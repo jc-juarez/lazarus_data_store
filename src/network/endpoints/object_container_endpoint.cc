@@ -30,6 +30,7 @@ object_container_endpoint::get_object_container(
     const drogon::HttpRequestPtr& request,
     std::function<void(const drogon::HttpResponsePtr &)>&& callback)
 {
+    request->bodyData();
     auto resp = drogon::HttpResponse::newHttpResponse();
     resp->setBody(
         "Hello, this is a generic hello message from the SayHello "

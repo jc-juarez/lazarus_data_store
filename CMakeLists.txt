@@ -17,7 +17,7 @@ find_package(Protobuf REQUIRED)
 
 # Define and process .proto files.
 set(PROTO_FILES
-    src/schemas/object_container.proto
+    src/schemas/object_container_interface.proto
 )
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 

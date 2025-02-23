@@ -1,0 +1,15 @@
+// ****************************************************
+// Lazarus Data Store
+// Schemas
+// 'object_container_interface.proto'
+// Author: jcjuarez
+// Description:
+//      Defines the object container structure.
+// ****************************************************
+
+syntax = "proto3";
+
+message object_container_interface {
+    string id = 1;
+    int64 created_at = 3;
+}
