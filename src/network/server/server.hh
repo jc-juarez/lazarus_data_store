@@ -15,6 +15,8 @@
 
 namespace lazarus
 {
+namespace network
+{
 
 //
 // Main HTTP server wrapper.
@@ -42,7 +44,7 @@ public:
     template <typename T>
     void
     register_endpoint(
-        std::shared_ptr<drogon::HttpController<T>> endpoint)
+        std::shared_ptr<T> endpoint)
     {
         http_server_.registerController(endpoint);
     }
@@ -84,4 +86,5 @@ private:
     const server_configuration server_config_;
 };
 
+} // namespace network.
 } // namespace lazarus.

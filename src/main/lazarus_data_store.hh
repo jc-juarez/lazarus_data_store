@@ -14,7 +14,10 @@
 namespace lazarus
 {
 
+namespace network
+{
 class server;
+}
 
 //
 // Lazarus system root object.
@@ -37,9 +40,15 @@ public:
 private:
 
     //
+    // Registers the endpoints to be used by the server.
+    //
+    void
+    register_endpoints();
+
+    //
     // HTTP server handle.
     //
-    std::shared_ptr<server> server_;
+    std::shared_ptr<network::server> server_;
 };
 
 } // namespace lazarus.

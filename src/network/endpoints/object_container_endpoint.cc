@@ -10,7 +10,12 @@
 
 #include "object_container_endpoint.hh"
 
-object_container_endpoint::object_container_endpoint(int data) {}
+/*namespace lazarus
+{
+namespace network
+{*/
+
+object_container_endpoint::object_container_endpoint(const std::string &str) {}
 
 void
 object_container_endpoint::get_object_container(
@@ -23,3 +28,6 @@ object_container_endpoint::get_object_container(
         "controller");
     callback(resp);
 }
+
+/*} // namespace network.
+} // namespace lazarus.*/

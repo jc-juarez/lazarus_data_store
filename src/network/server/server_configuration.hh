@@ -15,6 +15,8 @@
 
 namespace lazarus
 {
+namespace network
+{
 
 //
 // Sever configuration container.
@@ -59,4 +61,5 @@ struct server_configuration
     bool run_as_daemon_;
 };
 
+} // namespace network.
 } // namespace lazarus.

@@ -12,6 +12,8 @@
 
 namespace lazarus
 {
+namespace network
+{
 
 server::server(
     const server_configuration& server_config)
@@ -59,4 +61,5 @@ server::get_server_listener_ip_address() const
     return server_config_.server_listener_ip_address_.c_str();
 }
 
+} // namespace network.
 } // namespace lazarus.

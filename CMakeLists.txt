@@ -10,6 +10,7 @@ set(SOURCE_FILES
     src/main/main.cc
     src/main/lazarus_data_store.cc
     src/network/server/server.cc
+    src/network/endpoints/object_container_endpoint.cc
 )
 
 add_executable(lazarus ${SOURCE_FILES})

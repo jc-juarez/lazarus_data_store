@@ -12,16 +12,16 @@
 
 #include <drogon/HttpController.h>
 
-class object_container_endpoint : public drogon::HttpController<object_container_endpoint>
+/*namespace lazarus
+{
+namespace network
+{*/
+
+class object_container_endpoint : public drogon::HttpController<object_container_endpoint, false>
 {
   public:
 
-    //
-    // Explicit manual instantiation.
-    //
-    static constexpr bool isAutoCreation = false;
-
-    explicit object_container_endpoint(int data);
+    object_container_endpoint(const std::string &str);
 
     METHOD_LIST_BEGIN
     //
@@ -35,3 +35,6 @@ class object_container_endpoint : public drogon::HttpController<object_container
       const drogon::HttpRequestPtr& request,
       std::function<void(const drogon::HttpResponsePtr&)>&& callback);
 };
+
+/*} // namespace network.
+} // namespace lazarus.*/

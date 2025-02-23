@@ -1,0 +1,3 @@
+/home/waxymantis/projects/lazarus-ds/build/CMakeFiles/lazarus.dir
+/home/waxymantis/projects/lazarus-ds/build/CMakeFiles/edit_cache.dir
+/home/waxymantis/projects/lazarus-ds/build/CMakeFiles/rebuild_cache.dir
