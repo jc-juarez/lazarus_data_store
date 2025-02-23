@@ -15,16 +15,13 @@ set(CMAKE_CXX_STANDARD 20)
 find_package(Drogon REQUIRED)
 find_package(Protobuf REQUIRED)
 
-# Protobuf schemas handling.
-set(GENERATED_DIR src/generated)
-file(MAKE_DIRECTORY ${GENERATED_DIR})
+# Define and process .proto files.
 set(PROTO_FILES
     src/schemas/object_container.proto
 )
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
-include_directories(${GENERATED_DIR} ${Protobuf_INCLUDE_DIRS})
 
-# Source files inclusion.
+# Define source files.
 set(SOURCE_FILES
     src/main/main.cc
     src/main/lazarus_data_store.cc
@@ -32,5 +29,6 @@ set(SOURCE_FILES
     src/network/endpoints/object_container_endpoint.cc
 )
 
-add_executable(lazarus ${PROTO_SRCS} ${PROTO_HDRS} ${SOURCE_FILES})
+add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})
+target_include_directories(lazarus PRIVATE build/)
 target_link_libraries(lazarus PRIVATE Drogon::Drogon ${Protobuf_LIBRARIES})

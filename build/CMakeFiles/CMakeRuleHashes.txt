@@ -1,2 +1,0 @@
-# Hashes of file build rules.
-26434a6a3dee1dc680275e4301fcca90 object_container.pb.h
