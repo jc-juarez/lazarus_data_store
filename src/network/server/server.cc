@@ -10,7 +10,6 @@
 
 #include "server.hh"
 #include "../endpoints/object_container_endpoint.hh"
-#include <iostream> // remove.
 
 namespace lazarus
 {
@@ -22,7 +21,6 @@ server::server(
     : http_server_{drogon::app()},
       server_config_{server_config}
 {
-    std::cout << "Yes1";
     http_server_.setLogPath(server_config_.server_logs_directory_path_)
          .setLogLevel(trantor::Logger::kWarn)
          .addListener(server_config_.server_listener_ip_address_, server_config_.port_number_)
@@ -36,7 +34,6 @@ server::server(
     //
     // Register all needed endpoints for the server.
     //
-    std::cout << "Yes2";
     register_endpoints();
 }
 

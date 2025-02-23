@@ -11,7 +11,6 @@
 #include "lazarus_data_store.hh"
 #include "../network/server/server.hh"
 #include "../network/server/server_configuration.hh"
-#include <iostream> // remove.
 
 namespace lazarus
 {
@@ -23,7 +22,6 @@ lazarus_data_store::lazarus_data_store()
 void
 lazarus_data_store::start_system()
 {
-    std::cout << "Yes3" << std::endl;
     //
     // As a final step, start the
     // HTTP server for handling incoming requests.

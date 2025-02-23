@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+message ObjectContainer {
+    string id = 1;
+    int64 created_at = 3;
+}

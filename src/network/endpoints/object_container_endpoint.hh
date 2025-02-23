@@ -12,29 +12,38 @@
 
 #include <drogon/HttpController.h>
 
-/*namespace lazarus
+namespace lazarus
 {
 namespace network
-{*/
+{
 
 class object_container_endpoint : public drogon::HttpController<object_container_endpoint, false>
 {
-  public:
+public:
 
-    object_container_endpoint(const std::string &str);
+  object_container_endpoint(const std::string &str);
 
-    METHOD_LIST_BEGIN
-    //
-    // Gets the metadata of a given element container.
-    //
-    METHOD_ADD(object_container_endpoint::get_object_container, "/", drogon::Get);
-    METHOD_LIST_END
+  METHOD_LIST_BEGIN
+  METHOD_ADD(object_container_endpoint::create_object_container, "/", drogon::Put);
+  METHOD_ADD(object_container_endpoint::get_object_container, "/", drogon::Get);
+  METHOD_LIST_END
 
-    void
-    get_object_container(
-      const drogon::HttpRequestPtr& request,
-      std::function<void(const drogon::HttpResponsePtr&)>&& callback);
+  //
+  // Creates a new object container.
+  //
+  void
+  create_object_container(
+    const drogon::HttpRequestPtr& request,
+    std::function<void(const drogon::HttpResponsePtr&)>&& callback);
+
+  //
+  // Gets the metadata of a given object container.
+  //
+  void
+  get_object_container(
+    const drogon::HttpRequestPtr& request,
+    std::function<void(const drogon::HttpResponsePtr&)>&& callback);
 };
 
-/*} // namespace network.
-} // namespace lazarus.*/
+} // namespace network.
+} // namespace lazarus.
