@@ -29,6 +29,7 @@ set(SOURCE_FILES
     src/main/lazarus_data_store.cc
     src/network/server/server.cc
     src/network/endpoints/object_container_endpoint.cc
+    src/common/uuid_utilities.cc
 )
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})
