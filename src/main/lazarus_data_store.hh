@@ -40,6 +40,12 @@ public:
 private:
 
     //
+    // Initializes the global logger to be used by the system.
+    //
+    void
+    initialize_logger();
+
+    //
     // HTTP server handle.
     //
     std::shared_ptr<network::server> server_;

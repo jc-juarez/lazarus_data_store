@@ -11,8 +11,10 @@ cmake_minimum_required(VERSION 3.10)
 project(lazarus)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_BUILD_TYPE Debug)
 
 find_package(Drogon REQUIRED)
+find_package(spdlog REQUIRED)
 find_package(Protobuf REQUIRED)
 
 # Define and process .proto files.
@@ -31,4 +33,4 @@ set(SOURCE_FILES
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})
 target_include_directories(lazarus PRIVATE build/)
-target_link_libraries(lazarus PRIVATE Drogon::Drogon ${Protobuf_LIBRARIES})
+target_link_libraries(lazarus PRIVATE Drogon::Drogon ${Protobuf_LIBRARIES} spdlog::spdlog)

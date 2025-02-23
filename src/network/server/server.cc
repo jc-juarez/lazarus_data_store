@@ -9,6 +9,7 @@
 // ****************************************************
 
 #include "server.hh"
+#include <spdlog/spdlog.h>
 #include "../endpoints/object_container_endpoint.hh"
 
 namespace lazarus
@@ -40,6 +41,9 @@ server::server(
 void
 server::start()
 {
+    spdlog::info("Starting lazarus data store server on port={}.",
+        server_config_.port_number_);
+
     http_server_.run();
 }
 
