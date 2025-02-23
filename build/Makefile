@@ -129,6 +129,30 @@ lazarus/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lazarus.dir/build.make CMakeFiles/lazarus.dir/build
 .PHONY : lazarus/fast
 
+object_container.pb.o: object_container.pb.cc.o
+.PHONY : object_container.pb.o
+
+# target to build an object file
+object_container.pb.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lazarus.dir/build.make CMakeFiles/lazarus.dir/object_container.pb.cc.o
+.PHONY : object_container.pb.cc.o
+
+object_container.pb.i: object_container.pb.cc.i
+.PHONY : object_container.pb.i
+
+# target to preprocess a source file
+object_container.pb.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lazarus.dir/build.make CMakeFiles/lazarus.dir/object_container.pb.cc.i
+.PHONY : object_container.pb.cc.i
+
+object_container.pb.s: object_container.pb.cc.s
+.PHONY : object_container.pb.s
+
+# target to generate assembly for a file
+object_container.pb.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lazarus.dir/build.make CMakeFiles/lazarus.dir/object_container.pb.cc.s
+.PHONY : object_container.pb.cc.s
+
 src/main/lazarus_data_store.o: src/main/lazarus_data_store.cc.o
 .PHONY : src/main/lazarus_data_store.o
 
@@ -234,6 +258,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... lazarus"
+	@echo "... object_container.pb.o"
+	@echo "... object_container.pb.i"
+	@echo "... object_container.pb.s"
 	@echo "... src/main/lazarus_data_store.o"
 	@echo "... src/main/lazarus_data_store.i"
 	@echo "... src/main/lazarus_data_store.s"

@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -isystem /usr/include/jsoncpp
+CXX_INCLUDES = -I/home/waxymantis/projects/lazarus-ds/src/generated -isystem /usr/include/jsoncpp
 
 CXX_FLAGS = -std=gnu++20
 

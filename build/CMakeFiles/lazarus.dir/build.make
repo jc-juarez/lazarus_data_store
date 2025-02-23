@@ -69,10 +69,32 @@ include CMakeFiles/lazarus.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/lazarus.dir/flags.make
 
+object_container.pb.h: /home/waxymantis/projects/lazarus-ds/src/schemas/object_container.proto
+object_container.pb.h: /usr/bin/protoc
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/waxymantis/projects/lazarus-ds/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Running cpp protocol buffer compiler on src/schemas/object_container.proto"
+	/usr/bin/protoc --cpp_out :/home/waxymantis/projects/lazarus-ds/build -I /home/waxymantis/projects/lazarus-ds/src/schemas /home/waxymantis/projects/lazarus-ds/src/schemas/object_container.proto
+
+object_container.pb.cc: object_container.pb.h
+	@$(CMAKE_COMMAND) -E touch_nocreate object_container.pb.cc
+
+CMakeFiles/lazarus.dir/object_container.pb.cc.o: CMakeFiles/lazarus.dir/flags.make
+CMakeFiles/lazarus.dir/object_container.pb.cc.o: object_container.pb.cc
+CMakeFiles/lazarus.dir/object_container.pb.cc.o: CMakeFiles/lazarus.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/waxymantis/projects/lazarus-ds/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/lazarus.dir/object_container.pb.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/lazarus.dir/object_container.pb.cc.o -MF CMakeFiles/lazarus.dir/object_container.pb.cc.o.d -o CMakeFiles/lazarus.dir/object_container.pb.cc.o -c /home/waxymantis/projects/lazarus-ds/build/object_container.pb.cc
+
+CMakeFiles/lazarus.dir/object_container.pb.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/lazarus.dir/object_container.pb.cc.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/waxymantis/projects/lazarus-ds/build/object_container.pb.cc > CMakeFiles/lazarus.dir/object_container.pb.cc.i
+
+CMakeFiles/lazarus.dir/object_container.pb.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/lazarus.dir/object_container.pb.cc.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/waxymantis/projects/lazarus-ds/build/object_container.pb.cc -o CMakeFiles/lazarus.dir/object_container.pb.cc.s
+
 CMakeFiles/lazarus.dir/src/main/main.cc.o: CMakeFiles/lazarus.dir/flags.make
 CMakeFiles/lazarus.dir/src/main/main.cc.o: /home/waxymantis/projects/lazarus-ds/src/main/main.cc
 CMakeFiles/lazarus.dir/src/main/main.cc.o: CMakeFiles/lazarus.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/waxymantis/projects/lazarus-ds/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/lazarus.dir/src/main/main.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/waxymantis/projects/lazarus-ds/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/lazarus.dir/src/main/main.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/lazarus.dir/src/main/main.cc.o -MF CMakeFiles/lazarus.dir/src/main/main.cc.o.d -o CMakeFiles/lazarus.dir/src/main/main.cc.o -c /home/waxymantis/projects/lazarus-ds/src/main/main.cc
 
 CMakeFiles/lazarus.dir/src/main/main.cc.i: cmake_force
@@ -86,7 +108,7 @@ CMakeFiles/lazarus.dir/src/main/main.cc.s: cmake_force
 CMakeFiles/lazarus.dir/src/main/lazarus_data_store.cc.o: CMakeFiles/lazarus.dir/flags.make
 CMakeFiles/lazarus.dir/src/main/lazarus_data_store.cc.o: /home/waxymantis/projects/lazarus-ds/src/main/lazarus_data_store.cc
 CMakeFiles/lazarus.dir/src/main/lazarus_data_store.cc.o: CMakeFiles/lazarus.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/waxymantis/projects/lazarus-ds/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/lazarus.dir/src/main/lazarus_data_store.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/waxymantis/projects/lazarus-ds/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/lazarus.dir/src/main/lazarus_data_store.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/lazarus.dir/src/main/lazarus_data_store.cc.o -MF CMakeFiles/lazarus.dir/src/main/lazarus_data_store.cc.o.d -o CMakeFiles/lazarus.dir/src/main/lazarus_data_store.cc.o -c /home/waxymantis/projects/lazarus-ds/src/main/lazarus_data_store.cc
 
 CMakeFiles/lazarus.dir/src/main/lazarus_data_store.cc.i: cmake_force
@@ -100,7 +122,7 @@ CMakeFiles/lazarus.dir/src/main/lazarus_data_store.cc.s: cmake_force
 CMakeFiles/lazarus.dir/src/network/server/server.cc.o: CMakeFiles/lazarus.dir/flags.make
 CMakeFiles/lazarus.dir/src/network/server/server.cc.o: /home/waxymantis/projects/lazarus-ds/src/network/server/server.cc
 CMakeFiles/lazarus.dir/src/network/server/server.cc.o: CMakeFiles/lazarus.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/waxymantis/projects/lazarus-ds/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/lazarus.dir/src/network/server/server.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/waxymantis/projects/lazarus-ds/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/lazarus.dir/src/network/server/server.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/lazarus.dir/src/network/server/server.cc.o -MF CMakeFiles/lazarus.dir/src/network/server/server.cc.o.d -o CMakeFiles/lazarus.dir/src/network/server/server.cc.o -c /home/waxymantis/projects/lazarus-ds/src/network/server/server.cc
 
 CMakeFiles/lazarus.dir/src/network/server/server.cc.i: cmake_force
@@ -114,7 +136,7 @@ CMakeFiles/lazarus.dir/src/network/server/server.cc.s: cmake_force
 CMakeFiles/lazarus.dir/src/network/endpoints/object_container_endpoint.cc.o: CMakeFiles/lazarus.dir/flags.make
 CMakeFiles/lazarus.dir/src/network/endpoints/object_container_endpoint.cc.o: /home/waxymantis/projects/lazarus-ds/src/network/endpoints/object_container_endpoint.cc
 CMakeFiles/lazarus.dir/src/network/endpoints/object_container_endpoint.cc.o: CMakeFiles/lazarus.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/waxymantis/projects/lazarus-ds/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/lazarus.dir/src/network/endpoints/object_container_endpoint.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/waxymantis/projects/lazarus-ds/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/lazarus.dir/src/network/endpoints/object_container_endpoint.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/lazarus.dir/src/network/endpoints/object_container_endpoint.cc.o -MF CMakeFiles/lazarus.dir/src/network/endpoints/object_container_endpoint.cc.o.d -o CMakeFiles/lazarus.dir/src/network/endpoints/object_container_endpoint.cc.o -c /home/waxymantis/projects/lazarus-ds/src/network/endpoints/object_container_endpoint.cc
 
 CMakeFiles/lazarus.dir/src/network/endpoints/object_container_endpoint.cc.i: cmake_force
@@ -127,6 +149,7 @@ CMakeFiles/lazarus.dir/src/network/endpoints/object_container_endpoint.cc.s: cma
 
 # Object files for target lazarus
 lazarus_OBJECTS = \
+"CMakeFiles/lazarus.dir/object_container.pb.cc.o" \
 "CMakeFiles/lazarus.dir/src/main/main.cc.o" \
 "CMakeFiles/lazarus.dir/src/main/lazarus_data_store.cc.o" \
 "CMakeFiles/lazarus.dir/src/network/server/server.cc.o" \
@@ -135,18 +158,20 @@ lazarus_OBJECTS = \
 # External object files for target lazarus
 lazarus_EXTERNAL_OBJECTS =
 
+lazarus: CMakeFiles/lazarus.dir/object_container.pb.cc.o
 lazarus: CMakeFiles/lazarus.dir/src/main/main.cc.o
 lazarus: CMakeFiles/lazarus.dir/src/main/lazarus_data_store.cc.o
 lazarus: CMakeFiles/lazarus.dir/src/network/server/server.cc.o
 lazarus: CMakeFiles/lazarus.dir/src/network/endpoints/object_container_endpoint.cc.o
 lazarus: CMakeFiles/lazarus.dir/build.make
 lazarus: /usr/local/lib/libdrogon.a
+lazarus: /usr/lib/x86_64-linux-gnu/libprotobuf.so
 lazarus: /usr/local/lib/libtrantor.a
 lazarus: /usr/lib/x86_64-linux-gnu/libjsoncpp.so
 lazarus: /usr/lib/x86_64-linux-gnu/libuuid.so
 lazarus: /usr/lib/x86_64-linux-gnu/libz.so
 lazarus: CMakeFiles/lazarus.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/waxymantis/projects/lazarus-ds/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable lazarus"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/waxymantis/projects/lazarus-ds/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable lazarus"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lazarus.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -157,7 +182,8 @@ CMakeFiles/lazarus.dir/clean:
 	$(CMAKE_COMMAND) -P CMakeFiles/lazarus.dir/cmake_clean.cmake
 .PHONY : CMakeFiles/lazarus.dir/clean
 
-CMakeFiles/lazarus.dir/depend:
+CMakeFiles/lazarus.dir/depend: object_container.pb.cc
+CMakeFiles/lazarus.dir/depend: object_container.pb.h
 	cd /home/waxymantis/projects/lazarus-ds/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/waxymantis/projects/lazarus-ds /home/waxymantis/projects/lazarus-ds /home/waxymantis/projects/lazarus-ds/build /home/waxymantis/projects/lazarus-ds/build /home/waxymantis/projects/lazarus-ds/build/CMakeFiles/lazarus.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/lazarus.dir/depend
 
