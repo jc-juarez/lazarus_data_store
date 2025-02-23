@@ -40,12 +40,6 @@ public:
 private:
 
     //
-    // Registers the endpoints to be used by the server.
-    //
-    void
-    register_endpoints();
-
-    //
     // HTTP server handle.
     //
     std::shared_ptr<network::server> server_;

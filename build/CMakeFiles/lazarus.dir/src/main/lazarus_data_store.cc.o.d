@@ -375,5 +375,4 @@ CMakeFiles/lazarus.dir/src/main/lazarus_data_store.cc.o: \
  /usr/local/include/drogon/IOThreadStorage.h \
  /home/waxymantis/projects/lazarus-ds/src/main/lazarus_data_store.hh \
  /home/waxymantis/projects/lazarus-ds/src/main/../network/server/server.hh \
- /home/waxymantis/projects/lazarus-ds/src/main/../network/server/server_configuration.hh \
- /home/waxymantis/projects/lazarus-ds/src/main/../network/endpoints/object_container_endpoint.hh
+ /home/waxymantis/projects/lazarus-ds/src/main/../network/server/server_configuration.hh

@@ -39,15 +39,10 @@ public:
     start();
 
     //
-    // Registers a new endpoint with the server.
+    // Register the endpoints that the server needs to handle.
     //
-    template <typename T>
     void
-    register_endpoint(
-        std::shared_ptr<T> endpoint)
-    {
-        http_server_.registerController(endpoint);
-    }
+    register_endpoints();
         
     //
     // Gets the server associated port number.

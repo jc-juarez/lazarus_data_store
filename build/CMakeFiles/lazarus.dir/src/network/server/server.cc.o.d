@@ -375,4 +375,5 @@ CMakeFiles/lazarus.dir/src/network/server/server.cc.o: \
  /usr/local/include/drogon/IntranetIpFilter.h \
  /usr/local/include/drogon/LocalHostFilter.h \
  /usr/local/include/drogon/IOThreadStorage.h \
- /home/waxymantis/projects/lazarus-ds/src/network/server/server_configuration.hh
+ /home/waxymantis/projects/lazarus-ds/src/network/server/server_configuration.hh \
+ /home/waxymantis/projects/lazarus-ds/src/network/server/../endpoints/object_container_endpoint.hh

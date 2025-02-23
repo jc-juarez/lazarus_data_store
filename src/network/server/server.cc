@@ -9,6 +9,8 @@
 // ****************************************************
 
 #include "server.hh"
+#include "../endpoints/object_container_endpoint.hh"
+#include <iostream> // remove.
 
 namespace lazarus
 {
@@ -20,6 +22,7 @@ server::server(
     : http_server_{drogon::app()},
       server_config_{server_config}
 {
+    std::cout << "Yes1";
     http_server_.setLogPath(server_config_.server_logs_directory_path_)
          .setLogLevel(trantor::Logger::kWarn)
          .addListener(server_config_.server_listener_ip_address_, server_config_.port_number_)
@@ -29,12 +32,27 @@ server::server(
     {
         http_server_.enableRunAsDaemon();
     }
+
+    //
+    // Register all needed endpoints for the server.
+    //
+    std::cout << "Yes2";
+    register_endpoints();
 }
 
 void
 server::start()
 {
     http_server_.run();
+}
+
+void
+server::register_endpoints()
+{
+    //
+    // Object container endpoint.
+    //
+    http_server_.registerController(std::make_shared<object_container_endpoint>("Hello"));
 }
 
 std::uint16_t
