@@ -45,5 +45,25 @@ storage_engine::insert_object(
     }
 }
 
+void
+storage_engine::get_object(
+    const char* object_id,
+    byte_stream& object_data_stream)
+{
+    const rocksdb::Status status = core_database_->Get(
+        rocksdb::ReadOptions(),
+        object_id,
+        &object_data_stream);
+
+    if (status.ok())
+    {
+        // std::cout << "Value for 'hello': " << value << std::endl;
+    }
+    else
+    {
+        // std::cerr << "Get failed: " << status.ToString() << std::endl;
+    }
+}
+
 } // namespace storage.
 } // namespace lazarus.

@@ -30,5 +30,15 @@ data_store_accessor::insert_object(
         object_data_buffer);
 }
 
+void
+data_store_accessor::get_object(
+    const char* object_id,
+    byte_stream& object_data_stream)
+{
+    storage_engine_->get_object(
+        object_id,
+        object_data_stream);
+}
+
 } // namespace storage.
 } // namespace lazarus.

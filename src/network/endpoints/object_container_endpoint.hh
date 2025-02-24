@@ -34,17 +34,17 @@ public:
     std::shared_ptr<lazarus::storage::data_store_accessor> data_store_accessor_handle);
 
   METHOD_LIST_BEGIN
-  //METHOD_ADD(object_container_endpoint::create_object_container, "/", drogon::Put);
+  METHOD_ADD(object_container_endpoint::create_object_container, "/", drogon::Put);
   METHOD_ADD(object_container_endpoint::get_object_container, "/", drogon::Get);
   METHOD_LIST_END
 
   //
   // Creates a new object container.
   //
-  /*void
+  void
   create_object_container(
     const drogon::HttpRequestPtr& request,
-    std::function<void(const drogon::HttpResponsePtr&)>&& callback);*/
+    std::function<void(const drogon::HttpResponsePtr&)>&& callback);
 
   //
   // Gets the metadata of a given object container.

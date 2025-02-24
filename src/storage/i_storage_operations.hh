@@ -9,12 +9,15 @@
 
 #pragma once
 
+#include <string>
+
 namespace lazarus
 {
 namespace storage
 {
 
 using byte = char;
+using byte_stream = std::string;
 
 //
 // Storage core operations interface.
@@ -36,6 +39,16 @@ public:
     insert_object(
         const char* object_id,
         const byte* object_data_buffer) = 0;
+
+    //
+    // Get an object from the data store.
+    // Stores the object contents into the data stream if it exists.
+    //
+    virtual
+    void
+    get_object(
+        const char* object_id,
+        byte_stream& object_data_stream) = 0;
 };
 
 } // namespace storage.
