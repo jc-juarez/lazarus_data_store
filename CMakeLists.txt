@@ -15,6 +15,7 @@ set(CMAKE_BUILD_TYPE Debug)
 
 find_package(Drogon REQUIRED)
 find_package(spdlog REQUIRED)
+find_package(RocksDB REQUIRED)
 find_package(Protobuf REQUIRED)
 
 # Define and process .proto files.
@@ -30,8 +31,16 @@ set(SOURCE_FILES
     src/network/server/server.cc
     src/network/endpoints/object_container_endpoint.cc
     src/common/uuid_utilities.cc
+    src/storage/data_store_accessor.cc
+    src/storage/storage_engine.cc
 )
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})
 target_include_directories(lazarus PRIVATE build/)
-target_link_libraries(lazarus PRIVATE Drogon::Drogon ${Protobuf_LIBRARIES} spdlog::spdlog)
+target_link_libraries(
+    lazarus PRIVATE
+    Drogon::Drogon
+    ${Protobuf_LIBRARIES}
+    spdlog::spdlog
+    rocksdb
+)

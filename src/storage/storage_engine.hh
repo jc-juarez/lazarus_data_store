@@ -13,18 +13,17 @@
 #include <memory>
 #include <cstdint>
 #include <rocksdb/db.h>
+#include "i_storage_operations.hh"
 
 namespace lazarus
 {
 namespace storage
 {
 
-using byte = char;
-
 //
 // Core storage engine with a RocksDB backend.
 //
-class storage_engine
+class storage_engine : public i_storage_operations
 {
 public:
 

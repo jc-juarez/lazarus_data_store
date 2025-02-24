@@ -14,6 +14,12 @@
 
 namespace lazarus
 {
+
+namespace storage
+{
+  class data_store_accessor;
+}
+
 namespace network
 {
 
@@ -21,7 +27,11 @@ class object_container_endpoint : public drogon::HttpController<object_container
 {
 public:
 
-  object_container_endpoint(const std::string &str);
+  //
+  // Endpoint constructor.
+  //
+  object_container_endpoint(
+    std::shared_ptr<lazarus::storage::data_store_accessor> data_store_accessor_handle);
 
   METHOD_LIST_BEGIN
   //METHOD_ADD(object_container_endpoint::create_object_container, "/", drogon::Put);
@@ -43,6 +53,13 @@ public:
   get_object_container(
     const drogon::HttpRequestPtr& request,
     std::function<void(const drogon::HttpResponsePtr&)>&& callback);
+
+private:
+
+  //
+  // Data store accessor handle.
+  //
+  std::shared_ptr<lazarus::storage::data_store_accessor> data_store_accessor_;
 };
 
 } // namespace network.

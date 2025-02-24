@@ -12,6 +12,8 @@
 #include <drogon/drogon.h>
 #include "lazarus_data_store.hh"
 #include "../network/server/server.hh"
+#include "../storage/storage_engine.hh"
+#include "../storage/data_store_accessor.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "../network/server/server_configuration.hh"
 
@@ -22,9 +24,26 @@ lazarus_data_store::lazarus_data_store(
     const logger::logger_configuration& logger_config,
     const network::server_configuration& server_config)
     : session_id_{common::generate_uuid()},
-      logger_config_{logger_config},
-      server_{std::make_shared<network::server>(server_config)}
-{}
+      logger_config_{logger_config}
+{
+    //
+    // Storage engine component.
+    //
+    storage_engine_ = std::make_shared<storage::storage_engine>();
+
+    //
+    // Data store accessor component.
+    //
+    data_store_accessor_ = std::make_shared<storage::data_store_accessor>(
+        storage_engine_);
+
+    //
+    // Server component.
+    //
+    server_ = std::make_shared<network::server>(
+        server_config,
+        data_store_accessor_);
+}
 
 void
 lazarus_data_store::start_system()

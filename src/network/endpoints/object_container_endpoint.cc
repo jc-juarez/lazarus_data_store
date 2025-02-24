@@ -15,7 +15,10 @@ namespace lazarus
 namespace network
 {
 
-object_container_endpoint::object_container_endpoint(const std::string &str) {}
+object_container_endpoint::object_container_endpoint(
+    std::shared_ptr<lazarus::storage::data_store_accessor> data_store_accessor_handle)
+    : data_store_accessor_{std::move(data_store_accessor_handle)}
+{}
 
 /*void
 create_object_container(

@@ -15,6 +15,12 @@
 
 namespace lazarus
 {
+
+namespace storage
+{
+    class data_store_accessor;
+}
+
 namespace network
 {
 
@@ -29,7 +35,8 @@ public:
     // Constructor for the HTTP server.
     //
     server(
-        const server_configuration& server_config);
+        const server_configuration& server_config,
+        std::shared_ptr<lazarus::storage::data_store_accessor> data_store_accessor_handle);
 
     //
     // Starts the HTTP server for processing storage requests.
@@ -42,7 +49,8 @@ public:
     // Register the endpoints that the server needs to handle.
     //
     void
-    register_endpoints();
+    register_endpoints(
+        std::shared_ptr<lazarus::storage::data_store_accessor> data_store_accessor_handle);
         
     //
     // Gets the server associated port number.

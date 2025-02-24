@@ -22,6 +22,12 @@ namespace network
 class server;
 }
 
+namespace storage
+{
+class storage_engine;
+class data_store_accessor;
+}
+
 //
 // Lazarus system root object.
 //
@@ -51,11 +57,6 @@ private:
     initialize_logger();
 
     //
-    // HTTP server handle.
-    //
-    std::shared_ptr<network::server> server_;
-
-    //
     // Session identifier.
     //
     boost::uuids::uuid session_id_;
@@ -64,6 +65,21 @@ private:
     // Logger configurations.
     //
     const logger::logger_configuration logger_config_;
+
+    //
+    // HTTP server handle.
+    //
+    std::shared_ptr<network::server> server_;
+
+    //
+    // Storage engine handle.
+    //
+    std::shared_ptr<storage::storage_engine> storage_engine_;
+
+    //
+    // Data store accessor handle.
+    //
+    std::shared_ptr<storage::data_store_accessor> data_store_accessor_;
 };
 
 } // namespace lazarus.
