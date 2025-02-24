@@ -10,6 +10,7 @@
 
 #include "object_container_endpoint.hh"
 #include "../../storage/data_store_accessor.hh"
+#include <thread>
 
 namespace lazarus
 {
@@ -27,17 +28,13 @@ object_container_endpoint::create_object_container(
     std::function<void(const drogon::HttpResponsePtr&)>&& callback)
 {
     //
-    // Insert into the db.
+    // Handle async insertion.
+    // Response will be provided async.
     //
-    data_store_accessor_->insert_object(
-        "John",
-        "12");
-
-    auto resp = drogon::HttpResponse::newHttpResponse();
-    resp->setBody(
-        "Object has been inserted into the data store");
-
-    callback(resp);
+    data_store_accessor_->enqueue_async_object_insertion(
+        "Joe",
+        "My hobby is reading books!",
+        std::move(callback));
 }
 
 void
@@ -51,13 +48,12 @@ object_container_endpoint::get_object_container(
     // Get contents from the db.
     //
     data_store_accessor_->get_object(
-        "John",
+        "Joe",
         object_stream);
 
     auto resp = drogon::HttpResponse::newHttpResponse();
     resp->setBody(
         object_stream.c_str());
-
     callback(resp);
 }
 

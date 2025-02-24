@@ -79,6 +79,8 @@
         "netfwd": "cpp",
         "socket": "cpp",
         "source_location": "cpp",
-        "timer": "cpp"
+        "timer": "cpp",
+        "shared_mutex": "cpp",
+        "cfenv": "cpp"
     }
 }

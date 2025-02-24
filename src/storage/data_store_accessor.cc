@@ -17,17 +17,36 @@ namespace storage
 
 data_store_accessor::data_store_accessor(
     std::shared_ptr<storage_engine> storage_engine_handle)
-    : storage_engine_(std::move(storage_engine_handle))
+    : storage_engine_(std::move(storage_engine_handle)),
+      object_insertion_thread_pool_{16u}
 {}
 
 void
-data_store_accessor::insert_object(
+data_store_accessor::enqueue_async_object_insertion(
     const char* object_id,
-    const byte* object_data_buffer)
+    const byte* object_data_stream,
+    std::function<void(const drogon::HttpResponsePtr&)>&& callback)
 {
-    storage_engine_->insert_object(
-        object_id,
-        object_data_buffer);
+    //
+    // Ensure the associated contents of the object are copied before proceeding. 
+    //
+    std::string object_id_to_dispatch{object_id};
+    byte_stream object_data_stream_to_dispatch{object_data_stream};
+
+    //
+    // Enqueue the async write action.
+    //
+    object_insertion_thread_pool_.execute(
+        [this,
+        object_id_to_dispatch = std::move(object_id_to_dispatch),
+        object_data_stream_to_dispatch = std::move(object_data_stream_to_dispatch),
+        callback = std::move(callback)]() mutable
+        {
+            this->object_insertion_dispatch_proxy(
+                std::move(object_id_to_dispatch),
+                std::move(object_data_stream_to_dispatch),
+                std::move(callback));
+        });
 }
 
 void
@@ -38,6 +57,27 @@ data_store_accessor::get_object(
     storage_engine_->get_object(
         object_id,
         object_data_stream);
+}
+
+void
+data_store_accessor::object_insertion_dispatch_proxy(
+    const std::string&& object_id,
+    const byte_stream&& object_data_stream,
+    std::function<void(const drogon::HttpResponsePtr&)>&& callback)
+{
+    //
+    // At this point, it is guaranteed that the memory contents
+    // of the object are safely copied ino the provided containers.
+    //
+    storage_engine_->insert_object(
+        object_id.c_str(),
+        object_data_stream.c_str());
+
+    auto resp = drogon::HttpResponse::newHttpResponse();
+    resp->setBody(
+        "Async response. Object has been inserted.");
+    
+    callback(resp);
 }
 
 } // namespace storage.

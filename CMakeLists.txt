@@ -13,6 +13,7 @@ project(lazarus)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Debug)
 
+find_package(TBB REQUIRED)
 find_package(Drogon REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(RocksDB REQUIRED)
@@ -43,4 +44,5 @@ target_link_libraries(
     ${Protobuf_LIBRARIES}
     spdlog::spdlog
     rocksdb
+    TBB::tbb
 )
