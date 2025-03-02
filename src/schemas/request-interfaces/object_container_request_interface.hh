@@ -11,7 +11,9 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
 #include <drogon/HttpController.h>
+#include "../request-optypes/object_container_request_optype.hh"
 
 namespace lazarus
 {
@@ -44,6 +46,12 @@ public:
     const char*
     get_id() const;
 
+    //
+    // Gets the object container request optype.
+    //
+    object_container_request_optype
+    get_optype() const;
+
 
 private:
 
@@ -56,6 +64,11 @@ private:
     // Expected object container identifier key name in the client request.
     //
     static constexpr const char* id_key_name = "id";
+
+    //
+    // Optype for the object container operation.
+    //
+    object_container_request_optype optype_;
 };
 
 } // namespace schemas.

@@ -10,7 +10,7 @@
 #include "storage_engine.hh"
 #include "data_store_accessor.hh"
 #include "object_container_index.hh"
-#include "object_container_creation_serializer.hh"
+#include "object_container_operation_serializer.hh"
 
 namespace lazarus
 {
@@ -28,9 +28,9 @@ data_store_accessor::data_store_accessor(
     object_container_index_ = std::make_shared<object_container_index>();
 
     //
-    // Object container creation serializer component allocation.
+    // Object container operation serializer component allocation.
     //
-    object_container_creation_serializer_ = std::make_shared<object_container_creation_serializer>(
+    object_container_operation_serializer_ = std::make_shared<object_container_operation_serializer>(
         storage_engine_,
         object_container_index_);
 }
@@ -71,6 +71,16 @@ data_store_accessor::get_object(
     storage_engine_->get_object(
         object_id,
         object_data_stream);
+}
+
+void
+data_store_accessor::orchestrate_serial_object_container_operation(
+    lazarus::schemas::object_container_request_interface&& object_container_request,
+    std::function<void(const drogon::HttpResponsePtr&)>&& callback)
+{
+    object_container_operation_serializer_->enqueue_object_container_operation(
+        std::move(object_container_request),
+        std::move(callback));
 }
 
 void

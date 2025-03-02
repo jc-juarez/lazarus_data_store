@@ -12,6 +12,7 @@
 #include <memory>
 #include <tbb/tbb.h>
 #include <drogon/HttpController.h>
+#include "../schemas/request-interfaces/object_container_request_interface.hh"
 
 namespace lazarus
 {
@@ -23,7 +24,7 @@ using byte_stream = std::string;
 
 class storage_engine;
 class object_container_index;
-class object_container_creation_serializer;
+class object_container_operation_serializer;
 
 //
 // Core storage access interface.
@@ -58,6 +59,17 @@ public:
         const char* object_id,
         byte_stream& object_data_stream);
 
+    //
+    // Orchestrates possible update operations to the object container index.
+    // Given possible check-then-act race conditions upon object
+    // container creation/deletion, these operations need to be serialized.
+    // Handles callback response.
+    //
+    void
+    orchestrate_serial_object_container_operation(
+        lazarus::schemas::object_container_request_interface&& object_container_request,
+        std::function<void(const drogon::HttpResponsePtr&)>&& callback);
+
 private:
 
     //
@@ -81,9 +93,9 @@ private:
     std::shared_ptr<object_container_index> object_container_index_;
 
     //
-    // Handle for the object container creation serializer component.
+    // Handle for the object container operation serializer component.
     //
-    std::shared_ptr<object_container_creation_serializer> object_container_creation_serializer_;
+    std::shared_ptr<object_container_operation_serializer> object_container_operation_serializer_;
 
     //
     // Scalable thread pool for handling async object insertions.

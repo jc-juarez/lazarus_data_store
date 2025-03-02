@@ -28,6 +28,20 @@ object_container_request_interface::object_container_request_interface(
         //
         id_ = (*json)[id_key_name].asString();
     }
+
+    switch (request->getMethod())
+    {
+        case drogon::HttpMethod::Put:
+        {
+            optype_ = object_container_request_optype::create;
+            break;
+        }
+        default:
+        {
+            optype_ = object_container_request_optype::invalid;
+            break;
+        }
+    }
 }
 
 object_container_request_interface::object_container_request_interface(
@@ -39,6 +53,12 @@ const char*
 object_container_request_interface::get_id() const
 {
     return id_.c_str();
+}
+
+object_container_request_optype
+object_container_request_interface::get_optype() const
+{
+    return optype_;
 }
 
 } // namespace schemas.

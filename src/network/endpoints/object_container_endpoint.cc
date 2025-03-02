@@ -28,7 +28,7 @@ object_container_endpoint::create_object_container(
     const drogon::HttpRequestPtr& request,
     std::function<void(const drogon::HttpResponsePtr&)>&& callback)
 {
-    const lazarus::schemas::object_container_request_interface object_container_request{
+    lazarus::schemas::object_container_request_interface object_container_request{
         request};
 
     spdlog::info("Create object container request received. "
@@ -36,13 +36,18 @@ object_container_endpoint::create_object_container(
         object_container_request.get_id());
 
     //
-    // Handle async insertion.
-    // Response will be provided async.
+    // Pending: Validate request and do a quick lookup.
+    // If it already exists, no need to enqueue anything.
     //
-    // data_store_accessor_->enqueue_async_object_insertion(
-    //    "Joe",
-    //    "My hobby is reading books!",
-    //    std::move(callback));
+
+    //
+    // Orchestrate the creation of the object
+    // container in async serialized fashion.
+    // Response will be provided by a separate thread.
+    //
+    data_store_accessor_->orchestrate_serial_object_container_operation(
+        std::move(object_container_request),
+        std::move(callback));
 }
 
 void

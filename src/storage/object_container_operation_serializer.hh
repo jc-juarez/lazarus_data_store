@@ -1,11 +1,11 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'object_container_creation_serializer.hh'
+// 'object_container_operation_serializer.hh'
 // Author: jcjuarez
 // Description:
-//      Manages the object container creation
-//      process in a serialized manner. 
+//      Manages object container operations
+//      in a serialized manner. 
 // ****************************************************
 
 #pragma once
@@ -23,41 +23,41 @@ class storage_engine;
 class object_container_index;
 
 //
-// Serialized object container creation orchestrator.
+// Serialized object container operation orchestrator.
 //
-class object_container_creation_serializer
+class object_container_operation_serializer
 {
 public:
 
     //
-    // Constructor for the object creation serializer.
+    // Constructor for the object operation serializer.
     //
-    object_container_creation_serializer(
+    object_container_operation_serializer(
         std::shared_ptr<storage_engine> storage_engine_handle,
         std::shared_ptr<object_container_index> object_cotainer_index_handle);
 
     //
-    // Enqueues a serialized object container creation operation into the serializer.
+    // Enqueues a serialized object container operation into the serializer.
     // Handles server callback replies in an asynchronous manner.
     //
     void
-    enqueue_object_container_creation(
+    enqueue_object_container_operation(
         lazarus::schemas::object_container_request_interface&& object_container_request,
         std::function<void(const drogon::HttpResponsePtr&)>&& callback);
 
 private:
 
     //
-    // Object container creation serialization entry point.
+    // Object container operation serialization entry point.
     // All calls to this proxy are serialized.
     //
     void
-    object_container_creation_serial_proxy(
+    object_container_operation_serial_proxy(
         const lazarus::schemas::object_container_request_interface&& object_container_request,
         std::function<void(const drogon::HttpResponsePtr&)>&& callback);
 
     //
-    // Serializer task queue for executing object container creations serially.
+    // Serializer task queue for executing object container operations serially.
     // Implemented using a single threaded thread pool.
     //
     tbb::task_arena serializer_queue_;

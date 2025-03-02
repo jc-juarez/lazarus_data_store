@@ -36,7 +36,7 @@ set(SOURCE_FILES
     src/storage/storage_engine.cc
     src/storage/object_container.cc
     src/storage/object_container_index.cc
-    src/storage/object_container_creation_serializer.cc
+    src/storage/object_container_operation_serializer.cc
     src/schemas/request-interfaces/object_container_request_interface.cc
 )
 
