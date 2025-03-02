@@ -8,9 +8,10 @@
 //      Handles CRUD operations for object containers.
 // ****************************************************
 
+#include <spdlog/spdlog.h>
 #include "object_container_endpoint.hh"
 #include "../../storage/data_store_accessor.hh"
-#include <thread>
+#include "../../schemas/request-interfaces/object_container_request_interface.hh"
 
 namespace lazarus
 {
@@ -27,14 +28,21 @@ object_container_endpoint::create_object_container(
     const drogon::HttpRequestPtr& request,
     std::function<void(const drogon::HttpResponsePtr&)>&& callback)
 {
+    const lazarus::schemas::object_container_request_interface object_container_request{
+        request};
+
+    spdlog::info("Create object container request received. "
+        "ObjectContainerId={}.",
+        object_container_request.get_id());
+
     //
     // Handle async insertion.
     // Response will be provided async.
     //
-    data_store_accessor_->enqueue_async_object_insertion(
-        "Joe",
-        "My hobby is reading books!",
-        std::move(callback));
+    // data_store_accessor_->enqueue_async_object_insertion(
+    //    "Joe",
+    //    "My hobby is reading books!",
+    //    std::move(callback));
 }
 
 void

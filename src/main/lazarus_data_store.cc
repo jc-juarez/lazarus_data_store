@@ -27,18 +27,18 @@ lazarus_data_store::lazarus_data_store(
       logger_config_{logger_config}
 {
     //
-    // Storage engine component.
+    // Storage engine component allocation.
     //
     storage_engine_ = std::make_shared<storage::storage_engine>();
 
     //
-    // Data store accessor component.
+    // Data store accessor component allocation.
     //
     data_store_accessor_ = std::make_shared<storage::data_store_accessor>(
         storage_engine_);
 
     //
-    // Server component.
+    // Server component allocation.
     //
     server_ = std::make_shared<network::server>(
         server_config,

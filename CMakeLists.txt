@@ -21,7 +21,7 @@ find_package(Protobuf REQUIRED)
 
 # Define and process .proto files.
 set(PROTO_FILES
-    src/schemas/object_container_interface.proto
+    src/schemas/persistance-interfaces/object_container_persistance_interface.proto
 )
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 
@@ -34,6 +34,10 @@ set(SOURCE_FILES
     src/common/uuid_utilities.cc
     src/storage/data_store_accessor.cc
     src/storage/storage_engine.cc
+    src/storage/object_container.cc
+    src/storage/object_container_index.cc
+    src/storage/object_container_creation_serializer.cc
+    src/schemas/request-interfaces/object_container_request_interface.cc
 )
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})

@@ -22,6 +22,8 @@ using byte = char;
 using byte_stream = std::string;
 
 class storage_engine;
+class object_container_index;
+class object_container_creation_serializer;
 
 //
 // Core storage access interface.
@@ -74,7 +76,17 @@ private:
     std::shared_ptr<storage_engine> storage_engine_;
 
     //
-    // Thread pool for handling async object insertions.
+    // Handle for the object container index component.
+    //
+    std::shared_ptr<object_container_index> object_container_index_;
+
+    //
+    // Handle for the object container creation serializer component.
+    //
+    std::shared_ptr<object_container_creation_serializer> object_container_creation_serializer_;
+
+    //
+    // Scalable thread pool for handling async object insertions.
     //
     tbb::task_arena object_insertion_thread_pool_;
 };

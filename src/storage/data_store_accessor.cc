@@ -9,6 +9,8 @@
 
 #include "storage_engine.hh"
 #include "data_store_accessor.hh"
+#include "object_container_index.hh"
+#include "object_container_creation_serializer.hh"
 
 namespace lazarus
 {
@@ -19,7 +21,19 @@ data_store_accessor::data_store_accessor(
     std::shared_ptr<storage_engine> storage_engine_handle)
     : storage_engine_(std::move(storage_engine_handle)),
       object_insertion_thread_pool_{16u}
-{}
+{
+    //
+    // Object container index component allocation.
+    //
+    object_container_index_ = std::make_shared<object_container_index>();
+
+    //
+    // Object container creation serializer component allocation.
+    //
+    object_container_creation_serializer_ = std::make_shared<object_container_creation_serializer>(
+        storage_engine_,
+        object_container_index_);
+}
 
 void
 data_store_accessor::enqueue_async_object_insertion(
@@ -34,7 +48,7 @@ data_store_accessor::enqueue_async_object_insertion(
     byte_stream object_data_stream_to_dispatch{object_data_stream};
 
     //
-    // Enqueue the async write action.
+    // Enqueue the object insertion action.
     //
     object_insertion_thread_pool_.execute(
         [this,

@@ -81,6 +81,7 @@
         "source_location": "cpp",
         "timer": "cpp",
         "shared_mutex": "cpp",
-        "cfenv": "cpp"
+        "cfenv": "cpp",
+        "*.inc": "cpp"
     }
 }

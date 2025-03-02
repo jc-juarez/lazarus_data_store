@@ -34,7 +34,7 @@ public:
     std::shared_ptr<lazarus::storage::data_store_accessor> data_store_accessor_handle);
 
   METHOD_LIST_BEGIN
-  METHOD_ADD(object_container_endpoint::create_object_container, "/", drogon::Put);
+  METHOD_ADD(object_container_endpoint::create_object_container, "/{id}", drogon::Put);
   METHOD_ADD(object_container_endpoint::get_object_container, "/", drogon::Get);
   METHOD_LIST_END
 
