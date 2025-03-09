@@ -31,10 +31,10 @@ public:
   // Endpoint constructor.
   //
   object_container_endpoint(
-    std::shared_ptr<lazarus::storage::data_store_service> data_store_service_handle);
+    std::shared_ptr<storage::data_store_service> data_store_service_handle);
 
   METHOD_LIST_BEGIN
-  METHOD_ADD(object_container_endpoint::create_object_container, "/{id}", drogon::Put);
+  METHOD_ADD(object_container_endpoint::create_object_container, "/", drogon::Put);
   METHOD_ADD(object_container_endpoint::get_object_container, "/", drogon::Get);
   METHOD_LIST_END
 
@@ -59,7 +59,7 @@ private:
   //
   // Data store service handle.
   //
-  std::shared_ptr<lazarus::storage::data_store_service> data_store_service_;
+  std::shared_ptr<storage::data_store_service> data_store_service_;
 };
 
 } // namespace network.

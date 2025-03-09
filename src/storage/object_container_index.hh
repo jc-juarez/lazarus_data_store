@@ -13,7 +13,7 @@
 #include <memory>
 #include <tbb/tbb.h>
 #include "object_container.hh"
-#include "object_container_persistance_interface.pb.h"
+#include "object_container_persistent_interface.pb.h"
 
 namespace lazarus
 {
@@ -40,8 +40,8 @@ public:
     //
     void
     insert_object_container(
-        rocksdb::ColumnFamilyHandle* data_store_reference,
-        const lazarus::schemas::object_container_persistance_interface& object_container_persistance);
+        rocksdb::ColumnFamilyHandle* storage_engine_reference,
+        const schemas::object_container_persistent_interface& object_container_persistent_metadata);
 
     //
     // Internal column family name for persisting
@@ -56,13 +56,13 @@ public:
     void
     set_object_containers_internal_metadata_handle(
         rocksdb::ColumnFamilyHandle* storage_engine_reference,
-        const lazarus::schemas::object_container_persistance_interface& object_container_persistance);
+        const schemas::object_container_persistent_interface& object_container_persistent_metadata);
 
     //
     // Gets the data store reference of the object containers internal metadata column family.
     //
     rocksdb::ColumnFamilyHandle*
-    get_object_containers_internal_metadata_data_store_reference() const;
+    get_object_containers_internal_metadata_storage_engine_reference() const;
 
     //
     // Checks if the object container exists in the index internal metadata.

@@ -43,7 +43,7 @@ public:
     //
     void
     enqueue_object_container_operation(
-        lazarus::schemas::object_container_request_interface&& object_container_request,
+        schemas::object_container_request_interface&& object_container_request,
         std::function<void(const drogon::HttpResponsePtr&)>&& callback);
 
 private:
@@ -54,12 +54,12 @@ private:
     //
     void
     object_container_operation_serial_proxy(
-        const lazarus::schemas::object_container_request_interface&& object_container_request,
+        const schemas::object_container_request_interface&& object_container_request,
         std::function<void(const drogon::HttpResponsePtr&)>&& response_callback);
 
     status::status_code
     handle_object_container_creation(
-        const lazarus::schemas::object_container_request_interface& object_container_request);
+        const schemas::object_container_request_interface& object_container_request);
 
     //
     // Serializer task queue for executing object container operations serially.

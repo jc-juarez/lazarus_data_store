@@ -13,7 +13,7 @@
 
 #include <string>
 #include <rocksdb/db.h>
-#include "object_container_persistance_interface.pb.h"
+#include "object_container_persistent_interface.pb.h"
 
 namespace lazarus
 {
@@ -34,7 +34,7 @@ public:
     //
     object_container(
         rocksdb::ColumnFamilyHandle* storage_engine_reference,
-        const lazarus::schemas::object_container_persistance_interface& object_container_persistent_metadata);
+        const schemas::object_container_persistent_interface& object_container_persistent_metadata);
 
     //
     // Gets the associated storage engine reference for the object container.
@@ -47,7 +47,7 @@ private:
     //
     // Object container persistent metadata.
     //
-    lazarus::schemas::object_container_persistance_interface object_container_persistent_metadata_;
+    schemas::object_container_persistent_interface object_container_persistent_metadata_;
 
     //
     // Pointer to the associated column family for the object container.

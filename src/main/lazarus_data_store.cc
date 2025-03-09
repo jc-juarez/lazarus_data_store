@@ -70,17 +70,17 @@ lazarus_data_store::start_system()
     // Start the storage engine. On success, it will associate the object
     // containers names to their respective column family reference.
     //
-    std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*> column_family_references_mapping;
+    std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*> storage_engine_references_mapping;
     storage_engine_->start(
         object_containers_names,
-        &column_family_references_mapping);
+        &storage_engine_references_mapping);
 
     //
     // Populate the in-memory object container index with the
     // references obtained when the storage engine was started.
     //
     data_store_service_->populate_object_container_index(
-        column_family_references_mapping);
+        storage_engine_references_mapping);
 
     //
     // Finally, start the

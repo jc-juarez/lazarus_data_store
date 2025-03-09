@@ -44,7 +44,7 @@ public:
     void
     start(
         std::vector<std::string>& object_containers_names,
-        std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>* column_family_references_mapping);
+        std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>* storage_engine_references_mapping);
 
     //
     // Inserts a single object into the data store.
@@ -70,7 +70,7 @@ public:
     //
     rocksdb::ColumnFamilyHandle*
     create_object_container(
-        const char* name);
+        const char* object_container_name);
 
     //
     // Gets all the objects from a specified object container.
@@ -78,7 +78,7 @@ public:
     //
     std::unordered_map<std::string, byte_stream>
     get_all_objects_from_object_container(
-        rocksdb::ColumnFamilyHandle* data_store_reference);
+        rocksdb::ColumnFamilyHandle* storage_engine_reference);
 
     //
     // Fetches the existing object containers in the data store.

@@ -24,19 +24,19 @@ object_container_index::object_container_index()
 
 void
 object_container_index::insert_object_container(
-    rocksdb::ColumnFamilyHandle* data_store_reference,
-    const lazarus::schemas::object_container_persistance_interface& object_container_persistance)
+    rocksdb::ColumnFamilyHandle* storage_engine_reference,
+    const schemas::object_container_persistent_interface& object_container_persistent_metadata)
 {
     //
-    // At this point, it is guaranteed that the object container persistance
+    // At this point, it is guaranteed that the object container
     // reference has a valid hashable identifier to be used as index key.
     // Also, it is guaranteed that no other thread will try to insert the same key.
     //
     if (object_container_index_table_.insert({
-        object_container_persistance.name(),
+        object_container_persistent_metadata.name(),
         object_container{
-            data_store_reference,
-            object_container_persistance}}))
+            storage_engine_reference,
+            object_container_persistent_metadata}}))
     {
         //
         // Key did not exist and metadata register was succesful.
@@ -52,7 +52,7 @@ object_container_index::insert_object_container(
     //
     spdlog::critical("Object container collision has been detected. "
         "ObjectContainerName={}.",
-        object_container_persistance.name());
+        object_container_persistent_metadata.name());
 
     assert(false);
 }
@@ -60,15 +60,15 @@ object_container_index::insert_object_container(
 void
 object_container_index::set_object_containers_internal_metadata_handle(
     rocksdb::ColumnFamilyHandle* storage_engine_reference,
-    const lazarus::schemas::object_container_persistance_interface& object_container_persistance)
+    const schemas::object_container_persistent_interface& object_container_persistent_metadata)
 {
     object_containers_internal_metadata_ = std::make_unique<object_container>(
         storage_engine_reference,
-        object_container_persistance);
+        object_container_persistent_metadata);
 }
 
 rocksdb::ColumnFamilyHandle*
-object_container_index::get_object_containers_internal_metadata_data_store_reference() const
+object_container_index::get_object_containers_internal_metadata_storage_engine_reference() const
 {
     return object_containers_internal_metadata_->get_storage_engine_reference();
 }

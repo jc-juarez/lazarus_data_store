@@ -24,7 +24,7 @@ storage_engine::storage_engine(
 void
 storage_engine::start(
     std::vector<std::string>& object_containers_names,
-    std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>* column_family_references_mapping)
+    std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>* storage_engine_references_mapping)
 {
     std::vector<rocksdb::ColumnFamilyDescriptor> column_family_descriptors;
     
@@ -41,13 +41,13 @@ storage_engine::start(
     rocksdb::DB* database_handle;
     rocksdb::Options options;
     options.create_if_missing = true;
-    std::vector<rocksdb::ColumnFamilyHandle*> column_family_references;
+    std::vector<rocksdb::ColumnFamilyHandle*> storage_engine_references;
 
     const rocksdb::Status status = rocksdb::DB::Open(
         options,
         storage_engine_configuration_.core_database_path_,
         column_family_descriptors,
-        &column_family_references,
+        &storage_engine_references,
         &database_handle);
 
     if (!status.ok())
@@ -65,10 +65,10 @@ storage_engine::start(
     //
     // Map the object container names to their respective column family references.
     //
-    auto& mapping = *column_family_references_mapping;
+    auto& mapping = *storage_engine_references_mapping;
     for (size_t index = 0; index < object_containers_names.size(); ++index)
     {
-        mapping[object_containers_names[index]] = column_family_references[index];
+        mapping[object_containers_names[index]] = storage_engine_references[index];
     }
 
 }
@@ -109,36 +109,36 @@ storage_engine::get_object(
 
 rocksdb::ColumnFamilyHandle*
 storage_engine::create_object_container(
-    const char* name)
+    const char* object_container_name)
 {
-    rocksdb::ColumnFamilyHandle* column_family_reference;
+    rocksdb::ColumnFamilyHandle* storage_engine_reference;
 
     const rocksdb::Status status = core_database_->CreateColumnFamily(
         rocksdb::ColumnFamilyOptions(),
-        name,
-        &column_family_reference);
+        object_container_name,
+        &storage_engine_reference);
 
     if (!status.ok())
     {
         //
         // Nullify the reference.
         //
-        column_family_reference = nullptr;
+        storage_engine_reference = nullptr;
         // spdlog::error("");
     }
 
-    return column_family_reference;
+    return storage_engine_reference;
 }
 
 std::unordered_map<std::string, byte_stream>
 storage_engine::get_all_objects_from_object_container(
-    rocksdb::ColumnFamilyHandle* data_store_reference)
+    rocksdb::ColumnFamilyHandle* storage_engine_reference)
 {
     std::unordered_map<std::string, byte_stream> objects;
     rocksdb::ReadOptions read_options;
     std::unique_ptr<rocksdb::Iterator> it(core_database_->NewIterator(
         read_options,
-        data_store_reference));
+        storage_engine_reference));
 
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
         std::string key = it->key().ToString();

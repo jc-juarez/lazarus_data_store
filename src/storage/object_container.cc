@@ -18,7 +18,7 @@ namespace storage
 
 object_container::object_container(
     rocksdb::ColumnFamilyHandle* storage_engine_reference,
-    const lazarus::schemas::object_container_persistance_interface& object_container_persistent_metadata)
+    const schemas::object_container_persistent_interface& object_container_persistent_metadata)
     : storage_engine_reference_{storage_engine_reference},
       object_container_persistent_metadata_{object_container_persistent_metadata}
 {}

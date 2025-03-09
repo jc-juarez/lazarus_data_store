@@ -29,7 +29,7 @@ object_container_operation_serializer::object_container_operation_serializer(
 
 void
 object_container_operation_serializer::enqueue_object_container_operation(
-    lazarus::schemas::object_container_request_interface&& object_container_request,
+    schemas::object_container_request_interface&& object_container_request,
     std::function<void(const drogon::HttpResponsePtr&)>&& callback)
 {
     //
@@ -49,7 +49,7 @@ object_container_operation_serializer::enqueue_object_container_operation(
 
 void
 object_container_operation_serializer::object_container_operation_serial_proxy(
-    const lazarus::schemas::object_container_request_interface&& object_container_request,
+    const schemas::object_container_request_interface&& object_container_request,
     std::function<void(const drogon::HttpResponsePtr&)>&& response_callback)
 {
     spdlog::info("Executing serialized object container operation action. "
@@ -82,7 +82,7 @@ object_container_operation_serializer::object_container_operation_serial_proxy(
 
 status::status_code
 object_container_operation_serializer::handle_object_container_creation(
-    const lazarus::schemas::object_container_request_interface& object_container_request)
+    const schemas::object_container_request_interface& object_container_request)
 {
     if (object_container_index_->object_container_exists(
         object_container_request.get_name()))
@@ -115,21 +115,21 @@ object_container_operation_serializer::handle_object_container_creation(
     //
     // Insert the metadata for the newly created object container to the storage engine.
     //
-    schemas::object_container_persistance_interface object_container_persistent_data;
-    object_container_persistent_data.set_name(object_container_request.get_name());
-    byte_stream serialized_object_container_persistent_data;
-    object_container_persistent_data.SerializeToString(&serialized_object_container_persistent_data);
+    schemas::object_container_persistent_interface object_container_persistent_metadata;
+    object_container_persistent_metadata.set_name(object_container_request.get_name());
+    byte_stream serialized_object_container_persistent_metadata;
+    object_container_persistent_metadata.SerializeToString(&serialized_object_container_persistent_metadata);
     storage_engine_->insert_object(
-        object_container_index_->get_object_containers_internal_metadata_data_store_reference(),
+        object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
         object_container_request.get_name(),
-        serialized_object_container_persistent_data.c_str());
+        serialized_object_container_persistent_metadata.c_str());
 
     //
     // Index the new object container to the internal metadata table.
     //
     object_container_index_->insert_object_container(
         storage_engine_reference,
-        object_container_persistent_data);
+        object_container_persistent_metadata);
 
     spdlog::info("Object container creation succeeded. "
         "Optype={}, "

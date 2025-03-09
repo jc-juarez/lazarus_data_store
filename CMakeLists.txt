@@ -21,7 +21,7 @@ find_package(Protobuf REQUIRED)
 
 # Define and process .proto files.
 set(PROTO_FILES
-    src/schemas/persistance-interfaces/object_container_persistance_interface.proto
+    src/schemas/persistent-interfaces/object_container_persistent_interface.proto
 )
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 

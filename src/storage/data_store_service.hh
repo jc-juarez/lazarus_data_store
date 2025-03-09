@@ -47,7 +47,7 @@ public:
     //
     void
     populate_object_container_index(
-        const std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>& column_family_references_mapping);
+        const std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>& storage_engine_references_mapping);
 
     //
     // Creates the root metadata column
@@ -85,7 +85,7 @@ public:
     //
     void
     orchestrate_serial_object_container_operation(
-        lazarus::schemas::object_container_request_interface&& object_container_request,
+        schemas::object_container_request_interface&& object_container_request,
         std::function<void(const drogon::HttpResponsePtr&)>&& callback);
 
     //
@@ -103,7 +103,7 @@ private:
     //
     std::optional<std::pair<std::string, rocksdb::ColumnFamilyHandle*>>
     find_object_containers_internal_metadata_association_pair(
-        const std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>& column_family_references_mapping);
+        const std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>& storage_engine_references_mapping);
 
     //
     // Object insertion dispatcher entry point.

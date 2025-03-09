@@ -37,7 +37,7 @@ public:
     //
     server(
         const server_configuration& server_config,
-        std::shared_ptr<lazarus::storage::data_store_service> data_store_service_handle);
+        std::shared_ptr<storage::data_store_service> data_store_service_handle);
 
     //
     // Starts the HTTP server for processing storage requests.
@@ -51,7 +51,7 @@ public:
     //
     void
     register_endpoints(
-        std::shared_ptr<lazarus::storage::data_store_service> data_store_service_handle);
+        std::shared_ptr<storage::data_store_service> data_store_service_handle);
         
     //
     // Gets the server associated port number.

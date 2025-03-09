@@ -12,7 +12,7 @@
 #include "data_store_service.hh"
 #include "object_container_index.hh"
 #include "object_container_operation_serializer.hh"
-#include "object_container_persistance_interface.pb.h"
+#include "object_container_persistent_interface.pb.h"
 
 namespace lazarus
 {
@@ -39,7 +39,7 @@ data_store_service::data_store_service(
 
 void
 data_store_service::populate_object_container_index(
-    const std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>& column_family_references_mapping)
+    const std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>& storage_engine_references_mapping)
 {
     //
     // Keep track of the internal metadata object containers.
@@ -49,7 +49,7 @@ data_store_service::populate_object_container_index(
     // case, it implies that the system cannot start because of missing critical
     // internal metadata.
     //
-    if (column_family_references_mapping.size() == 1u)
+    if (storage_engine_references_mapping.size() == 1u)
     {
         // This means this is the first ever startup for the data store,
         // or that it simply does not need a previous metadata state for working.
@@ -64,7 +64,7 @@ data_store_service::populate_object_container_index(
     // this is a critical error as the data store cannot function without them.
     //
     const std::optional<std::pair<std::string, rocksdb::ColumnFamilyHandle*>> object_containers_internal_metadata =
-        find_object_containers_internal_metadata_association_pair(column_family_references_mapping);
+        find_object_containers_internal_metadata_association_pair(storage_engine_references_mapping);
 
     if (!object_containers_internal_metadata.has_value())
     {
@@ -76,11 +76,11 @@ data_store_service::populate_object_container_index(
         throw std::runtime_error("Failed to find find the storage engine reference for internal metadata.");
     }
 
-    lazarus::schemas::object_container_persistance_interface object_container_persistent_data;
-    object_container_persistent_data.set_name(object_container_index::object_containers_internal_metadata_column_family_name);
+    schemas::object_container_persistent_interface object_container_persistent_metadata;
+    object_container_persistent_metadata.set_name(object_container_index::object_containers_internal_metadata_column_family_name);
     object_container_index_->set_object_containers_internal_metadata_handle(
         object_containers_internal_metadata.value().second,
-        object_container_persistent_data);
+        object_container_persistent_metadata);
 
     //
     // Finally, get all known object containers to the system
@@ -88,12 +88,12 @@ data_store_service::populate_object_container_index(
     //
     const std::unordered_map<std::string, byte_stream> objects = 
         storage_engine_->get_all_objects_from_object_container(
-            object_container_index_->get_object_containers_internal_metadata_data_store_reference());
+            object_container_index_->get_object_containers_internal_metadata_storage_engine_reference());
 
     for (const auto& object : objects)
     {
-        lazarus::schemas::object_container_persistance_interface object_container_persistent_data;
-        const bool is_parsing_successful = object_container_persistent_data.ParseFromString(object.second);
+        schemas::object_container_persistent_interface object_container_persistent_metadata;
+        const bool is_parsing_successful = object_container_persistent_metadata.ParseFromString(object.second);
 
         if (!is_parsing_successful)
         {
@@ -104,7 +104,7 @@ data_store_service::populate_object_container_index(
             throw std::runtime_error("Failed to parse an object container metadata on startup.");
         }
 
-        if (column_family_references_mapping.find(object_container_persistent_data.name()) == column_family_references_mapping.end())
+        if (storage_engine_references_mapping.find(object_container_persistent_metadata.name()) == storage_engine_references_mapping.end())
         {
             //
             // The initial mapping obtained from the storage engine does not
@@ -114,18 +114,18 @@ data_store_service::populate_object_container_index(
             //
             spdlog::critical("Failed to find the storage engine reference for an object container on startup. "
                 "ObjectContainerName={}.",
-                object_container_persistent_data.name());
+                object_container_persistent_metadata.name());
 
             throw std::runtime_error("Failed to find the storage engine reference for an object container on startup.");
         }
 
         spdlog::info("Found object container on startup. Indexing into the object containers metadata table. "
             "ObjectContainerName={}.",
-            object_container_persistent_data.name());
+            object_container_persistent_metadata.name());
 
         object_container_index_->insert_object_container(
-            column_family_references_mapping.at(object_container_persistent_data.name()),
-            object_container_persistent_data);
+            storage_engine_references_mapping.at(object_container_persistent_metadata.name()),
+            object_container_persistent_metadata);
     }
 }
 
@@ -140,11 +140,11 @@ data_store_service::create_internal_metadata_column_families()
         storage_engine_->create_object_container(
             object_container_index::object_containers_internal_metadata_column_family_name);
 
-    lazarus::schemas::object_container_persistance_interface object_container_persistent_data;
-    object_container_persistent_data.set_name(object_container_index::object_containers_internal_metadata_column_family_name);
+    schemas::object_container_persistent_interface object_container_persistent_metadata;
+    object_container_persistent_metadata.set_name(object_container_index::object_containers_internal_metadata_column_family_name);
     object_container_index_->set_object_containers_internal_metadata_handle(
         storage_engine_reference,
-        object_container_persistent_data);
+        object_container_persistent_metadata);
 }
 
 void
@@ -187,7 +187,7 @@ data_store_service::get_object(
 
 void
 data_store_service::orchestrate_serial_object_container_operation(
-    lazarus::schemas::object_container_request_interface&& object_container_request,
+    schemas::object_container_request_interface&& object_container_request,
     std::function<void(const drogon::HttpResponsePtr&)>&& callback)
 {
     object_container_operation_serializer_->enqueue_object_container_operation(
@@ -197,12 +197,12 @@ data_store_service::orchestrate_serial_object_container_operation(
 
 std::optional<std::pair<std::string, rocksdb::ColumnFamilyHandle*>>
 data_store_service::find_object_containers_internal_metadata_association_pair(
-    const std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>& column_family_references_mapping)
+    const std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>& storage_engine_references_mapping)
 {
-    for (const auto& column_family_mapping_entry : column_family_references_mapping)
+    for (const auto& column_family_mapping_entry : storage_engine_references_mapping)
     {
         const std::string object_container_name = column_family_mapping_entry.first;
-        rocksdb::ColumnFamilyHandle* object_container_data_store_reference = column_family_mapping_entry.second;
+        rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference = column_family_mapping_entry.second;
 
         if (object_container_name == object_container_index::object_containers_internal_metadata_column_family_name)
         {
@@ -210,7 +210,7 @@ data_store_service::find_object_containers_internal_metadata_association_pair(
             return std::optional<std::pair<std::string, rocksdb::ColumnFamilyHandle*>>(
                 std::make_pair(
                     object_container_name,
-                    object_container_data_store_reference));
+                    object_container_storage_engine_reference));
         }
     }
 
