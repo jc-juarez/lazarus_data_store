@@ -114,10 +114,14 @@ data_store_service::populate_object_container_index(
             //
             spdlog::critical("Failed to find the storage engine reference for an object container on startup. "
                 "ObjectContainerName={}.",
-                object.first);
+                object_container_persistent_data.name());
 
             throw std::runtime_error("Failed to find the storage engine reference for an object container on startup.");
         }
+
+        spdlog::info("Found object container on startup. Indexing into the object containers metadata table. "
+            "ObjectContainerName={}.",
+            object_container_persistent_data.name());
 
         object_container_index_->insert_object_container(
             column_family_references_mapping.at(object_container_persistent_data.name()),

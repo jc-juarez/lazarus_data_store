@@ -131,6 +131,12 @@ object_container_operation_serializer::handle_object_container_creation(
         storage_engine_reference,
         object_container_persistent_data);
 
+    spdlog::info("Object container creation succeeded. "
+        "Optype={}, "
+        "ObjectContainerName={}.",
+        static_cast<std::uint8_t>(object_container_request.get_optype()),
+        object_container_request.get_name());
+
     return status::success;
 }
 
