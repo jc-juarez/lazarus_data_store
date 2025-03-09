@@ -12,6 +12,7 @@
 
 #include <string>
 #include <cstdint>
+#include <filesystem>
 
 namespace lazarus
 {
@@ -33,7 +34,27 @@ struct server_configuration
           server_number_threads_{16u},
           server_listener_ip_address_{"0.0.0.0"},
           run_as_daemon_{false}
-    {}
+    {
+        //
+        // Set the server logs path with the default home directory path if no path
+        // override was specified. Throws if fails to obtain the home environment variable.
+        //
+        const char* home_environment_variable = std::getenv("HOME");
+
+        if (home_environment_variable == nullptr)
+        {
+            throw std::runtime_error("Failed to access the HOME environment "
+                "variable for setting the server logs path.");
+        }
+
+        server_logs_directory_path_ =
+            std::string(home_environment_variable) + "/lazarus/server-logs";
+
+        //
+        // Create the path if it does not exist.
+        //
+        std::filesystem::create_directories(server_logs_directory_path_);
+    }
 
     //
     // Port number for the HTTP server.

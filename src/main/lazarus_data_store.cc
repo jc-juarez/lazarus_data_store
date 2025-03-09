@@ -96,9 +96,10 @@ lazarus_data_store::initialize_logger()
         logger_config_.queue_size_bytes_,
         1u /* thread_count */);
 
-    const std::string current_session_logs_directory = logger_config_.logging_session_directory_prefix_ + "-" + common::uuid_to_string(session_id_);
+    const std::string current_session_logs_directory =
+        logger_config_.logging_session_directory_prefix_ + "-" + common::uuid_to_string(session_id_);
     const std::filesystem::path logging_session_directory_path =
-        logger_config_.logs_directory_path_ / current_session_logs_directory / logger_config_.log_file_prefix_;
+        std::filesystem::path(logger_config_.logs_directory_path_) / current_session_logs_directory / logger_config_.log_file_prefix_;
 
     auto logger = spdlog::rotating_logger_mt<spdlog::async_factory>(
         logger_config_.component_name_,

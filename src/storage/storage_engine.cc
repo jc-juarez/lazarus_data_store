@@ -7,7 +7,6 @@
 //      Core storage engine for handling IO operations. 
 // ****************************************************
 
-#include <filesystem>
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 
@@ -38,11 +37,6 @@ storage_engine::start(
             object_container_name,
             rocksdb::ColumnFamilyOptions());
     }
-
-    //
-    // Create the core database directory in case it does not exist.
-    //
-    std::filesystem::create_directories(storage_engine_configuration_.core_database_path_);
 
     rocksdb::DB* database_handle;
     rocksdb::Options options;

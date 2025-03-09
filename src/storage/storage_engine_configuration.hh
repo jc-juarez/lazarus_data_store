@@ -13,6 +13,7 @@
 #include <string>
 #include <cstdlib>
 #include <stdexcept>
+#include <filesystem>
 
 namespace lazarus
 {
@@ -44,7 +45,12 @@ struct storage_engine_configuration
         }
 
         core_database_path_ =
-            std::string(home_environment_variable) + "/lazarus-ds";
+            std::string(home_environment_variable) + "/lazarus/lazarus-ds";
+
+        //
+        // Create the path if it does not exist.
+        //
+        std::filesystem::create_directories(core_database_path_);
     }
 
     //

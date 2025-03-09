@@ -27,7 +27,7 @@ struct logger_configuration
     // Specifies the default values to be used by the logger.
     //
     logger_configuration()
-        : logs_directory_path_{std::filesystem::current_path()},
+        : logs_directory_path_{""},
           component_name_{"LazarusDataStore"},
           queue_size_bytes_{32 * 1'024u},
           max_log_file_size_bytes_{10u * 1'024u * 1'024u},
@@ -35,12 +35,32 @@ struct logger_configuration
           flush_frequency_ms_{1'000u},
           log_file_prefix_{"lazarus_ds.log"},
           logging_session_directory_prefix_{"lazarus-logs"}
-    {}
+    {
+        //
+        // Set the logs path with the default home directory path if no path
+        // override was specified. Throws if fails to obtain the home environment variable.
+        //
+        const char* home_environment_variable = std::getenv("HOME");
+
+        if (home_environment_variable == nullptr)
+        {
+            throw std::runtime_error("Failed to access the HOME environment "
+                "variable for setting the logs path.");
+        }
+
+        logs_directory_path_ =
+            std::string(home_environment_variable) + "/lazarus/logs";
+
+        //
+        // Create the path if it does not exist.
+        //
+        std::filesystem::create_directories(logs_directory_path_);
+    }
 
     //
     // Path to the directory where the logging session directory will be created.
     //
-    std::filesystem::path logs_directory_path_;
+    std::string logs_directory_path_;
 
     //
     // Component name to be used by the logger for service identification.
