@@ -12,6 +12,7 @@
 #pragma once
 
 #include <string>
+#include <rocksdb/db.h>
 #include "object_container_persistance_interface.pb.h"
 
 namespace lazarus
@@ -32,14 +33,27 @@ public:
     // Constructor for the object container.
     //
     object_container(
-        const lazarus::schemas::object_container_persistance_interface& object_container_persistance);
+        rocksdb::ColumnFamilyHandle* storage_engine_reference,
+        const lazarus::schemas::object_container_persistance_interface& object_container_persistent_metadata);
+
+    //
+    // Gets the associated storage engine reference for the object container.
+    //
+    rocksdb::ColumnFamilyHandle*
+    get_storage_engine_reference() const;
 
 private:
 
     //
-    // Object container identifier.
+    // Object container persistent metadata.
     //
-    const std::string id_;
+    lazarus::schemas::object_container_persistance_interface object_container_persistent_metadata_;
+
+    //
+    // Pointer to the associated column family for the object container.
+    // This only concerns the storage engine.
+    //
+    rocksdb::ColumnFamilyHandle* const storage_engine_reference_;
 };
 
 } // namespace storage.

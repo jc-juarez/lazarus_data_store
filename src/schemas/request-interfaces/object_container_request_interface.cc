@@ -17,7 +17,7 @@ namespace schemas
 
 object_container_request_interface::object_container_request_interface(
     const drogon::HttpRequestPtr& request)
-    : id_{""}
+    : name_{""}
 {
     const auto json = request->getJsonObject();
 
@@ -26,7 +26,7 @@ object_container_request_interface::object_container_request_interface(
         //
         // Parse the JSON into the system interface.
         //
-        id_ = (*json)[id_key_name].asString();
+        name_ = (*json)[name_key_tag].asString();
     }
 
     switch (request->getMethod())
@@ -46,13 +46,13 @@ object_container_request_interface::object_container_request_interface(
 
 object_container_request_interface::object_container_request_interface(
     object_container_request_interface&& other)
-    : id_{std::move(other.id_)}
+    : name_{std::move(other.name_)}
 {}
 
 const char*
-object_container_request_interface::get_id() const
+object_container_request_interface::get_name() const
 {
-    return id_.c_str();
+    return name_.c_str();
 }
 
 object_container_request_optype

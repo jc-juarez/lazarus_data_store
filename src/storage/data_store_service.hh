@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'data_store_accessor.hh'
+// 'data_store_service.hh'
 // Author: jcjuarez
 // Description:
 //      Accessor core storage operations. 
@@ -10,7 +10,9 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <tbb/tbb.h>
+#include <rocksdb/db.h>
 #include <drogon/HttpController.h>
 #include "../schemas/request-interfaces/object_container_request_interface.hh"
 
@@ -29,15 +31,31 @@ class object_container_operation_serializer;
 //
 // Core storage access interface.
 //
-class data_store_accessor
+class data_store_service
 {
 public:
 
     //
-    // Constructor data accessor.
+    // Constructor data service.
     //
-    data_store_accessor(
+    data_store_service(
         std::shared_ptr<storage_engine> storage_engine_handle);
+
+    //
+    // Populates the in-memory contents of the object container
+    // index based on the references received from the storage engine start.
+    //
+    void
+    populate_object_container_index(
+        const std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>& column_family_references_mapping);
+
+    //
+    // Creates the root metadata column
+    // families for the system if not present already.
+    // On first-time startup, the data store will create them.
+    //
+    void
+    create_internal_metadata_column_families();
 
     //
     // Inserts a single object into the data store in async fashion.
@@ -71,6 +89,14 @@ public:
         std::function<void(const drogon::HttpResponsePtr&)>&& callback);
 
 private:
+
+    //
+    // Gets the object containers internal
+    // metadata column family association pair if it exists.
+    //
+    std::optional<std::pair<std::string, rocksdb::ColumnFamilyHandle*>>
+    find_object_containers_internal_metadata_association_pair(
+        const std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>& column_family_references_mapping);
 
     //
     // Object insertion dispatcher entry point.

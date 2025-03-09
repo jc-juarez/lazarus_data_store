@@ -41,10 +41,10 @@ public:
         object_container_request_interface&& other);
 
     //
-    // Gets the object container identifier.
+    // Gets the object container name.
     //
     const char*
-    get_id() const;
+    get_name() const;
 
     //
     // Gets the object container request optype.
@@ -56,14 +56,14 @@ public:
 private:
 
     //
-    // Object container identifier.
+    // Object container name.
     //
-    std::string id_;
+    std::string name_;
 
     //
-    // Expected object container identifier key name in the client request.
+    // Expected object container name key tag in the client request.
     //
-    static constexpr const char* id_key_name = "id";
+    static constexpr const char* name_key_tag = "name";
 
     //
     // Optype for the object container operation.

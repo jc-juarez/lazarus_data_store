@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <memory>
 #include <tbb/tbb.h>
 #include "object_container.hh"
 #include "object_container_persistance_interface.pb.h"
@@ -32,17 +33,6 @@ public:
     object_container_index();
 
     //
-    // Fetches the existing object container references on the filesystem
-    // into memory. This should only be executed during system startup.
-    // In case of a system crash, the underlying storage engine ensures
-    // that all operations are written into the WAL entries, thus lazarus
-    // only acknowledges object container references that were successfully
-    // recorded into the storage engine WAL.
-    //
-    void
-    fetch_object_containers_from_disk();
-
-    //
     // Inserts a new object container entry into the index map.
     // This can either be invoked as a callback from a request-initiated
     // object container insertion or as the initial disk fetching process.
@@ -50,7 +40,29 @@ public:
     //
     void
     insert_object_container(
+        rocksdb::ColumnFamilyHandle* data_store_reference,
         const lazarus::schemas::object_container_persistance_interface& object_container_persistance);
+
+    //
+    // Internal column family name for persisting
+    // user-created object containers and their metadata.
+    // This name is reserved for the data store use.
+    //
+    static constexpr const char* object_containers_internal_metadata_column_family_name = "_internal_metadata_:object_containers";
+
+    //
+    // Sets the reference for the object containers internal metadata column family.
+    //
+    void
+    set_object_containers_internal_metadata_handle(
+        rocksdb::ColumnFamilyHandle* storage_engine_reference,
+        const lazarus::schemas::object_container_persistance_interface& object_container_persistance);
+
+    //
+    // Gets the data store reference of the object containers internal metadata column family.
+    //
+    rocksdb::ColumnFamilyHandle*
+    get_object_containers_internal_metadata_data_store_reference() const;
 
 private:
 
@@ -60,6 +72,18 @@ private:
     // respective object container memory reference.
     //
     tbb::concurrent_hash_map<std::string, object_container> object_container_index_map_;
+
+    //
+    // Max number of object containers allowed to be created
+    // within the data store.
+    //
+    std::size_t max_number_object_containers_;
+
+    //
+    // Main handle to the column family for storing user-created object
+    // containers. Internally, it is treated as a normal object container as well.
+    //
+    std::unique_ptr<object_container> object_containers_internal_metadata_;
 };
 
 } // namespace storage.

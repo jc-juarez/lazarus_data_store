@@ -18,14 +18,13 @@ namespace storage
 {
 
 object_container_index::object_container_index()
-{}
-
-void
-object_container_index::fetch_object_containers_from_disk()
+    : max_number_object_containers_{100u},
+      object_containers_internal_metadata_{nullptr}
 {}
 
 void
 object_container_index::insert_object_container(
+    rocksdb::ColumnFamilyHandle* data_store_reference,
     const lazarus::schemas::object_container_persistance_interface& object_container_persistance)
 {
     //
@@ -34,8 +33,10 @@ object_container_index::insert_object_container(
     // Also, it is guaranteed that no other thread will try to insert the same key.
     //
     if (object_container_index_map_.insert({
-        object_container_persistance.id(),
-        object_container{object_container_persistance}}))
+        object_container_persistance.name(),
+        object_container{
+            data_store_reference,
+            object_container_persistance}}))
     {
         //
         // Key did not exist and metadata register was succesful.
@@ -51,6 +52,22 @@ object_container_index::insert_object_container(
     //
     spdlog::critical("Object container collision has been detected");
     assert(false);
+}
+
+void
+object_container_index::set_object_containers_internal_metadata_handle(
+    rocksdb::ColumnFamilyHandle* storage_engine_reference,
+    const lazarus::schemas::object_container_persistance_interface& object_container_persistance)
+{
+    object_containers_internal_metadata_ = std::make_unique<object_container>(
+        storage_engine_reference,
+        object_container_persistance);
+}
+
+rocksdb::ColumnFamilyHandle*
+object_container_index::get_object_containers_internal_metadata_data_store_reference() const
+{
+    return object_containers_internal_metadata_->get_storage_engine_reference();
 }
 
 } // namespace storage.

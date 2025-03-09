@@ -18,7 +18,7 @@ namespace lazarus
 
 namespace storage
 {
-    class data_store_accessor;
+    class data_store_service;
 }
 
 namespace network
@@ -36,7 +36,7 @@ public:
     //
     server(
         const server_configuration& server_config,
-        std::shared_ptr<lazarus::storage::data_store_accessor> data_store_accessor_handle);
+        std::shared_ptr<lazarus::storage::data_store_service> data_store_service_handle);
 
     //
     // Starts the HTTP server for processing storage requests.
@@ -50,7 +50,7 @@ public:
     //
     void
     register_endpoints(
-        std::shared_ptr<lazarus::storage::data_store_accessor> data_store_accessor_handle);
+        std::shared_ptr<lazarus::storage::data_store_service> data_store_service_handle);
         
     //
     // Gets the server associated port number.

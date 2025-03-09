@@ -10,7 +10,7 @@
 
 #include <spdlog/spdlog.h>
 #include "object_container_endpoint.hh"
-#include "../../storage/data_store_accessor.hh"
+#include "../../storage/data_store_service.hh"
 #include "../../schemas/request-interfaces/object_container_request_interface.hh"
 
 namespace lazarus
@@ -19,8 +19,8 @@ namespace network
 {
 
 object_container_endpoint::object_container_endpoint(
-    std::shared_ptr<lazarus::storage::data_store_accessor> data_store_accessor_handle)
-    : data_store_accessor_{std::move(data_store_accessor_handle)}
+    std::shared_ptr<lazarus::storage::data_store_service> data_store_service_handle)
+    : data_store_service_{std::move(data_store_service_handle)}
 {}
 
 void
@@ -32,8 +32,8 @@ object_container_endpoint::create_object_container(
         request};
 
     spdlog::info("Create object container request received. "
-        "ObjectContainerId={}.",
-        object_container_request.get_id());
+        "ObjectContainerName={}.",
+        object_container_request.get_name());
 
     //
     // Pending: Validate request and do a quick lookup.
@@ -45,7 +45,7 @@ object_container_endpoint::create_object_container(
     // container in async serialized fashion.
     // Response will be provided by a separate thread.
     //
-    data_store_accessor_->orchestrate_serial_object_container_operation(
+    data_store_service_->orchestrate_serial_object_container_operation(
         std::move(object_container_request),
         std::move(callback));
 }
@@ -60,7 +60,7 @@ object_container_endpoint::get_object_container(
     //
     // Get contents from the db.
     //
-    data_store_accessor_->get_object(
+    data_store_service_->get_object(
         "Joe",
         object_stream);
 

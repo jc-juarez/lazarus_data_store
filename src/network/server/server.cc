@@ -10,7 +10,7 @@
 
 #include "server.hh"
 #include <spdlog/spdlog.h>
-#include "../../storage/data_store_accessor.hh"
+#include "../../storage/data_store_service.hh"
 #include "../endpoints/object_container_endpoint.hh"
 
 namespace lazarus
@@ -20,7 +20,7 @@ namespace network
 
 server::server(
     const server_configuration& server_config,
-    std::shared_ptr<lazarus::storage::data_store_accessor> data_store_accessor_handle)
+    std::shared_ptr<lazarus::storage::data_store_service> data_store_service_handle)
     : http_server_{drogon::app()},
       server_config_{server_config}
 {
@@ -37,7 +37,7 @@ server::server(
     //
     // Register all needed endpoints for the server.
     //
-    register_endpoints(data_store_accessor_handle);
+    register_endpoints(data_store_service_handle);
 }
 
 void
@@ -51,13 +51,13 @@ server::start()
 
 void
 server::register_endpoints(
-    std::shared_ptr<lazarus::storage::data_store_accessor> data_store_accessor_handle)
+    std::shared_ptr<lazarus::storage::data_store_service> data_store_service_handle)
 {
     //
     // Object container endpoint.
     //
     http_server_.registerController(std::make_shared<object_container_endpoint>(
-        data_store_accessor_handle));
+        data_store_service_handle));
 }
 
 std::uint16_t

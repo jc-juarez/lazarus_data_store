@@ -7,13 +7,14 @@
 //      Lazarus Data Store root object. 
 // ****************************************************
 
+#include <rocksdb/db.h>
 #include <spdlog/async.h>
 #include <spdlog/spdlog.h>
 #include <drogon/drogon.h>
 #include "lazarus_data_store.hh"
 #include "../network/server/server.hh"
 #include "../storage/storage_engine.hh"
-#include "../storage/data_store_accessor.hh"
+#include "../storage/data_store_service.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "../network/server/server_configuration.hh"
 
@@ -22,19 +23,21 @@ namespace lazarus
 
 lazarus_data_store::lazarus_data_store(
     const logger::logger_configuration& logger_config,
-    const network::server_configuration& server_config)
+    const network::server_configuration& server_config,
+    const storage::storage_engine_configuration& storage_engine_configuration)
     : session_id_{common::generate_uuid()},
       logger_config_{logger_config}
 {
     //
     // Storage engine component allocation.
     //
-    storage_engine_ = std::make_shared<storage::storage_engine>();
+    storage_engine_ = std::make_shared<storage::storage_engine>(
+        storage_engine_configuration);
 
     //
-    // Data store accessor component allocation.
+    // Data store service component allocation.
     //
-    data_store_accessor_ = std::make_shared<storage::data_store_accessor>(
+    data_store_service_ = std::make_shared<storage::data_store_service>(
         storage_engine_);
 
     //
@@ -42,7 +45,7 @@ lazarus_data_store::lazarus_data_store(
     //
     server_ = std::make_shared<network::server>(
         server_config,
-        data_store_accessor_);
+        data_store_service_);
 }
 
 void
@@ -54,7 +57,33 @@ lazarus_data_store::start_system()
     initialize_logger();
 
     //
-    // As a final step, start the
+    // Before starting the server, fetch all persistent object containers from the 
+    // filesystem. These are needed for starting the storage engine so that it can
+    // later associate an object container name to its respective column family reference.
+    // This is an static invocation being executed before the storage engine is started.
+    //
+    std::vector<std::string> object_containers_names;
+    storage_engine_->fetch_object_containers_from_disk(
+        &object_containers_names);
+
+    //
+    // Start the storage engine. On success, it will associate the object
+    // containers names to their respective column family reference.
+    //
+    std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*> column_family_references_mapping;
+    storage_engine_->start(
+        object_containers_names,
+        &column_family_references_mapping);
+
+    //
+    // Populate the in-memory object container index with the
+    // references obtained when the storage engine was started.
+    //
+    data_store_service_->populate_object_container_index(
+        column_family_references_mapping);
+
+    //
+    // Finally, start the
     // HTTP server for handling incoming requests.
     //
     server_->start();

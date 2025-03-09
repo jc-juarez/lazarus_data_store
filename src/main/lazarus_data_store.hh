@@ -13,6 +13,7 @@
 #include "../common/uuid_utilities.hh"
 #include "../logger/logger_configuration.hh"
 #include "../network/server/server_configuration.hh"
+#include "../storage/storage_engine_configuration.hh"
 
 namespace lazarus
 {
@@ -25,7 +26,7 @@ class server;
 namespace storage
 {
 class storage_engine;
-class data_store_accessor;
+class data_store_service;
 }
 
 //
@@ -40,7 +41,8 @@ public:
     //
     lazarus_data_store(
         const logger::logger_configuration& logger_config,
-        const network::server_configuration& server_config);
+        const network::server_configuration& server_config,
+        const storage::storage_engine_configuration& storage_engine_configuration);
 
     //
     // Start the lazarus data store system.
@@ -77,9 +79,9 @@ private:
     std::shared_ptr<storage::storage_engine> storage_engine_;
 
     //
-    // Data store accessor handle.
+    // Data store service handle.
     //
-    std::shared_ptr<storage::data_store_accessor> data_store_accessor_;
+    std::shared_ptr<storage::data_store_service> data_store_service_;
 };
 
 } // namespace lazarus.

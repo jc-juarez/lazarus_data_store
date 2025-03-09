@@ -13,6 +13,6 @@ package lazarus.schemas;
 
 message object_container_persistance_interface
 {
-    string id = 1;
+    string name = 1;
     int64 created_at = 3;
 }

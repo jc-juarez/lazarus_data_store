@@ -53,9 +53,11 @@ object_container_operation_serializer::object_container_operation_serial_proxy(
 {
     spdlog::info("Executing serialized object container operation action. "
         "OpType={}, "
-        "ObjectContainerId={}.",
+        "ObjectContainerName={}.",
         static_cast<std::uint8_t>(object_container_request.get_optype()),
-        object_container_request.get_id());
+        object_container_request.get_name());
+
+    
 }
 
 } // namespace storage.

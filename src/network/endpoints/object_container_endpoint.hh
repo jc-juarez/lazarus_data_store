@@ -17,7 +17,7 @@ namespace lazarus
 
 namespace storage
 {
-  class data_store_accessor;
+  class data_store_service;
 }
 
 namespace network
@@ -31,7 +31,7 @@ public:
   // Endpoint constructor.
   //
   object_container_endpoint(
-    std::shared_ptr<lazarus::storage::data_store_accessor> data_store_accessor_handle);
+    std::shared_ptr<lazarus::storage::data_store_service> data_store_service_handle);
 
   METHOD_LIST_BEGIN
   METHOD_ADD(object_container_endpoint::create_object_container, "/{id}", drogon::Put);
@@ -57,9 +57,9 @@ public:
 private:
 
   //
-  // Data store accessor handle.
+  // Data store service handle.
   //
-  std::shared_ptr<lazarus::storage::data_store_accessor> data_store_accessor_;
+  std::shared_ptr<lazarus::storage::data_store_service> data_store_service_;
 };
 
 } // namespace network.
