@@ -75,13 +75,15 @@ storage_engine::start(
 
 void
 storage_engine::insert_object(
+    rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference,
     const char* object_id,
-    const byte* object_data_buffer)
+    const byte* object_data)
 {
     const rocksdb::Status status = core_database_->Put(
         rocksdb::WriteOptions(),
+        object_container_storage_engine_reference,
         object_id,
-        object_data_buffer);
+        object_data);
 
     if (!status.ok())
     {

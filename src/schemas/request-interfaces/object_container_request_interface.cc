@@ -46,7 +46,8 @@ object_container_request_interface::object_container_request_interface(
 
 object_container_request_interface::object_container_request_interface(
     object_container_request_interface&& other)
-    : name_{std::move(other.name_)}
+    : name_{std::move(other.name_)},
+      optype_{std::move(other.optype_)}
 {}
 
 const char*

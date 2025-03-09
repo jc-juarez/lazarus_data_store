@@ -64,6 +64,13 @@ public:
     rocksdb::ColumnFamilyHandle*
     get_object_containers_internal_metadata_data_store_reference() const;
 
+    //
+    // Checks if the object container exists in the index internal metadata.
+    //
+    bool
+    object_container_exists(
+        const char* object_container_name);
+
 private:
 
     //
@@ -71,7 +78,7 @@ private:
     // Maps an object container identifier to the
     // respective object container memory reference.
     //
-    tbb::concurrent_hash_map<std::string, object_container> object_container_index_map_;
+    tbb::concurrent_hash_map<std::string, object_container> object_container_index_table_;
 
     //
     // Max number of object containers allowed to be created

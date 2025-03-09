@@ -32,7 +32,7 @@ object_container_index::insert_object_container(
     // reference has a valid hashable identifier to be used as index key.
     // Also, it is guaranteed that no other thread will try to insert the same key.
     //
-    if (object_container_index_map_.insert({
+    if (object_container_index_table_.insert({
         object_container_persistance.name(),
         object_container{
             data_store_reference,
@@ -50,7 +50,10 @@ object_container_index::insert_object_container(
     // should have reached this point before for inserting the same key.
     // Log the issue and assert.
     //
-    spdlog::critical("Object container collision has been detected");
+    spdlog::critical("Object container collision has been detected. "
+        "ObjectContainerName={}.",
+        object_container_persistance.name());
+
     assert(false);
 }
 
@@ -68,6 +71,17 @@ rocksdb::ColumnFamilyHandle*
 object_container_index::get_object_containers_internal_metadata_data_store_reference() const
 {
     return object_containers_internal_metadata_->get_storage_engine_reference();
+}
+
+//
+// Checks if the object container exists in the index internal metadata.
+//
+bool
+object_container_index::object_container_exists(
+    const char* object_container_name)
+{
+    tbb::concurrent_hash_map<std::string, object_container>::const_accessor accessor;
+    return object_container_index_table_.find(accessor, object_container_name);
 }
 
 } // namespace storage.

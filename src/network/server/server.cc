@@ -8,6 +8,7 @@
 //      incoming storage processing requests. 
 // ****************************************************
 
+#include <format>
 #include "server.hh"
 #include <spdlog/spdlog.h>
 #include "../../storage/data_store_service.hh"
@@ -82,6 +83,26 @@ const char*
 server::get_server_listener_ip_address() const
 {
     return server_config_.server_listener_ip_address_.c_str();
+}
+
+void
+server::send_response(
+    std::function<void(const drogon::HttpResponsePtr &)>& response_callback,
+    const status::status_code status)
+{
+    const std::string response_body = std::format(
+        "{{\n"
+        "    \"InternalStatusCode\": {:#X}\n"
+        "}}\n", 
+        status);
+
+    const drogon::HttpStatusCode http_status_code = status::failed(status) ?
+        drogon::HttpStatusCode::k500InternalServerError : drogon::HttpStatusCode::k200OK;
+
+    auto response = drogon::HttpResponse::newHttpResponse();
+    response->setStatusCode(http_status_code);
+    response->setBody(response_body);
+    response_callback(response);
 }
 
 } // namespace network.

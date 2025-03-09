@@ -12,6 +12,7 @@
 
 #include <memory>
 #include <tbb/tbb.h>
+#include "../status/status.hh"
 #include "../schemas/request-interfaces/object_container_request_interface.hh"
 
 namespace lazarus
@@ -54,7 +55,11 @@ private:
     void
     object_container_operation_serial_proxy(
         const lazarus::schemas::object_container_request_interface&& object_container_request,
-        std::function<void(const drogon::HttpResponsePtr&)>&& callback);
+        std::function<void(const drogon::HttpResponsePtr&)>&& response_callback);
+
+    status::status_code
+    handle_object_container_creation(
+        const lazarus::schemas::object_container_request_interface& object_container_request);
 
     //
     // Serializer task queue for executing object container operations serially.

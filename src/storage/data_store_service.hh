@@ -88,6 +88,13 @@ public:
         lazarus::schemas::object_container_request_interface&& object_container_request,
         std::function<void(const drogon::HttpResponsePtr&)>&& callback);
 
+    //
+    // Checks if an object container exists in the object container index.
+    //
+    bool
+    object_container_exists(
+        const char* object_container_name);
+
 private:
 
     //

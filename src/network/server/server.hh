@@ -11,6 +11,7 @@
 #pragma once
 
 #include <drogon/drogon.h>
+#include "../../status/status.hh"
 #include "server_configuration.hh"
 
 namespace lazarus
@@ -75,6 +76,15 @@ public:
     //
     const char*
     get_server_listener_ip_address() const;
+
+    //
+    // Sends back a response to a client over a provided callback.
+    //
+    static
+    void
+    send_response(
+        std::function<void(const drogon::HttpResponsePtr &)>& response_callback,
+        const status::status_code status);
 
 private:
 

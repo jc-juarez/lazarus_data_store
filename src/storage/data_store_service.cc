@@ -213,6 +213,14 @@ data_store_service::find_object_containers_internal_metadata_association_pair(
     return std::nullopt;
 }
 
+bool
+data_store_service::object_container_exists(
+    const char* object_container_name)
+{
+    return object_container_index_->object_container_exists(
+        object_container_name);
+}
+
 void
 data_store_service::object_insertion_dispatch_proxy(
     const std::string&& object_id,
@@ -223,9 +231,9 @@ data_store_service::object_insertion_dispatch_proxy(
     // At this point, it is guaranteed that the memory contents
     // of the object are safely copied ino the provided containers.
     //
-    storage_engine_->insert_object(
-        object_id.c_str(),
-        object_data_stream.c_str());
+    //storage_engine_->insert_object(
+    //    object_id.c_str(),
+    //    object_data_stream.c_str());
 
     auto resp = drogon::HttpResponse::newHttpResponse();
     resp->setBody(

@@ -51,8 +51,9 @@ public:
     //
     void
     insert_object(
+        rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference,
         const char* object_id,
-        const byte* object_data_buffer);
+        const byte* object_data);
 
     //
     // Get an object from the data store.
