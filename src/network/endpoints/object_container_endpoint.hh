@@ -44,7 +44,7 @@ public:
   void
   create_object_container(
     const drogon::HttpRequestPtr& request,
-    std::function<void(const drogon::HttpResponsePtr&)>&& callback);
+    server_response_callback&& response_callback);
 
   //
   // Gets the metadata of a given object container.
@@ -52,7 +52,7 @@ public:
   void
   get_object_container(
     const drogon::HttpRequestPtr& request,
-    std::function<void(const drogon::HttpResponsePtr&)>&& callback);
+    server_response_callback&& response_callback);
 
 private:
 

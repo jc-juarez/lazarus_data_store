@@ -30,7 +30,7 @@ object_container_operation_serializer::object_container_operation_serializer(
 void
 object_container_operation_serializer::enqueue_object_container_operation(
     schemas::object_container_request_interface&& object_container_request,
-    std::function<void(const drogon::HttpResponsePtr&)>&& callback)
+    network::server_response_callback&& response_callback)
 {
     //
     // Enqueue the async object container operation action.
@@ -39,18 +39,18 @@ object_container_operation_serializer::enqueue_object_container_operation(
     serializer_queue_.execute(
         [this,
         object_container_request = std::move(object_container_request),
-        callback = std::move(callback)]() mutable
+        response_callback = std::move(response_callback)]() mutable
         {
             this->object_container_operation_serial_proxy(
                 std::move(object_container_request),
-                std::move(callback));
+                std::move(response_callback));
         });
 }
 
 void
 object_container_operation_serializer::object_container_operation_serial_proxy(
     const schemas::object_container_request_interface&& object_container_request,
-    std::function<void(const drogon::HttpResponsePtr&)>&& response_callback)
+    network::server_response_callback&& response_callback)
 {
     spdlog::info("Executing serialized object container operation action. "
         "OpType={}, "

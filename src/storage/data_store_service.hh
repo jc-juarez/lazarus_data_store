@@ -15,6 +15,7 @@
 #include <rocksdb/db.h>
 #include "../status/status.hh"
 #include <drogon/HttpController.h>
+#include "../network/server/server.hh"
 #include "../schemas/request-interfaces/object_container_request_interface.hh"
 
 namespace lazarus
@@ -53,13 +54,13 @@ public:
     //
     // Inserts a single object into the data store in async fashion.
     // Ensures that a copy of the object is created before enqueueing the async
-    // task, and notifies back the result of the operation over the provided callback.
+    // task, and notifies back the result of the operation over the provided response_callback.
     //
     void
     enqueue_async_object_insertion(
         const char* object_id,
         const byte* object_data_stream,
-        std::function<void(const drogon::HttpResponsePtr&)>&& callback);
+        network::server_response_callback&& response_callback);
 
     //
     // Get an object from the data store.
@@ -79,7 +80,7 @@ public:
     void
     orchestrate_serial_object_container_operation(
         schemas::object_container_request_interface&& object_container_request,
-        std::function<void(const drogon::HttpResponsePtr&)>&& callback);
+        network::server_response_callback&& response_callback);
 
     //
     // Checks if an object container exists in the object container index.
@@ -87,6 +88,13 @@ public:
     bool
     object_container_exists(
         const char* object_container_name);
+
+    //
+    // Validates if an object container operation request.
+    //
+    status::status_code
+    validate_object_container_operation_request(
+        const schemas::object_container_request_interface& object_container_request);
 
 private:
 
@@ -107,7 +115,7 @@ private:
     object_insertion_dispatch_proxy(
         const std::string&& object_id,
         const byte_stream&& object_data_stream,
-        std::function<void(const drogon::HttpResponsePtr&)>&& callback);
+        network::server_response_callback&& response_callback);
 
     //
     // Handle for the storage enine.

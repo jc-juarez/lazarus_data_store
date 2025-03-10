@@ -13,6 +13,7 @@
 #include <memory>
 #include <tbb/tbb.h>
 #include "../status/status.hh"
+#include "../network/server/server.hh"
 #include "../schemas/request-interfaces/object_container_request_interface.hh"
 
 namespace lazarus
@@ -39,12 +40,12 @@ public:
 
     //
     // Enqueues a serialized object container operation into the serializer.
-    // Handles server callback replies in an asynchronous manner.
+    // Handles server response callback replies in an asynchronous manner.
     //
     void
     enqueue_object_container_operation(
         schemas::object_container_request_interface&& object_container_request,
-        std::function<void(const drogon::HttpResponsePtr&)>&& callback);
+        network::server_response_callback&& response_callback);
 
 private:
 
@@ -55,7 +56,7 @@ private:
     void
     object_container_operation_serial_proxy(
         const schemas::object_container_request_interface&& object_container_request,
-        std::function<void(const drogon::HttpResponsePtr&)>&& response_callback);
+        network::server_response_callback&& response_callback);
 
     status::status_code
     handle_object_container_creation(

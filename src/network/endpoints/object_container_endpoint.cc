@@ -9,6 +9,7 @@
 // ****************************************************
 
 #include <spdlog/spdlog.h>
+#include "../server/server.hh"
 #include "object_container_endpoint.hh"
 #include "../../storage/data_store_service.hh"
 #include "../../schemas/request-interfaces/object_container_request_interface.hh"
@@ -26,20 +27,36 @@ object_container_endpoint::object_container_endpoint(
 void
 object_container_endpoint::create_object_container(
     const drogon::HttpRequestPtr& request,
-    std::function<void(const drogon::HttpResponsePtr&)>&& callback)
+    server_response_callback&& response_callback)
 {
     schemas::object_container_request_interface object_container_request{
         request};
 
     spdlog::info("Create object container request received. "
+        "Optype={}, "
         "ObjectContainerName={}.",
+        static_cast<std::uint8_t>(object_container_request.get_optype()),
         object_container_request.get_name());
 
-    //
-    // Pending: Validate request and do a quick lookup.
-    // If it already exists, no need to enqueue anything.
-    //
+    const status::status_code status = data_store_service_->validate_object_container_operation_request(
+        object_container_request);
 
+    if (status::failed(status))
+    {
+        spdlog::error("Object container operation request validation failed. "
+            "Optype={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name(),
+            status);
+
+        network::server::send_response(
+            response_callback,
+            status);
+
+        return;
+    }
 
     //
     // Orchestrate the creation of the object
@@ -48,13 +65,13 @@ object_container_endpoint::create_object_container(
     //
     data_store_service_->orchestrate_serial_object_container_operation(
         std::move(object_container_request),
-        std::move(callback));
+        std::move(response_callback));
 }
 
 void
 object_container_endpoint::get_object_container(
     const drogon::HttpRequestPtr& request,
-    std::function<void(const drogon::HttpResponsePtr &)>&& callback)
+    std::function<void(const drogon::HttpResponsePtr &)>&& response_callback)
 {
     storage::byte_stream object_stream;
 
@@ -68,7 +85,7 @@ object_container_endpoint::get_object_container(
     auto resp = drogon::HttpResponse::newHttpResponse();
     resp->setBody(
         object_stream.c_str());
-    callback(resp);
+    response_callback(resp);
 }
 
 } // namespace network.

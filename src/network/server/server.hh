@@ -25,6 +25,8 @@ namespace storage
 namespace network
 {
 
+using server_response_callback = std::function<void(const drogon::HttpResponsePtr&)>;
+
 //
 // Main HTTP server wrapper.
 //
@@ -78,7 +80,7 @@ public:
     get_server_listener_ip_address() const;
 
     //
-    // Sends back a response to a client over a provided callback.
+    // Sends back a response to a client over a provided response_callback.
     //
     static
     void

@@ -92,7 +92,7 @@ server::send_response(
 {
     const std::string response_body = std::format(
         "{{\n"
-        "    \"InternalStatusCode\": {:#X}\n"
+        "    \"InternalStatusCode\": {:#x}\n"
         "}}\n", 
         status);
 

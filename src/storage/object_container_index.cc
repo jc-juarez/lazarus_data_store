@@ -86,11 +86,19 @@ object_container_index::insert_object_container(
 rocksdb::ColumnFamilyHandle*
 object_container_index::get_object_containers_internal_metadata_storage_engine_reference() const
 {
+    return get_object_container_storage_engine_reference(
+        object_containers_internal_metadata_name);
+}
+
+rocksdb::ColumnFamilyHandle*
+object_container_index::get_object_container_storage_engine_reference(
+    const char* object_container_name) const
+{
     tbb::concurrent_hash_map<std::string, object_container>::const_accessor accessor;
 
     if (object_container_index_table_.find(
         accessor,
-        object_container_index::object_containers_internal_metadata_name))
+        object_container_name))
     {
         return accessor->second.get_storage_engine_reference();
     }
@@ -114,7 +122,7 @@ object_container_index::is_internal_metadata(
     const std::string object_container_name)
 {
     return object_container_name == rocksdb::kDefaultColumnFamilyName ||
-        object_container_name == object_container_index::object_containers_internal_metadata_name;
+        object_container_name == object_containers_internal_metadata_name;
 }
 
 } // namespace storage.

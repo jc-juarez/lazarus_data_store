@@ -195,7 +195,7 @@ void
 data_store_service::enqueue_async_object_insertion(
     const char* object_id,
     const byte* object_data_stream,
-    std::function<void(const drogon::HttpResponsePtr&)>&& callback)
+    network::server_response_callback&& response_callback)
 {
     //
     // Ensure the associated contents of the object are copied before proceeding. 
@@ -210,12 +210,12 @@ data_store_service::enqueue_async_object_insertion(
         [this,
         object_id_to_dispatch = std::move(object_id_to_dispatch),
         object_data_stream_to_dispatch = std::move(object_data_stream_to_dispatch),
-        callback = std::move(callback)]() mutable
+        response_callback = std::move(response_callback)]() mutable
         {
             this->object_insertion_dispatch_proxy(
                 std::move(object_id_to_dispatch),
                 std::move(object_data_stream_to_dispatch),
-                std::move(callback));
+                std::move(response_callback));
         });
 }
 
@@ -232,11 +232,11 @@ data_store_service::get_object(
 void
 data_store_service::orchestrate_serial_object_container_operation(
     schemas::object_container_request_interface&& object_container_request,
-    std::function<void(const drogon::HttpResponsePtr&)>&& callback)
+    network::server_response_callback&& response_callback)
 {
     object_container_operation_serializer_->enqueue_object_container_operation(
         std::move(object_container_request),
-        std::move(callback));
+        std::move(response_callback));
 }
 
 bool
@@ -247,11 +247,47 @@ data_store_service::object_container_exists(
         object_container_name);
 }
 
+status::status_code
+data_store_service::validate_object_container_operation_request(
+    const schemas::object_container_request_interface& object_container_request)
+{
+    switch (object_container_request.get_optype())
+    {
+        case schemas::object_container_request_optype::create:
+        {
+            if (object_container_index_->object_container_exists(
+                object_container_request.get_name()))
+            {
+                //
+                // Fail fast in case the object container already exists.
+                //
+                spdlog::error("Object container creation will be failed as the "
+                    "object container already exists. "
+                    "Optype={}, "
+                    "ObjectContainerName={}.",
+                    static_cast<std::uint8_t>(object_container_request.get_optype()),
+                    object_container_request.get_name());
+
+                return status::object_container_already_exists;
+            }
+
+            break;
+        }
+        default:
+        {
+            return status::invalid_operation;
+            break;
+        }
+    }
+
+    return status::success;
+}
+
 void
 data_store_service::object_insertion_dispatch_proxy(
     const std::string&& object_id,
     const byte_stream&& object_data_stream,
-    std::function<void(const drogon::HttpResponsePtr&)>&& callback)
+    network::server_response_callback&& response_callback)
 {
     //
     // At this point, it is guaranteed that the memory contents
@@ -265,7 +301,7 @@ data_store_service::object_insertion_dispatch_proxy(
     resp->setBody(
         "Async response. Object has been inserted.");
     
-    callback(resp);
+    response_callback(resp);
 }
 
 } // namespace storage.

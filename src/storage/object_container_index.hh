@@ -42,7 +42,7 @@ public:
 
     //
     // Inserts a new object container entry into the index map.
-    // This can either be invoked as a callback from a request-initiated
+    // This can either be invoked as a response_callback from a request-initiated
     // object container insertion or as the initial disk fetching process.
     // This is only executed after a well-known commited disk write.
     //
@@ -59,10 +59,17 @@ public:
     static constexpr const char* object_containers_internal_metadata_name = "_internal_metadata_:object_containers";
 
     //
-    // Gets the data store reference of the object containers internal metadata column family.
+    // Gets the storage engine reference of the object containers internal metadata column family.
     //
     rocksdb::ColumnFamilyHandle*
     get_object_containers_internal_metadata_storage_engine_reference() const;
+
+    //
+    // Gets the storage engine reference for a particular object container.
+    //
+    rocksdb::ColumnFamilyHandle*
+    get_object_container_storage_engine_reference(
+        const char* object_container_name) const;
 
     //
     // Checks if the object container exists in the index internal metadata.
