@@ -109,9 +109,20 @@ object_container_operation_serializer::handle_object_container_creation(
     // and the garbage collector will be in charge to clean it up.
     //
     rocksdb::ColumnFamilyHandle* storage_engine_reference;
-    storage_engine_->create_object_container(
+    status::status_code status = storage_engine_->create_object_container(
         object_container_request.get_name(),
         storage_engine_reference);
+
+    if (status::failed(status))
+    {
+        spdlog::error("Storage engine failed to create the new object container. "
+            "Optype={}, "
+            "ObjectContainerName={}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name());
+
+        return status;
+    }
 
     //
     // Insert the metadata for the newly created object container to the storage engine.
@@ -120,10 +131,21 @@ object_container_operation_serializer::handle_object_container_creation(
     object_container_persistent_metadata.set_name(object_container_request.get_name());
     byte_stream serialized_object_container_persistent_metadata;
     object_container_persistent_metadata.SerializeToString(&serialized_object_container_persistent_metadata);
-    storage_engine_->insert_object(
+    status = storage_engine_->insert_object(
         object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
         object_container_request.get_name(),
         serialized_object_container_persistent_metadata.c_str());
+
+    if (status::failed(status))
+    {
+        spdlog::error("Storage engine failed insert the metadata entry for the new object container. "
+            "Optype={}, "
+            "ObjectContainerName={}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name());
+
+        return status;
+    }
 
     //
     // Index the new object container to the internal metadata table.
