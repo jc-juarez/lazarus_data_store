@@ -140,5 +140,10 @@ status_code_definition(object_parsing_failed, 0x8'0000010);
 //
 status_code_definition(missing_storage_engine_reference, 0x8'0000011);
 
+//
+// Failed to close an object container storage engine reference.
+//
+status_code_definition(storage_engine_reference_close_failed, 0x8'0000012);
+
 } // namespace status.
 } // namespace lazarus.

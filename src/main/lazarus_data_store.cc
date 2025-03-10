@@ -140,7 +140,7 @@ lazarus_data_store::start_data_store()
     // references obtained when the storage engine was started.
     //
     data_store_service_->populate_object_container_index(
-        storage_engine_references_mapping);
+        &storage_engine_references_mapping);
 
     if (status::failed(status))
     {
@@ -182,7 +182,7 @@ lazarus_data_store::initialize_logger(
     spdlog::set_default_logger(logger);
     spdlog::flush_every(std::chrono::milliseconds(logger_config.flush_frequency_ms_));
 
-    spdlog::info("Logger has been initializad successfully. "
+    spdlog::info("Logger has been initialized successfully. "
         "LogsDirectoryPath={}, "
         "ComponentName={}, "
         "QueueSizeBytes={}, "

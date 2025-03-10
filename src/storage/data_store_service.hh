@@ -48,7 +48,7 @@ public:
     //
     status::status_code
     populate_object_container_index(
-        const std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>& storage_engine_references_mapping);
+        std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>* storage_engine_references_mapping);
 
     //
     // Inserts a single object into the data store in async fashion.
@@ -96,15 +96,8 @@ private:
     // On first-time startup, the data store will create them.
     //
     status::status_code
-    create_internal_metadata_column_families();
-
-    //
-    // Gets the object containers internal
-    // metadata column family association pair if it exists.
-    //
-    std::optional<std::pair<std::string, rocksdb::ColumnFamilyHandle*>>
-    find_object_containers_internal_metadata_association_pair(
-        const std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>& storage_engine_references_mapping);
+    create_internal_metadata_column_families(
+        std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>* storage_engine_references_mapping);
 
     //
     // Object insertion dispatcher entry point.

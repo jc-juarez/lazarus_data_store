@@ -145,12 +145,12 @@ storage_engine::get_object(
 status::status_code
 storage_engine::create_object_container(
     const char* object_container_name,
-    rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference)
+    rocksdb::ColumnFamilyHandle** object_container_storage_engine_reference)
 {
     const rocksdb::Status status = core_database_->CreateColumnFamily(
         rocksdb::ColumnFamilyOptions(),
         object_container_name,
-        &object_container_storage_engine_reference);
+        object_container_storage_engine_reference);
 
     if (!status.ok())
     {
@@ -225,7 +225,12 @@ storage_engine::fetch_object_containers_from_disk(
         storage_engine_configuration_.core_database_path_,
         object_containers_names);
 
-    if (!status.ok())
+    //
+    // rocksdb::Status::kPathNotFound is a valid error code
+    // in case this is the first-time startup for the data store.
+    //
+    if (!status.ok() &&
+        status.subcode() != rocksdb::Status::kPathNotFound)
     {
         spdlog::critical("Failed to retrieve initial object containers from disk. "
             "StorageEngineCode={}, "
@@ -244,6 +249,29 @@ storage_engine::fetch_object_containers_from_disk(
         // default column family needs to be added to the core database initialization.
         //
         object_containers_names->push_back(rocksdb::kDefaultColumnFamilyName);
+    }
+
+    return status::success;
+}
+
+status::status_code
+storage_engine::close_object_container_storage_engine_reference(
+    rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference)
+{
+    const rocksdb::Status status = core_database_->DestroyColumnFamilyHandle(
+        object_container_storage_engine_reference);
+
+    if (!status.ok())
+    {
+        spdlog::error("Failed to close storage engine reference. "
+            "ObjectContainerStorageEngineReference={}, "
+            "StorageEngineCode={}, "
+            "StorageEngineSubCode={}.",
+            static_cast<void*>(object_container_storage_engine_reference),
+            static_cast<std::uint32_t>(status.code()),
+            static_cast<std::uint32_t>(status.subcode()));
+
+        return status::storage_engine_reference_close_failed;
     }
 
     return status::success;

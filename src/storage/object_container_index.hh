@@ -20,6 +20,8 @@ namespace lazarus
 namespace storage
 {
 
+class storage_engine;
+
 //
 // Core object container indexing system.
 //
@@ -30,7 +32,13 @@ public:
     //
     // Constructor for the object container index.
     //
-    object_container_index();
+    object_container_index(
+        std::shared_ptr<storage_engine> storage_engine_handle);
+
+    //
+    // Destructor. Manages the correct memory cleanup for object containers.
+    //
+    ~object_container_index();
 
     //
     // Inserts a new object container entry into the index map.
@@ -48,15 +56,7 @@ public:
     // user-created object containers and their metadata.
     // This name is reserved for the data store use.
     //
-    static constexpr const char* object_containers_internal_metadata_column_family_name = "_internal_metadata_:object_containers";
-
-    //
-    // Sets the reference for the object containers internal metadata column family.
-    //
-    void
-    set_object_containers_internal_metadata_handle(
-        rocksdb::ColumnFamilyHandle* storage_engine_reference,
-        const schemas::object_container_persistent_interface& object_container_persistent_metadata);
+    static constexpr const char* object_containers_internal_metadata_name = "_internal_metadata_:object_containers";
 
     //
     // Gets the data store reference of the object containers internal metadata column family.
@@ -70,6 +70,14 @@ public:
     bool
     object_container_exists(
         const char* object_container_name);
+
+    //
+    // Checks if an object container is part of the internal metadata.
+    //
+    static
+    bool
+    is_internal_metadata(
+        const std::string object_container_name);
 
 private:
 
@@ -87,10 +95,9 @@ private:
     std::size_t max_number_object_containers_;
 
     //
-    // Main handle to the column family for storing user-created object
-    // containers. Internally, it is treated as a normal object container as well.
+    // Handle for the storage enine.
     //
-    std::unique_ptr<object_container> object_containers_internal_metadata_;
+    std::shared_ptr<storage_engine> storage_engine_;
 };
 
 } // namespace storage.

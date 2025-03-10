@@ -73,7 +73,7 @@ public:
     status::status_code
     create_object_container(
         const char* object_container_name,
-        rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference);
+        rocksdb::ColumnFamilyHandle** object_container_storage_engine_reference);
 
     //
     // Gets all the objects from a specified object container.
@@ -95,6 +95,13 @@ public:
     status::status_code
     fetch_object_containers_from_disk(
         std::vector<std::string>* object_containers_names);
+
+    //
+    // Closes the in-memory object container storage engine reference.
+    //
+    status::status_code
+    close_object_container_storage_engine_reference(
+        rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference);
 
 private:
 

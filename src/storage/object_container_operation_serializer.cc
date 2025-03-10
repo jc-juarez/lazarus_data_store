@@ -108,10 +108,10 @@ object_container_operation_serializer::handle_object_container_creation(
     // In case the data store crashes in between, the object container will be orphaned
     // and the garbage collector will be in charge to clean it up.
     //
-    rocksdb::ColumnFamilyHandle* storage_engine_reference;
+    rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference;
     status::status_code status = storage_engine_->create_object_container(
         object_container_request.get_name(),
-        storage_engine_reference);
+        &object_container_storage_engine_reference);
 
     if (status::failed(status))
     {
@@ -151,7 +151,7 @@ object_container_operation_serializer::handle_object_container_creation(
     // Index the new object container to the internal metadata table.
     //
     object_container_index_->insert_object_container(
-        storage_engine_reference,
+        object_container_storage_engine_reference,
         object_container_persistent_metadata);
 
     spdlog::info("Object container creation succeeded. "
