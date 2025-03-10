@@ -122,9 +122,18 @@ lazarus_data_store::start_data_store()
     // containers names to their respective column family reference.
     //
     std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*> storage_engine_references_mapping;
-    storage_engine_->start(
+    status = storage_engine_->start(
         object_containers_names,
         &storage_engine_references_mapping);
+
+    if (status::failed(status))
+    {
+        spdlog::critical("Failed to start the storage engine during the system startup. "
+            "Status={}.",
+            status);
+
+        return status;
+    }
 
     //
     // Populate the in-memory object container index with the
@@ -132,6 +141,15 @@ lazarus_data_store::start_data_store()
     //
     data_store_service_->populate_object_container_index(
         storage_engine_references_mapping);
+
+    if (status::failed(status))
+    {
+        spdlog::critical("Failed to populate the object container index during the system startup. "
+            "Status={}.",
+            status);
+
+        return status;
+    }
 
     //
     // Start the server for handling incoming data requests.

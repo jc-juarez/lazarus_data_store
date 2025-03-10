@@ -37,7 +37,7 @@ data_store_service::data_store_service(
         object_container_index_);
 }
 
-void
+status::status_code
 data_store_service::populate_object_container_index(
     const std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>& storage_engine_references_mapping)
 {
@@ -56,8 +56,7 @@ data_store_service::populate_object_container_index(
         // or that it simply does not need a previous metadata state for working.
         // Create all required internal metadata root object containers and exit.
         //
-        create_internal_metadata_column_families();
-        return;
+        return create_internal_metadata_column_families();
     }
 
     //
@@ -70,12 +69,14 @@ data_store_service::populate_object_container_index(
 
     if (!object_containers_internal_metadata.has_value())
     {
-        // This is a critical error as one or some of the core internal metadata
-        // column families were not found. Fail the system startup.
+        //
+        // This is a critical error as one or some of the core internal
+        // metadata column families were not found. Fail the system startup.
+        //
         spdlog::critical("Failed to find find the storage engine reference for the '{}' internal metadata.",
             object_container_index::object_containers_internal_metadata_column_family_name);
 
-        throw std::runtime_error("Failed to find find the storage engine reference for internal metadata.");
+        return status::object_containers_internal_metadata_lookup_failed;
     }
 
     schemas::object_container_persistent_interface object_container_persistent_metadata;
@@ -89,9 +90,18 @@ data_store_service::populate_object_container_index(
     // from the storage engine and populate the rest of the object container index.
     //
     std::unordered_map<std::string, byte_stream> objects;
-    storage_engine_->get_all_objects_from_object_container(
+    status::status_code status = storage_engine_->get_all_objects_from_object_container(
         object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
         &objects);
+
+    if (status::failed(status))
+    {
+        spdlog::critical("Failed to get all object containers from the object containers internal metadata. "
+            "Status={}.",
+            status);
+
+        return status;
+    }
 
     for (const auto& object : objects)
     {
@@ -104,7 +114,7 @@ data_store_service::populate_object_container_index(
                 "ObjectContainerName={}.",
                 object.first);
 
-            throw std::runtime_error("Failed to parse an object container metadata on startup.");
+            return status::object_parsing_failed;
         }
 
         if (storage_engine_references_mapping.find(object_container_persistent_metadata.name()) == storage_engine_references_mapping.end())
@@ -119,7 +129,7 @@ data_store_service::populate_object_container_index(
                 "ObjectContainerName={}.",
                 object_container_persistent_metadata.name());
 
-            throw std::runtime_error("Failed to find the storage engine reference for an object container on startup.");
+            return status::missing_storage_engine_reference;
         }
 
         spdlog::info("Found object container on startup. Indexing into the object containers metadata table. "
@@ -130,9 +140,11 @@ data_store_service::populate_object_container_index(
             storage_engine_references_mapping.at(object_container_persistent_metadata.name()),
             object_container_persistent_metadata);
     }
+
+    return status::success;
 }
 
-void
+status::status_code
 data_store_service::create_internal_metadata_column_families()
 {
     //
@@ -140,15 +152,25 @@ data_store_service::create_internal_metadata_column_families()
     // and assign the internal metadata handle.
     //
     rocksdb::ColumnFamilyHandle* storage_engine_reference;
-    storage_engine_->create_object_container(
+    status::status_code status = storage_engine_->create_object_container(
         object_container_index::object_containers_internal_metadata_column_family_name,
         storage_engine_reference);
+
+    if (status::failed(status))
+    {
+        spdlog::critical("Failed to create internal metadata column family '{}'.",
+            object_container_index::object_containers_internal_metadata_column_family_name);
+
+        return status;
+    }
 
     schemas::object_container_persistent_interface object_container_persistent_metadata;
     object_container_persistent_metadata.set_name(object_container_index::object_containers_internal_metadata_column_family_name);
     object_container_index_->set_object_containers_internal_metadata_handle(
         storage_engine_reference,
         object_container_persistent_metadata);
+
+    return status::success;
 }
 
 void

@@ -125,5 +125,20 @@ status_code_definition(objects_retrieval_from_object_container_failed, 0x8'00000
 //
 status_code_definition(fetch_object_containers_from_disk_failed, 0x8'0000008);
 
+//
+// Failed to find the object containers internal metadata column family during startup.
+//
+status_code_definition(object_containers_internal_metadata_lookup_failed, 0x8'0000009);
+
+//
+// Failed to parse a byte stream into an object.
+//
+status_code_definition(object_parsing_failed, 0x8'0000010);
+
+//
+// Failed to find an storage engine reference for an object container.
+//
+status_code_definition(missing_storage_engine_reference, 0x8'0000011);
+
 } // namespace status.
 } // namespace lazarus.

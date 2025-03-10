@@ -13,6 +13,7 @@
 #include <optional>
 #include <tbb/tbb.h>
 #include <rocksdb/db.h>
+#include "../status/status.hh"
 #include <drogon/HttpController.h>
 #include "../schemas/request-interfaces/object_container_request_interface.hh"
 
@@ -45,17 +46,9 @@ public:
     // Populates the in-memory contents of the object container
     // index based on the references received from the storage engine start.
     //
-    void
+    status::status_code
     populate_object_container_index(
         const std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>& storage_engine_references_mapping);
-
-    //
-    // Creates the root metadata column
-    // families for the system if not present already.
-    // On first-time startup, the data store will create them.
-    //
-    void
-    create_internal_metadata_column_families();
 
     //
     // Inserts a single object into the data store in async fashion.
@@ -96,6 +89,14 @@ public:
         const char* object_container_name);
 
 private:
+
+    //
+    // Creates the root metadata column
+    // families for the system if not present already.
+    // On first-time startup, the data store will create them.
+    //
+    status::status_code
+    create_internal_metadata_column_families();
 
     //
     // Gets the object containers internal
