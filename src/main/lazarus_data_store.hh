@@ -4,12 +4,13 @@
 // 'lazarus_data_store.hh'
 // Author: jcjuarez
 // Description:
-//      Lazarus Data Store root object. 
+//      Lazarus data store root object. 
 // ****************************************************
 
 #pragma once
 
 #include <memory>
+#include "../status/status.hh"
 #include "../common/uuid_utilities.hh"
 #include "../logger/logger_configuration.hh"
 #include "../network/server/server_configuration.hh"
@@ -17,6 +18,8 @@
 
 namespace lazarus
 {
+
+using exit_code = std::int32_t;
 
 namespace network
 {
@@ -40,23 +43,33 @@ public:
     // Constructor.
     //
     lazarus_data_store(
-        const logger::logger_configuration& logger_config,
+        const boost::uuids::uuid session_id,
         const network::server_configuration& server_config,
         const storage::storage_engine_configuration& storage_engine_configuration);
 
     //
+    // Entry point for the data store.
+    //
+    static
+    exit_code
+    run();
+
+    //
     // Start the lazarus data store system.
     //
-    void
-    start_system();
+    status::status_code
+    start_data_store();
 
 private:
 
     //
     // Initializes the global logger to be used by the system.
     //
+    static
     void
-    initialize_logger();
+    initialize_logger(
+        const boost::uuids::uuid session_id,
+        const logger::logger_configuration logger_config);
 
     //
     // Session identifier.

@@ -61,9 +61,9 @@ object_container_endpoint::get_object_container(
     //
     // Get contents from the db.
     //
-    data_store_service_->get_object(
+    /*data_store_service_->get_object(
         "Joe",
-        object_stream);
+        object_stream);*/
 
     auto resp = drogon::HttpResponse::newHttpResponse();
     resp->setBody(

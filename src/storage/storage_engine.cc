@@ -9,6 +9,7 @@
 
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
+#include "../status/status.hh"
 
 namespace lazarus
 {
@@ -21,9 +22,9 @@ storage_engine::storage_engine(
       core_database_(nullptr)
 {}
 
-void
+status::status_code
 storage_engine::start(
-    std::vector<std::string>& object_containers_names,
+    const std::vector<std::string>& object_containers_names,
     std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>* storage_engine_references_mapping)
 {
     std::vector<rocksdb::ColumnFamilyDescriptor> column_family_descriptors;
@@ -52,8 +53,15 @@ storage_engine::start(
 
     if (!status.ok())
     {
-        spdlog::error("An error occurred while trying to start the storage engine.");
-        // return error. Again,m only allow rocksdb::Status::kPathNotFound.
+        spdlog::critical("An error occurred while trying to start the storage engine. "
+            "NumberObjectContainersOnDisk={}, "
+            "StorageEngineCode={}, "
+            "StorageEngineSubCode={}.",
+            object_containers_names.size(),
+            static_cast<std::uint32_t>(status.code()),
+            static_cast<std::uint32_t>(status.subcode()));
+        
+        return status::storage_engine_startup_failed;
     }
 
     //
@@ -71,9 +79,10 @@ storage_engine::start(
         mapping[object_containers_names[index]] = storage_engine_references[index];
     }
 
+    return status::success;
 }
 
-void
+status::status_code
 storage_engine::insert_object(
     rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference,
     const char* object_id,
@@ -87,96 +96,157 @@ storage_engine::insert_object(
 
     if (!status.ok())
     {
-        // spdlog::error("");
+        spdlog::error("Failed to insert object into the specified object container. "
+            "ObjectId={}, "
+            "ObjectContainerStorageEngineReference={}, "
+            "StorageEngineCode={}, "
+            "StorageEngineSubCode={}.",
+            object_id,
+            static_cast<void*>(object_container_storage_engine_reference),
+            static_cast<std::uint32_t>(status.code()),
+            static_cast<std::uint32_t>(status.subcode()));
+        
+        return status::object_insertion_failed;
     }
+
+    return status::success;
 }
 
-void
+status::status_code
 storage_engine::get_object(
+    rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference,
     const char* object_id,
-    byte_stream& object_data_stream)
+    byte_stream& object_data)
 {
     const rocksdb::Status status = core_database_->Get(
         rocksdb::ReadOptions(),
+        object_container_storage_engine_reference,
         object_id,
-        &object_data_stream);
+        &object_data);
 
     if (!status.ok())
     {
-        // spdlog::error("");
+        spdlog::error("Failed to retrieve object from the specified object container. "
+            "ObjectId={}, "
+            "ObjectContainerStorageEngineReference={}, "
+            "StorageEngineCode={}, "
+            "StorageEngineSubCode={}.",
+            object_id,
+            static_cast<void*>(object_container_storage_engine_reference),
+            static_cast<std::uint32_t>(status.code()),
+            static_cast<std::uint32_t>(status.subcode()));
+        
+        return status::object_retrieval_failed;
     }
+
+    return status::success;
 }
 
-rocksdb::ColumnFamilyHandle*
+status::status_code
 storage_engine::create_object_container(
-    const char* object_container_name)
+    const char* object_container_name,
+    rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference)
 {
-    rocksdb::ColumnFamilyHandle* storage_engine_reference;
-
     const rocksdb::Status status = core_database_->CreateColumnFamily(
         rocksdb::ColumnFamilyOptions(),
         object_container_name,
-        &storage_engine_reference);
+        &object_container_storage_engine_reference);
 
     if (!status.ok())
     {
         //
-        // Nullify the reference.
+        // On failure, nullify the reference.
         //
-        storage_engine_reference = nullptr;
-        // spdlog::error("");
+        object_container_storage_engine_reference = nullptr;
+
+        spdlog::error("Failed to create the specified object container. "
+            "ObjectContainerName={}, "
+            "StorageEngineCode={}, "
+            "StorageEngineSubCode={}.",
+            object_container_name,
+            static_cast<std::uint32_t>(status.code()),
+            static_cast<std::uint32_t>(status.subcode()));
+
+        return status::object_container_creation_failed;
     }
 
-    return storage_engine_reference;
+    return status::success;
 }
 
-std::unordered_map<std::string, byte_stream>
+status::status_code
 storage_engine::get_all_objects_from_object_container(
-    rocksdb::ColumnFamilyHandle* storage_engine_reference)
+    rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference,
+    std::unordered_map<std::string, byte_stream>* objects)
 {
-    std::unordered_map<std::string, byte_stream> objects;
     rocksdb::ReadOptions read_options;
     std::unique_ptr<rocksdb::Iterator> it(core_database_->NewIterator(
         read_options,
-        storage_engine_reference));
+        object_container_storage_engine_reference));
 
-    for (it->SeekToFirst(); it->Valid(); it->Next()) {
+    //
+    // Iterate over all objects in the object container
+    // and append them to the list to return.
+    //
+    for (it->SeekToFirst(); it->Valid(); it->Next())
+    {
         std::string key = it->key().ToString();
         std::string value = it->value().ToString();
-        objects.emplace(key, value);
+        objects->emplace(key, value);
     }
 
-    return objects;
+    //
+    // If an error occurred, it will only be discovered after the storage
+    // iteration, so error handling must be handled post iterator traversal.
+    //
+    const rocksdb::Status status = it->status();
+
+    if (!status.ok())
+    {
+        spdlog::error("Failed to retrieve all objects inside the specified object container. "
+            "ObjectContainerStorageEngineReference={}, "
+            "StorageEngineCode={}, "
+            "StorageEngineSubCode={}.",
+            static_cast<void*>(object_container_storage_engine_reference),
+            static_cast<std::uint32_t>(status.code()),
+            static_cast<std::uint32_t>(status.subcode()));
+
+        return status::objects_retrieval_from_object_container_failed;
+    }
+
+    return status::success;
 }
 
-void
+status::status_code
 storage_engine::fetch_object_containers_from_disk(
-    std::vector<std::string>* object_containers)
+    std::vector<std::string>* object_containers_names)
 {
-    std::vector<std::string> containers;
-
     const rocksdb::Status status = rocksdb::DB::ListColumnFamilies(
         rocksdb::DBOptions(),
         storage_engine_configuration_.core_database_path_,
-        object_containers);
+        object_containers_names);
 
-    if (!status.ok() && 
-        status.subcode() != rocksdb::Status::kPathNotFound)
+    if (!status.ok())
     {
-        // only accept rocksdb::Status::kPathNotFound, else fail.
-        // spdlog::error("");
-        // return error.
+        spdlog::critical("Failed to retrieve initial object containers from disk. "
+            "StorageEngineCode={}, "
+            "StorageEngineSubCode={}.",
+            static_cast<std::uint32_t>(status.code()),
+            static_cast<std::uint32_t>(status.subcode()));
+
+        return status::fetch_object_containers_from_disk_failed;
     }
 
-    if (object_containers->empty())
+    if (object_containers_names->empty())
     {
         //
         // In case there are no initial object containers, this is
         // a first-time or fresh startup for the data store, so the
         // default column family needs to be added to the core database initialization.
         //
-        object_containers->push_back(rocksdb::kDefaultColumnFamilyName);
+        object_containers_names->push_back(rocksdb::kDefaultColumnFamilyName);
     }
+
+    return status::success;
 }
 
 } // namespace storage.

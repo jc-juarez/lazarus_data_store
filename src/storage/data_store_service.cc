@@ -51,9 +51,11 @@ data_store_service::populate_object_container_index(
     //
     if (storage_engine_references_mapping.size() == 1u)
     {
+        //
         // This means this is the first ever startup for the data store,
         // or that it simply does not need a previous metadata state for working.
         // Create all required internal metadata root object containers and exit.
+        //
         create_internal_metadata_column_families();
         return;
     }
@@ -86,9 +88,10 @@ data_store_service::populate_object_container_index(
     // Finally, get all known object containers to the system
     // from the storage engine and populate the rest of the object container index.
     //
-    const std::unordered_map<std::string, byte_stream> objects = 
-        storage_engine_->get_all_objects_from_object_container(
-            object_container_index_->get_object_containers_internal_metadata_storage_engine_reference());
+    std::unordered_map<std::string, byte_stream> objects;
+    storage_engine_->get_all_objects_from_object_container(
+        object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
+        &objects);
 
     for (const auto& object : objects)
     {
@@ -136,9 +139,10 @@ data_store_service::create_internal_metadata_column_families()
     // Create the object containers column family
     // and assign the internal metadata handle.
     //
-    rocksdb::ColumnFamilyHandle* storage_engine_reference =
-        storage_engine_->create_object_container(
-            object_container_index::object_containers_internal_metadata_column_family_name);
+    rocksdb::ColumnFamilyHandle* storage_engine_reference;
+    storage_engine_->create_object_container(
+        object_container_index::object_containers_internal_metadata_column_family_name,
+        storage_engine_reference);
 
     schemas::object_container_persistent_interface object_container_persistent_metadata;
     object_container_persistent_metadata.set_name(object_container_index::object_containers_internal_metadata_column_family_name);
@@ -178,11 +182,11 @@ data_store_service::enqueue_async_object_insertion(
 void
 data_store_service::get_object(
     const char* object_id,
-    byte_stream& object_data_stream)
+    byte_stream& object_data)
 {
-    storage_engine_->get_object(
-        object_id,
-        object_data_stream);
+    //storage_engine_->get_object(
+    //    object_id,
+    //    object_data_stream);
 }
 
 void

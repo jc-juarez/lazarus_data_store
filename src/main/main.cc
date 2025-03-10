@@ -1,11 +1,15 @@
+// ****************************************************
+// Lazarus Data Store
+// Main
+// 'main.cc'
+// Author: jcjuarez
+// Description:
+//      Lazarus data store entry point. 
+// ****************************************************
+
 #include "lazarus_data_store.hh"
 
 int main()
 {
-   lazarus::lazarus_data_store lazarus_ds{
-      lazarus::logger::logger_configuration{},
-      lazarus::network::server_configuration{},
-      lazarus::storage::storage_engine_configuration{}};
-
-   lazarus_ds.start_system();
+   return lazarus::lazarus_data_store::run();
 }

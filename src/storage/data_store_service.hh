@@ -75,7 +75,7 @@ public:
     void
     get_object(
         const char* object_id,
-        byte_stream& object_data_stream);
+        byte_stream& object_data);
 
     //
     // Orchestrates possible update operations to the object container index.
