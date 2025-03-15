@@ -12,6 +12,7 @@
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 #include "object_container_index.hh"
+#include "../common/uuid_utilities.hh"
 
 namespace lazarus
 {
@@ -75,6 +76,150 @@ object_container_index::get_object_containers_internal_metadata_storage_engine_r
         object_containers_internal_metadata_name);
 }
 
+status::status_code
+object_container_index::mark_object_container_as_deleted(
+    const char* object_container_name)
+{
+    //
+    // First, obtain a snapshot of the current state of the persistent metadata.
+    // This process involves multi-step locking with gaps, but this is a safe action given
+    // the serializer is the only thread updating the state for non-deleted object containers.
+    //
+    std::optional<schemas::object_container_persistent_interface> object_container_persistent_metadata =
+        get_object_container_persistent_metatadata_snapshot(
+            object_container_name);
+
+    if (!object_container_persistent_metadata.has_value())
+    {
+        return status::object_container_not_exists;
+    }
+
+    //
+    // Mark the object container as deleted and tombstone
+    // the object container by appending a UUID to the name.
+    //
+    object_container_persistent_metadata.value().set_is_deleted(true);
+    const std::string tombstoned_object_container_name =
+        object_container_persistent_metadata.value().name() + common::uuid_to_string(common::generate_uuid());
+    object_container_persistent_metadata.value().set_name(tombstoned_object_container_name);
+
+    //
+    // Persist with the storage engine first.
+    // On success, update the index table metadata entry.
+    //
+    byte_stream serialized_object_container_persistent_metadata =
+        object_container_persistent_metadata.value().SerializeAsString();
+
+    if (serialized_object_container_persistent_metadata.empty())
+    {
+        spdlog::error("Object container persistent metadata serialization failed while "
+            "marking the object container as deleted. "
+            "ObjectContainerName={}.",
+            object_container_name);
+
+        return status::serialization_failed;
+    }
+
+    status::status_code status = storage_engine_->insert_object(
+        get_object_containers_internal_metadata_storage_engine_reference(),
+        object_container_name,
+        serialized_object_container_persistent_metadata.c_str());
+
+    if (status::failed(status))
+    {
+        spdlog::error("Storage engine failed to insert the metadata entry for the "
+            "updated object container while marking the object container as deleted. "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            object_container_name,
+            status);
+
+        return status;
+    }
+
+    status = set_object_container_persistent_metadata(
+        object_container_name,
+        object_container_persistent_metadata.value());
+
+    if (status::failed(status))
+    {
+        spdlog::error("Failed to update the object container peristent metadata "
+            "while marking the object container as deleted. "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            object_container_name,
+            status);
+
+        return status;
+    }
+    
+    return status::success;
+}
+
+rocksdb::ColumnFamilyHandle*
+object_container_index::get_object_container_storage_engine_reference(
+    const char* object_container_name) const
+{
+    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::const_accessor accessor;
+
+    if (object_container_index_table_.find(
+        accessor,
+        object_container_name))
+    {
+        return accessor->second->get_storage_engine_reference();
+    }
+
+    //
+    // On failure, return a null reference.
+    //
+    return nullptr;
+}
+
+bool
+object_container_index::object_container_exists(
+    const char* object_container_name)
+{
+    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::const_accessor accessor;
+
+    if (object_container_index_table_.find(
+        accessor,
+        object_container_name))
+    {
+        //
+        // Object container present in the index table.
+        // If it is marked as deleted, consider it as non-existent.
+        // Given tombstoning is applied, an outside request should
+        // never be able to hit this with a tombstoned name. But in case the
+        // tombstoned name is leaked, apply this check anyways as safety-in-depth.
+        //
+        return !(accessor->second->is_deleted());
+    }
+
+    //
+    // Not present in the index table; unknown object container.
+    //
+    return false;
+}
+
+std::string
+object_container_index::get_object_container_as_string(
+    const char* object_container_name)
+{
+    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::const_accessor accessor;
+
+    if (object_container_index_table_.find(
+        accessor,
+        object_container_name))
+    {
+        return accessor->second->to_string();
+    }
+
+    //
+    // Not present in the index table; return an empty string.
+    //
+    return "";
+}
+
 std::optional<schemas::object_container_persistent_interface>
 object_container_index::get_object_container_persistent_metatadata_snapshot(
     const char* object_container_name) const
@@ -112,67 +257,6 @@ object_container_index::set_object_container_persistent_metadata(
     }
 
     return status::object_container_not_exists;
-}
-
-rocksdb::ColumnFamilyHandle*
-object_container_index::get_object_container_storage_engine_reference(
-    const char* object_container_name) const
-{
-    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::const_accessor accessor;
-
-    if (object_container_index_table_.find(
-        accessor,
-        object_container_name))
-    {
-        return accessor->second->get_storage_engine_reference();
-    }
-
-    //
-    // On failure, return a null reference.
-    //
-    return nullptr;
-}
-
-bool
-object_container_index::object_container_exists(
-    const char* object_container_name)
-{
-    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::const_accessor accessor;
-
-    if (object_container_index_table_.find(
-        accessor,
-        object_container_name))
-    {
-        //
-        // Object container present in the index table.
-        // If it is marked as deleted, consider it as non-existent.
-        //
-        return !(accessor->second->is_deleted());
-    }
-
-    //
-    // Not present in the index table; unknown object container.
-    //
-    return false;
-}
-
-std::string
-object_container_index::get_object_container_as_string(
-    const char* object_container_name)
-{
-    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::const_accessor accessor;
-
-    if (object_container_index_table_.find(
-        accessor,
-        object_container_name))
-    {
-        return accessor->second->to_string();
-    }
-
-    //
-    // Not present in the index table; return an empty string.
-    //
-    return "";
 }
 
 } // namespace storage.

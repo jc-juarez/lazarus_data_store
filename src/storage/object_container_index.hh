@@ -66,22 +66,15 @@ public:
     //
     rocksdb::ColumnFamilyHandle*
     get_object_containers_internal_metadata_storage_engine_reference() const;
-
-    //
-    // Gets a snapshot of the current object containers internal metadata persistent metadata.
-    // Used for modification of the metadata from a single writer thread (serializer).
-    //
-    std::optional<schemas::object_container_persistent_interface>
-    get_object_container_persistent_metatadata_snapshot(
-        const char* object_container_name) const;
         
     //
-    // Sets the persistent metadata for a given object container.
+    // Marks an object container as deleted.
+    // For handling continuous creations of object containers with the same name,
+    // tombstoning is applied by appending a new UUID to the object container name.
     //
     status::status_code
-    set_object_container_persistent_metadata(
-        const char* object_container_name,
-        const schemas::object_container_persistent_interface& object_container_persistent_metadata);
+    mark_object_container_as_deleted(
+        const char* object_container_name);
 
     //
     // Gets the storage engine reference for a particular object container.
@@ -105,6 +98,22 @@ public:
         const char* object_container_name);
 
 private:
+
+    //
+    // Gets a snapshot of the current object containers internal metadata persistent metadata.
+    // Used for modification of the metadata from a single writer thread (serializer).
+    //
+    std::optional<schemas::object_container_persistent_interface>
+    get_object_container_persistent_metatadata_snapshot(
+        const char* object_container_name) const;
+
+    //
+    // Sets the persistent metadata for a given object container.
+    //
+    status::status_code
+    set_object_container_persistent_metadata(
+        const char* object_container_name,
+        const schemas::object_container_persistent_interface& object_container_persistent_metadata);
 
     //
     // Index table for object containers in the system.

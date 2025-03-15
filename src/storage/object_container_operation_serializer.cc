@@ -174,98 +174,34 @@ object_container_operation_serializer::handle_object_container_removal(
     const schemas::object_container_request_interface& object_container_request)
 {
     //
-    // All operations in this thread are serialized and this is the only
-    // writer thread that updates the objects containers metadata state.
+    // All operations in this thread are serialized and this is the only writer thread
+    // that updates the objects containers metadata state for non-deleted object containers.
     //
-    std::optional<schemas::object_container_persistent_interface> object_container_persistent_metadata_snapshot =
-    object_container_index_->get_object_container_persistent_metatadata_snapshot(
+    const status::status_code status = object_container_index_->mark_object_container_as_deleted(
         object_container_request.get_name());
 
-    if (!object_container_persistent_metadata_snapshot.has_value())
+    if (status::succeeded(status))
     {
-        //
-        // At this point, it is guaranteed that this operation is serialized
-        // and that the object container does not exist; no further action needed.
-        //
-        spdlog::error("Object container creation will be failed as the "
-            "object container does not exist. "
-            "Optype={}, "
-            "ObjectContainerName={}.",
-            static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name());
-
-        return status::object_container_not_exists;
-    }
-
-    //
-    // This thread is only in charge of setting the metadata state as deleted.
-    // The actual filesystem deletion from the storage engine is executed by the garbage collector.
-    //
-    object_container_persistent_metadata_snapshot.value().set_is_deleted(true);
-    byte_stream serialized_object_container_persistent_metadata;
-    const bool is_serialization_successful =
-        object_container_persistent_metadata_snapshot.value().SerializeToString(&serialized_object_container_persistent_metadata);
-
-    if (!is_serialization_successful)
-    {
-        spdlog::error("Object container persistent metadata serialization failed. "
-            "Optype={}, "
-            "ObjectContainerName={}.",
-            static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name());
-
-        return status::serialization_failed;
-    }
-
-    //
-    // Update the filesystem state.
-    //
-    status::status_code status = storage_engine_->insert_object(
-        object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
-        object_container_request.get_name(),
-        serialized_object_container_persistent_metadata.c_str());
-
-    if (status::failed(status))
-    {
-        spdlog::error("Storage engine failed insert the metadata entry for the updated object container. "
+        spdlog::info("Object container deletion marking succeeded. "
             "Optype={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
             static_cast<std::uint8_t>(object_container_request.get_optype()),
             object_container_request.get_name(),
             status);
-
-        return status;
     }
-
-    //
-    // Update the in-memory state table index.
-    // In case of a previous crash, this will be handled on startup.
-    //
-    status = object_container_index_->set_object_container_persistent_metadata(
-        object_container_request.get_name(),
-        object_container_persistent_metadata_snapshot.value());
-
-    if (status::failed(status))
+    else
     {
-        spdlog::error("Failed to update the table index object container. "
+        spdlog::error("Object container deletion marking failed. "
             "Optype={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
             static_cast<std::uint8_t>(object_container_request.get_optype()),
             object_container_request.get_name(),
             status);
-
-        return status;
     }
 
-    spdlog::info("Object container deletion succeeded. "
-        "Optype={}, "
-        "ObjectContainerName={}.",
-        static_cast<std::uint8_t>(object_container_request.get_optype()),
-        object_container_request.get_name());
-
-    return status::success;
+    return status;
 }
 
 } // namespace storage.
