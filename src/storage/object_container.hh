@@ -42,6 +42,24 @@ public:
     rocksdb::ColumnFamilyHandle*
     get_storage_engine_reference() const;
 
+    //
+    // Returns the object container persistent metadata as a byte stream.
+    //
+    byte_stream
+    get_persistent_metadata_as_byte_stream() const;
+
+    //
+    // Gets the deletion state of the object container.
+    //
+    bool
+    is_deleted() const;
+
+    //
+    // Sets the deletion state of the object container.
+    //
+    void
+    set_as_deleted();
+
 private:
 
     //

@@ -36,6 +36,11 @@ object_container_request_interface::object_container_request_interface(
             optype_ = object_container_request_optype::create;
             break;
         }
+        case drogon::HttpMethod::Delete:
+        {
+            optype_ = object_container_request_optype::remove;
+            break;
+        }
         default:
         {
             optype_ = object_container_request_optype::invalid;

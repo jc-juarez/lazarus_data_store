@@ -1,11 +1,11 @@
 // ****************************************************
 // Lazarus Data Store
 // Network
-// 'object_container_endpoint.hh'
+// 'object_endpoint.hh'
 // Author: jcjuarez
 // Description:
-//      Object container controller endpoints collection.
-//      Handles CRUD operations for object containers.
+//      Object controller endpoints collection.
+//      Handles CRUD operations for objects.
 // ****************************************************
 
 #pragma once
@@ -24,43 +24,34 @@ class data_store_service;
 namespace network
 {
 
-class object_container_endpoint : public drogon::HttpController<object_container_endpoint, false>
+class object_endpoint : public drogon::HttpController<object_endpoint, false>
 {
 public:
 
   //
   // Endpoint constructor.
   //
-  object_container_endpoint(
+  object_endpoint(
     std::shared_ptr<storage::data_store_service> data_store_service_handle);
 
   METHOD_LIST_BEGIN
-  METHOD_ADD(object_container_endpoint::create_object_container, "/", drogon::Put);
-  METHOD_ADD(object_container_endpoint::get_object_container, "/", drogon::Get);
-  METHOD_ADD(object_container_endpoint::remove_object_container, "/", drogon::Delete);
+  METHOD_ADD(object_endpoint::insert_object, "/", drogon::Post);
+  METHOD_ADD(object_endpoint::get_object, "/", drogon::Get);
   METHOD_LIST_END
 
   //
-  // Creates a new object container.
+  // Inserts an object into an object container.
   //
   void
-  create_object_container(
+  insert_object(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback);
 
   //
-  // Gets the metadata of a given object container.
+  // Retrieves an object from an object container.
   //
   void
-  get_object_container(
-    const drogon::HttpRequestPtr& request,
-    server_response_callback&& response_callback);
-
-  //
-  // Removes an object container from the data store and all of its contents.
-  //
-  void
-  remove_object_container(
+  get_object(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback);
 

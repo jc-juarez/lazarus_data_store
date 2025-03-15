@@ -68,6 +68,12 @@ object_container_operation_serializer::object_container_operation_serial_proxy(
                 object_container_request);
             break;
         }
+        case schemas::object_container_request_optype::remove:
+        {
+            status = handle_object_container_removal(
+                object_container_request);
+            break;
+        }
         default:
         {
             status = status::invalid_operation;
@@ -161,6 +167,67 @@ object_container_operation_serializer::handle_object_container_creation(
         object_container_request.get_name());
 
     return status::success;
+}
+
+status::status_code
+object_container_operation_serializer::handle_object_container_removal(
+    const schemas::object_container_request_interface& object_container_request)
+{
+    if (!object_container_index_->object_container_exists(
+        object_container_request.get_name()))
+    {
+        //
+        // At this point, it is guaranteed that this operation is serialized
+        // and that the object container does not exist; no further action needed.
+        //
+        spdlog::error("Object container creation will be failed as the "
+            "object container does not exist. "
+            "Optype={}, "
+            "ObjectContainerName={}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name());
+
+        return status::object_container_not_exists;
+    }
+
+    //
+    // This thread is only in charge of setting the metadata state as deleted.
+    // The actual filesystem deletion from the storage engine is executed by the garbage collector.
+    //
+    
+    /*rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference =
+        object_container_index_->get_object_container_storage_engine_reference(
+            object_container_request.get_name());
+
+    if (object_container_storage_engine_reference == nullptr)
+    {
+        spdlog::error("Object container is not present in the index "
+            "metadata table during the object container removal process. "
+            "Optype={}, "
+            "ObjectContainerName={}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name());
+
+        return status::missing_storage_engine_reference;
+    }*/
+
+    /*byte_stream object_data;
+    status::status_code status = storage_engine_->get_object(
+        object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
+        object_container_request.get_name(),
+        &object_data);*/
+
+    
+
+
+    schemas::object_container_persistent_interface object_container_persistent_metadata;
+    object_container_persistent_metadata.set_name(object_container_request.get_name());
+    byte_stream serialized_object_container_persistent_metadata;
+    object_container_persistent_metadata.SerializeToString(&serialized_object_container_persistent_metadata);
+    status = storage_engine_->insert_object(
+        object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
+        object_container_request.get_name(),
+        serialized_object_container_persistent_metadata.c_str());
 }
 
 } // namespace storage.

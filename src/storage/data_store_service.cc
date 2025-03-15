@@ -273,6 +273,26 @@ data_store_service::validate_object_container_operation_request(
 
             break;
         }
+        case schemas::object_container_request_optype::remove:
+        {
+            if (!object_container_index_->object_container_exists(
+                object_container_request.get_name()))
+            {
+                //
+                // Fail fast in case the object container does not exist.
+                //
+                spdlog::error("Object container removal will be failed as the "
+                    "object container does not exist. "
+                    "Optype={}, "
+                    "ObjectContainerName={}.",
+                    static_cast<std::uint8_t>(object_container_request.get_optype()),
+                    object_container_request.get_name());
+
+                return status::object_container_not_exists;
+            }
+
+            break;
+        }
         default:
         {
             return status::invalid_operation;

@@ -116,7 +116,7 @@ status::status_code
 storage_engine::get_object(
     rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference,
     const char* object_id,
-    byte_stream& object_data)
+    byte_stream* object_data)
 {
     const rocksdb::Status status = core_database_->Get(
         rocksdb::ReadOptions(),

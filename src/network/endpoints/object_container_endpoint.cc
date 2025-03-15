@@ -43,7 +43,7 @@ object_container_endpoint::create_object_container(
 
     if (status::failed(status))
     {
-        spdlog::error("Object container operation request validation failed. "
+        spdlog::error("Object container creation request validation failed. "
             "Optype={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
@@ -72,20 +72,50 @@ void
 object_container_endpoint::get_object_container(
     const drogon::HttpRequestPtr& request,
     std::function<void(const drogon::HttpResponsePtr &)>&& response_callback)
+{}
+
+void
+object_container_endpoint::remove_object_container(
+    const drogon::HttpRequestPtr& request,
+    server_response_callback&& response_callback)
 {
-    storage::byte_stream object_stream;
+    schemas::object_container_request_interface object_container_request{
+        request};
+
+    spdlog::info("Remove object container request received. "
+        "Optype={}, "
+        "ObjectContainerName={}.",
+        static_cast<std::uint8_t>(object_container_request.get_optype()),
+        object_container_request.get_name());
+
+    const status::status_code status = data_store_service_->validate_object_container_operation_request(
+        object_container_request);
+
+    if (status::failed(status))
+    {
+        spdlog::error("Object container removal request validation failed. "
+            "Optype={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name(),
+            status);
+
+        network::server::send_response(
+            response_callback,
+            status);
+
+        return;
+    }
 
     //
-    // Get contents from the db.
+    // Orchestrate the removal of the object
+    // container in async serialized fashion.
+    // Response will be provided by a separate thread.
     //
-    /*data_store_service_->get_object(
-        "Joe",
-        object_stream);*/
-
-    auto resp = drogon::HttpResponse::newHttpResponse();
-    resp->setBody(
-        object_stream.c_str());
-    response_callback(resp);
+    data_store_service_->orchestrate_serial_object_container_operation(
+        std::move(object_container_request),
+        std::move(response_callback));
 }
 
 } // namespace network.

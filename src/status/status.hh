@@ -145,5 +145,10 @@ status_code_definition(missing_storage_engine_reference, 0x8'0000011);
 //
 status_code_definition(storage_engine_reference_close_failed, 0x8'0000012);
 
+//
+// Object container does not exist.
+//
+status_code_definition(object_container_not_exists, 0x8'0000013);
+
 } // namespace status.
 } // namespace lazarus.

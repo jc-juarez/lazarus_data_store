@@ -64,7 +64,7 @@ public:
     get_object(
         rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference,
         const char* object_id,
-        byte_stream& object_data);
+        byte_stream* object_data);
 
     //
     // Creates a new object container inside the data store.

@@ -58,8 +58,18 @@ private:
         const schemas::object_container_request_interface&& object_container_request,
         network::server_response_callback&& response_callback);
 
+    //
+    // Orchestrates the object container creation process.
+    //
     status::status_code
     handle_object_container_creation(
+        const schemas::object_container_request_interface& object_container_request);
+
+    //
+    // Orchestrates the object container removal process.
+    //
+    status::status_code
+    handle_object_container_removal(
         const schemas::object_container_request_interface& object_container_request);
 
     //
