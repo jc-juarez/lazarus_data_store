@@ -36,11 +36,6 @@ public:
         std::shared_ptr<storage_engine> storage_engine_handle);
 
     //
-    // Destructor. Manages the correct memory cleanup for object containers.
-    //
-    ~object_container_index();
-
-    //
     // Inserts a new object container entry into the index map.
     // This can either be invoked as a response_callback from a request-initiated
     // object container insertion or as the initial disk fetching process.
@@ -63,6 +58,22 @@ public:
     //
     rocksdb::ColumnFamilyHandle*
     get_object_containers_internal_metadata_storage_engine_reference() const;
+
+    //
+    // Gets a snapshot of the current object containers internal metadata persistent metadata.
+    // Used for modification of the metadata from a single writer thread (serializer).
+    //
+    std::optional<schemas::object_container_persistent_interface>
+    get_object_container_persistent_metatadata_snapshot(
+        const char* object_container_name) const;
+        
+    //
+    // Sets the persistent metadata for a given object container.
+    //
+    status::status_code
+    set_object_container_persistent_metadata(
+        const char* object_container_name,
+        const schemas::object_container_persistent_interface& object_container_persistent_metadata);
 
     //
     // Gets the storage engine reference for a particular object container.

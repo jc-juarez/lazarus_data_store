@@ -87,7 +87,7 @@ server::get_server_listener_ip_address() const
 
 void
 server::send_response(
-    std::function<void(const drogon::HttpResponsePtr &)>& response_callback,
+    server_response_callback& response_callback,
     const status::status_code status)
 {
     const std::string response_body = std::format(

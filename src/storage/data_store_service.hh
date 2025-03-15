@@ -14,6 +14,7 @@
 #include <tbb/tbb.h>
 #include <rocksdb/db.h>
 #include "../status/status.hh"
+#include "../common/aliases.hh"
 #include <drogon/HttpController.h>
 #include "../network/server/server.hh"
 #include "../schemas/request-interfaces/object_container_request_interface.hh"
@@ -22,9 +23,6 @@ namespace lazarus
 {
 namespace storage
 {
-
-using byte = char;
-using byte_stream = std::string;
 
 class storage_engine;
 class object_container_index;

@@ -133,7 +133,7 @@ status_code_definition(object_containers_internal_metadata_lookup_failed, 0x8'00
 //
 // Failed to parse a byte stream into an object.
 //
-status_code_definition(object_parsing_failed, 0x8'0000010);
+status_code_definition(parsing_failed, 0x8'0000010);
 
 //
 // Failed to find an storage engine reference for an object container.
@@ -149,6 +149,11 @@ status_code_definition(storage_engine_reference_close_failed, 0x8'0000012);
 // Object container does not exist.
 //
 status_code_definition(object_container_not_exists, 0x8'0000013);
+
+//
+// Failed to serialize an object into a byte stream.
+//
+status_code_definition(serialization_failed, 0x8'0000014);
 
 } // namespace status.
 } // namespace lazarus.

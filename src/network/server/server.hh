@@ -12,6 +12,7 @@
 
 #include <drogon/drogon.h>
 #include "../../status/status.hh"
+#include "../../common/aliases.hh"
 #include "server_configuration.hh"
 
 namespace lazarus
@@ -24,8 +25,6 @@ namespace storage
 
 namespace network
 {
-
-using server_response_callback = std::function<void(const drogon::HttpResponsePtr&)>;
 
 //
 // Main HTTP server wrapper.
@@ -85,7 +84,7 @@ public:
     static
     void
     send_response(
-        std::function<void(const drogon::HttpResponsePtr &)>& response_callback,
+        server_response_callback& response_callback,
         const status::status_code status);
 
 private:

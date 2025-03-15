@@ -133,8 +133,8 @@ object_container_operation_serializer::handle_object_container_creation(
     //
     // Insert the metadata for the newly created object container to the storage engine.
     //
-    schemas::object_container_persistent_interface object_container_persistent_metadata;
-    object_container_persistent_metadata.set_name(object_container_request.get_name());
+    const schemas::object_container_persistent_interface object_container_persistent_metadata =
+        object_container::create_object_container_persistent_metadata(object_container_request.get_name());
     byte_stream serialized_object_container_persistent_metadata;
     object_container_persistent_metadata.SerializeToString(&serialized_object_container_persistent_metadata);
     status = storage_engine_->insert_object(
@@ -173,8 +173,15 @@ status::status_code
 object_container_operation_serializer::handle_object_container_removal(
     const schemas::object_container_request_interface& object_container_request)
 {
-    if (!object_container_index_->object_container_exists(
-        object_container_request.get_name()))
+    //
+    // All operations in this thread are serialized and this is the only
+    // writer thread that updates the objects containers metadata state.
+    //
+    std::optional<schemas::object_container_persistent_interface> object_container_persistent_metadata_snapshot =
+    object_container_index_->get_object_container_persistent_metatadata_snapshot(
+        object_container_request.get_name());
+
+    if (!object_container_persistent_metadata_snapshot.has_value())
     {
         //
         // At this point, it is guaranteed that this operation is serialized
@@ -194,40 +201,63 @@ object_container_operation_serializer::handle_object_container_removal(
     // This thread is only in charge of setting the metadata state as deleted.
     // The actual filesystem deletion from the storage engine is executed by the garbage collector.
     //
-    
-    /*rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference =
-        object_container_index_->get_object_container_storage_engine_reference(
-            object_container_request.get_name());
+    object_container_persistent_metadata_snapshot.value().set_is_deleted(true);
+    byte_stream serialized_object_container_persistent_metadata;
+    const bool is_serialization_successful =
+        object_container_persistent_metadata_snapshot.value().SerializeToString(&serialized_object_container_persistent_metadata);
 
-    if (object_container_storage_engine_reference == nullptr)
+    if (!is_serialization_successful)
     {
-        spdlog::error("Object container is not present in the index "
-            "metadata table during the object container removal process. "
+        spdlog::error("Object container persistent metadata serialization failed. "
             "Optype={}, "
             "ObjectContainerName={}.",
             static_cast<std::uint8_t>(object_container_request.get_optype()),
             object_container_request.get_name());
 
-        return status::missing_storage_engine_reference;
-    }*/
+        return status::serialization_failed;
+    }
 
-    /*byte_stream object_data;
-    status::status_code status = storage_engine_->get_object(
+    //
+    // Update the filesystem state.
+    //
+    status::status_code status = storage_engine_->insert_object(
         object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
         object_container_request.get_name(),
-        &object_data);*/
+        serialized_object_container_persistent_metadata.c_str());
 
-    
+    if (status::failed(status))
+    {
+        spdlog::error("Storage engine failed insert the metadata entry for the updated object container. "
+            "Optype={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name(),
+            status);
 
+        return status;
+    }
 
-    /*schemas::object_container_persistent_interface object_container_persistent_metadata;
-    object_container_persistent_metadata.set_name(object_container_request.get_name());
-    byte_stream serialized_object_container_persistent_metadata;
-    object_container_persistent_metadata.SerializeToString(&serialized_object_container_persistent_metadata);
-    status = storage_engine_->insert_object(
-        object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
+    //
+    // Update the in-memory state table index.
+    // In case of a previous crash, this will be handled on startup.
+    //
+    status = object_container_index_->set_object_container_persistent_metadata(
         object_container_request.get_name(),
-        serialized_object_container_persistent_metadata.c_str());*/
+        object_container_persistent_metadata_snapshot.value());
+
+    if (status::failed(status))
+    {
+        spdlog::error("Failed to update the table index object container. "
+            "Optype={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name(),
+            status);
+
+        return status;
+    }
 
     return status::success;
 }

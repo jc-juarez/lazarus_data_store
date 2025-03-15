@@ -14,15 +14,13 @@
 #include <cstdint>
 #include <rocksdb/db.h>
 #include "../status/status.hh"
+#include "../common/aliases.hh"
 #include "storage_engine_configuration.hh"
 
 namespace lazarus
 {
 namespace storage
 {
-
-using byte = char;
-using byte_stream = std::string;
 
 //
 // Core storage engine with a RocksDB backend.

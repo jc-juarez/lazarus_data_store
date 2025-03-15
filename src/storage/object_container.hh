@@ -21,6 +21,8 @@ namespace lazarus
 namespace storage
 {
 
+class storage_engine;
+
 //
 // Object container metadata internal structure.
 // An in-memory creation of an object container reference can
@@ -34,8 +36,25 @@ public:
     // Constructor for the object container.
     //
     object_container(
+        std::shared_ptr<storage_engine> storage_engine_handle,
         rocksdb::ColumnFamilyHandle* storage_engine_reference,
         const schemas::object_container_persistent_interface& object_container_persistent_metadata);
+
+    //
+    // Destructor for the object container.
+    // Ensures that the storage engine reference is invalidated.
+    //
+    ~object_container();
+
+    //
+    // Initializes an object container persistent metadata instance
+    // with default values and returns it to the caller.
+    // Should be used for all new object container creations.
+    //
+    static
+    schemas::object_container_persistent_interface
+    create_object_container_persistent_metadata(
+        const char* object_container_name);
 
     //
     // Gets the associated storage engine reference for the object container.
@@ -44,10 +63,17 @@ public:
     get_storage_engine_reference() const;
 
     //
-    // Returns the object container persistent metadata as a byte stream.
+    // Returns the object container persistent metadata as a snapshot copy.
     //
-    byte_stream
-    get_persistent_metadata_as_byte_stream() const;
+    schemas::object_container_persistent_interface
+    get_persistent_metadata_snapshot() const;
+
+    //
+    // Sets the object container persistent metadata.
+    //
+    void
+    set_persistent_metadata(
+        const schemas::object_container_persistent_interface& object_container_persistent_metadata);
 
     //
     // Gets the deletion state of the object container.
@@ -62,6 +88,11 @@ public:
     set_as_deleted();
 
 private:
+
+    //
+    // Handle for the storage enine.
+    //
+    std::shared_ptr<storage_engine> storage_engine_;
 
     //
     // Object container persistent metadata.

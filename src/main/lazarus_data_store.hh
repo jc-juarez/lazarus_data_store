@@ -11,6 +11,7 @@
 
 #include <memory>
 #include "../status/status.hh"
+#include "../common/aliases.hh"
 #include "../common/uuid_utilities.hh"
 #include "../logger/logger_configuration.hh"
 #include "../network/server/server_configuration.hh"
@@ -18,8 +19,6 @@
 
 namespace lazarus
 {
-
-using exit_code = std::int32_t;
 
 namespace network
 {
