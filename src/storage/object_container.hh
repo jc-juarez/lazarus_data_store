@@ -82,10 +82,10 @@ public:
     is_deleted() const;
 
     //
-    // Sets the deletion state of the object container.
+    // Returns an string of the object container object.
     //
-    void
-    set_as_deleted();
+    std::string
+    to_string() const;
 
 private:
 

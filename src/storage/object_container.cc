@@ -9,6 +9,7 @@
 //      closely related data inside the data store. 
 // ****************************************************
 
+#include <format>
 #include "storage_engine.hh"
 #include "object_container.hh"
 
@@ -72,10 +73,16 @@ object_container::is_deleted() const
     return object_container_persistent_metadata_.is_deleted();
 }
 
-void
-object_container::set_as_deleted()
+std::string
+object_container::to_string() const
 {
-    object_container_persistent_metadata_.set_is_deleted(true);
+    return std::format(
+        "{{Name={}, "
+        "StorageEngineReference={}, "
+        "IsDeleted={}}}",
+        object_container_persistent_metadata_.name(),
+        static_cast<void*>(storage_engine_reference_),
+        object_container_persistent_metadata_.is_deleted());
 }
 
 } // namespace storage.

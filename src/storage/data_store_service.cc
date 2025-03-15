@@ -120,13 +120,13 @@ data_store_service::populate_object_container_index(
                 return status::parsing_failed;
             }
 
-            spdlog::info("Found object container on startup. Indexing into the object containers metadata table. "
-                "ObjectContainerName={}.",
-                object_container_persistent_metadata.name());
-
             object_container_index_->insert_object_container(
                 object_container_storage_engine_reference,
                 object_container_persistent_metadata);
+
+            spdlog::info("Found object container on startup. Indexing into the object containers metadata table. "
+                "ObjectContainerMetadata={}.",
+                object_container_index_->get_object_container_as_string(object_container_name.c_str()));
         }
         else
         {

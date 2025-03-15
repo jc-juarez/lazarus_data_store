@@ -259,6 +259,12 @@ object_container_operation_serializer::handle_object_container_removal(
         return status;
     }
 
+    spdlog::info("Object container deletion succeeded. "
+        "Optype={}, "
+        "ObjectContainerName={}.",
+        static_cast<std::uint8_t>(object_container_request.get_optype()),
+        object_container_request.get_name());
+
     return status::success;
 }
 

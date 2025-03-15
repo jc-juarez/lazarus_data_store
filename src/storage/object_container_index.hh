@@ -36,6 +36,21 @@ public:
         std::shared_ptr<storage_engine> storage_engine_handle);
 
     //
+    // Internal column family name for persisting
+    // user-created object containers and their metadata.
+    // This name is reserved for the data store use.
+    //
+    static constexpr const char* object_containers_internal_metadata_name = "_internal_metadata_:object_containers";
+
+    //
+    // Checks if an object container is part of the internal metadata.
+    //
+    static
+    bool
+    is_internal_metadata(
+        const std::string object_container_name);
+
+    //
     // Inserts a new object container entry into the index map.
     // This can either be invoked as a response_callback from a request-initiated
     // object container insertion or as the initial disk fetching process.
@@ -45,13 +60,6 @@ public:
     insert_object_container(
         rocksdb::ColumnFamilyHandle* storage_engine_reference,
         const schemas::object_container_persistent_interface& object_container_persistent_metadata);
-
-    //
-    // Internal column family name for persisting
-    // user-created object containers and their metadata.
-    // This name is reserved for the data store use.
-    //
-    static constexpr const char* object_containers_internal_metadata_name = "_internal_metadata_:object_containers";
 
     //
     // Gets the storage engine reference of the object containers internal metadata column family.
@@ -90,12 +98,11 @@ public:
         const char* object_container_name);
 
     //
-    // Checks if an object container is part of the internal metadata.
+    // Gets the object container format as a string.
     //
-    static
-    bool
-    is_internal_metadata(
-        const std::string object_container_name);
+    std::string
+    get_object_container_as_string(
+        const char* object_container_name);
 
 private:
 

@@ -24,6 +24,14 @@ object_container_index::object_container_index(
       max_number_object_containers_{100u}
 {}
 
+bool
+object_container_index::is_internal_metadata(
+    const std::string object_container_name)
+{
+    return object_container_name == rocksdb::kDefaultColumnFamilyName ||
+        object_container_name == object_containers_internal_metadata_name;
+}
+
 void
 object_container_index::insert_object_container(
     rocksdb::ColumnFamilyHandle* storage_engine_reference,
@@ -130,15 +138,41 @@ object_container_index::object_container_exists(
     const char* object_container_name)
 {
     tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::const_accessor accessor;
-    return object_container_index_table_.find(accessor, object_container_name);
+
+    if (object_container_index_table_.find(
+        accessor,
+        object_container_name))
+    {
+        //
+        // Object container present in the index table.
+        // If it is marked as deleted, consider it as non-existent.
+        //
+        return !(accessor->second->is_deleted());
+    }
+
+    //
+    // Not present in the index table; unknown object container.
+    //
+    return false;
 }
 
-bool
-object_container_index::is_internal_metadata(
-    const std::string object_container_name)
+std::string
+object_container_index::get_object_container_as_string(
+    const char* object_container_name)
 {
-    return object_container_name == rocksdb::kDefaultColumnFamilyName ||
-        object_container_name == object_containers_internal_metadata_name;
+    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::const_accessor accessor;
+
+    if (object_container_index_table_.find(
+        accessor,
+        object_container_name))
+    {
+        return accessor->second->to_string();
+    }
+
+    //
+    // Not present in the index table; return an empty string.
+    //
+    return "";
 }
 
 } // namespace storage.
