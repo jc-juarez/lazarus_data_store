@@ -100,11 +100,11 @@ public:
 private:
 
     //
-    // Main index for object containers in the system.
+    // Index table for object containers in the system.
     // Maps an object container identifier to the
     // respective object container memory reference.
     //
-    tbb::concurrent_hash_map<std::string, object_container> object_container_index_table_;
+    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>> object_container_index_table_;
 
     //
     // Max number of object containers allowed to be created

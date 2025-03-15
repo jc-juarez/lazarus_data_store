@@ -36,10 +36,10 @@ object_container_index::insert_object_container(
     //
     if (object_container_index_table_.emplace(
         object_container_persistent_metadata.name(),
-        std::move(object_container{
+        std::make_unique<object_container>(
             storage_engine_,
             storage_engine_reference,
-            object_container_persistent_metadata})))
+            object_container_persistent_metadata)))
     {
         //
         // Key did not exist and metadata register was succesful.
@@ -47,15 +47,6 @@ object_container_index::insert_object_container(
         //
         return;
     }
-
-    /*tbb::concurrent_hash_map<std::string, object_container>::accessor accessor;
-    if (object_container_index_table_.insert(accessor, object_container_persistent_metadata.name())) {
-        accessor->second = object_container{
-            storage_engine_,
-            storage_engine_reference,
-            object_container_persistent_metadata};
-    }*/
-
 
     //
     // Reaching this point is a critical error as no other thread
@@ -80,13 +71,13 @@ std::optional<schemas::object_container_persistent_interface>
 object_container_index::get_object_container_persistent_metatadata_snapshot(
     const char* object_container_name) const
 {
-    tbb::concurrent_hash_map<std::string, object_container>::const_accessor accessor;
+    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::const_accessor accessor;
 
     if (object_container_index_table_.find(
         accessor,
         object_container_name))
     {
-        return accessor->second.get_persistent_metadata_snapshot();
+        return accessor->second->get_persistent_metadata_snapshot();
     }
 
     //
@@ -100,13 +91,13 @@ object_container_index::set_object_container_persistent_metadata(
     const char* object_container_name,
     const schemas::object_container_persistent_interface& object_container_persistent_metadata)
 {
-    tbb::concurrent_hash_map<std::string, object_container>::accessor accessor;
+    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::accessor accessor;
 
     if (object_container_index_table_.find(
         accessor,
         object_container_name))
     {
-        accessor->second.set_persistent_metadata(
+        accessor->second->set_persistent_metadata(
             object_container_persistent_metadata);
 
         return status::success;
@@ -119,13 +110,13 @@ rocksdb::ColumnFamilyHandle*
 object_container_index::get_object_container_storage_engine_reference(
     const char* object_container_name) const
 {
-    tbb::concurrent_hash_map<std::string, object_container>::const_accessor accessor;
+    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::const_accessor accessor;
 
     if (object_container_index_table_.find(
         accessor,
         object_container_name))
     {
-        return accessor->second.get_storage_engine_reference();
+        return accessor->second->get_storage_engine_reference();
     }
 
     //
@@ -138,7 +129,7 @@ bool
 object_container_index::object_container_exists(
     const char* object_container_name)
 {
-    tbb::concurrent_hash_map<std::string, object_container>::const_accessor accessor;
+    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::const_accessor accessor;
     return object_container_index_table_.find(accessor, object_container_name);
 }
 
