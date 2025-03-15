@@ -220,14 +220,16 @@ object_container_operation_serializer::handle_object_container_removal(
     
 
 
-    schemas::object_container_persistent_interface object_container_persistent_metadata;
+    /*schemas::object_container_persistent_interface object_container_persistent_metadata;
     object_container_persistent_metadata.set_name(object_container_request.get_name());
     byte_stream serialized_object_container_persistent_metadata;
     object_container_persistent_metadata.SerializeToString(&serialized_object_container_persistent_metadata);
     status = storage_engine_->insert_object(
         object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
         object_container_request.get_name(),
-        serialized_object_container_persistent_metadata.c_str());
+        serialized_object_container_persistent_metadata.c_str());*/
+
+    return status::success;
 }
 
 } // namespace storage.

@@ -34,7 +34,7 @@ object_container::get_persistent_metadata_as_byte_stream() const
 {
     byte_stream serialized_object_container_persistent_metadata;
 
-    const is_serialization_successful = 
+    const bool is_serialization_successful = 
         object_container_persistent_metadata_.SerializeToString(&serialized_object_container_persistent_metadata);
     
     return is_serialization_successful ? serialized_object_container_persistent_metadata : byte_stream{};

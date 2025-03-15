@@ -9,6 +9,10 @@
 
 #pragma once
 
+#include <cstdint>
+#include <functional>
+#include <drogon/drogon.h>
+
 namespace lazarus
 {
 
@@ -25,5 +29,13 @@ namespace network
 using server_response_callback = std::function<void(const drogon::HttpResponsePtr&)>;
 }
 
+//
+// storage namespace.
+//
+namespace storage
+{
+using byte = char;
+using byte_stream = std::string;
+}
 
 } // namespace lazarus.

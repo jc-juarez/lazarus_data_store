@@ -13,6 +13,7 @@
 
 #include <string>
 #include <rocksdb/db.h>
+#include "../common/aliases.hh"
 #include "object_container_persistent_interface.pb.h"
 
 namespace lazarus

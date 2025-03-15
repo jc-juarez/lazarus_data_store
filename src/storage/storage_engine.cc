@@ -122,7 +122,7 @@ storage_engine::get_object(
         rocksdb::ReadOptions(),
         object_container_storage_engine_reference,
         object_id,
-        &object_data);
+        object_data);
 
     if (!status.ok())
     {
