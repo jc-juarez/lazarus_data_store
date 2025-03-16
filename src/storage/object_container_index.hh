@@ -97,6 +97,15 @@ public:
     get_object_container_as_string(
         const char* object_container_name);
 
+    //
+    // Swaps an object container memory reference from one name to the other.
+    // The new name of the object container must not exist.
+    //
+    status::status_code
+    swap_object_container_name(
+        const char* old_object_container_name,
+        const char* new_object_container_name);
+
 private:
 
     //

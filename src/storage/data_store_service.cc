@@ -11,6 +11,7 @@
 #include "storage_engine.hh"
 #include "data_store_service.hh"
 #include "object_container_index.hh"
+#include "../common/uuid_utilities.hh"
 #include "object_container_operation_serializer.hh"
 #include "object_container_persistent_interface.pb.h"
 
@@ -99,7 +100,7 @@ data_store_service::populate_object_container_index(
 
     for (const auto& storage_engine_references_pair : *storage_engine_references_mapping)
     {
-        const std::string& object_container_name = storage_engine_references_pair.first;
+        std::string object_container_name = storage_engine_references_pair.first;
         rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference = storage_engine_references_pair.second;
 
         if (objects.find(object_container_name) != objects.end())
@@ -132,28 +133,49 @@ data_store_service::populate_object_container_index(
         {
             //
             // This implies this is not a known object container to the persistent metadata.
-            // In this case, the only object containers to index should be the internal metadata.
+            // These could be internal metadata or orphaned object containers.
             //
-            if (object_container_index::is_internal_metadata(object_container_name.c_str()))
-            {
-                //
-                // Index the internal metadata object containers.
-                //
-                const schemas::object_container_persistent_interface object_container_persistent_metadata =
-                    object_container::create_object_container_persistent_metadata(object_container_name.c_str());
-                object_container_index_->insert_object_container(
-                    object_container_storage_engine_reference,
-                    object_container_persistent_metadata);
-            }
-            else
+            const bool is_orphaned_object_container =
+                !object_container_index::is_internal_metadata(object_container_name.c_str());
+
+            if (is_orphaned_object_container)
             {
                 //
                 // If this is not part of the internal metadata, it means that this is an
-                // orphaned object container; the garbage collector will clean it up later.
+                // orphaned object container; also, apply tombstoning so that this stale object
+                // does not interfere with new object container creations with the same name.
                 //
+                std::string previous_object_container_name = object_container_name;
+                object_container_name =
+                    object_container_name + "-" + common::uuid_to_string(common::generate_uuid());
+
                 spdlog::warn("Found orphaned object container on startup. "
-                    "ObjectContainerName={}.",
-                    object_container_name);
+                    "ObjectContainerName={}, "
+                    "TombstonedObjectContainerName={}.",
+                    previous_object_container_name.c_str(),
+                    object_container_name.c_str());
+            }
+
+            const schemas::object_container_persistent_interface object_container_persistent_metadata =
+                object_container::create_object_container_persistent_metadata(object_container_name.c_str());
+            object_container_index_->insert_object_container(
+                object_container_storage_engine_reference,
+                object_container_persistent_metadata);
+
+            if (is_orphaned_object_container)
+            {
+                // Mark it as deleted for the garbage collector to clean it up later.
+                status::status_code status = 
+                    object_container_index_->mark_object_container_as_deleted(object_container_name.c_str());
+
+                if (status::failed(status))
+                {
+                    spdlog::critical("Failed to mark object container as deleted on startup. "
+                        "ObjectContainerName={}.",
+                        object_container_name.c_str());
+
+                    return status;
+                }
             }
         }
     }

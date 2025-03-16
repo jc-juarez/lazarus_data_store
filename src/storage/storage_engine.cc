@@ -277,5 +277,33 @@ storage_engine::close_object_container_storage_engine_reference(
     return status::success;
 }
 
+status::status_code
+storage_engine::remove_object(
+    rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference,
+    const char* object_id)
+{
+    const rocksdb::Status status = core_database_->Delete(
+        rocksdb::WriteOptions(),
+        object_container_storage_engine_reference,
+        object_id);
+
+    if (!status.ok())
+    {
+        spdlog::error("Failed to remove object from the specified object container. "
+            "ObjectContainerStorageEngineReference={}, "
+            "ObjectId={}, "
+            "StorageEngineCode={}, "
+            "StorageEngineSubCode={}.",
+            static_cast<void*>(object_container_storage_engine_reference),
+            object_id,
+            static_cast<std::uint32_t>(status.code()),
+            static_cast<std::uint32_t>(status.subcode()));
+
+        return status::object_deletion_failed;
+    }
+
+    return status::success;
+}
+
 } // namespace storage.
 } // namespace lazarus.

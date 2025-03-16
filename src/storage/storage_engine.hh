@@ -101,6 +101,14 @@ public:
     close_object_container_storage_engine_reference(
         rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference);
 
+    //
+    // Removes an object from a given object container.
+    //
+    status::status_code
+    remove_object(
+        rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference,
+        const char* object_id);
+
 private:
 
     //

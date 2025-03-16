@@ -14,5 +14,4 @@ package lazarus.schemas;
 message object_container_persistent_interface
 {
     string name = 1;
-    bool is_deleted = 2;
 }

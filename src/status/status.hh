@@ -155,5 +155,10 @@ status_code_definition(object_container_not_exists, 0x8'0000013);
 //
 status_code_definition(serialization_failed, 0x8'0000014);
 
+//
+// Failed to remove an object from the storage engine.
+//
+status_code_definition(object_deletion_failed, 0x8'0000015);
+
 } // namespace status.
 } // namespace lazarus.

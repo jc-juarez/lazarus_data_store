@@ -24,7 +24,8 @@ object_container::object_container(
     const schemas::object_container_persistent_interface& object_container_persistent_metadata)
     : storage_engine_{std::move(storage_engine_handle)},
       storage_engine_reference_{storage_engine_reference},
-      object_container_persistent_metadata_{object_container_persistent_metadata}
+      object_container_persistent_metadata_{object_container_persistent_metadata},
+      is_deleted_{false}
 {}
 
 object_container::~object_container()
@@ -43,7 +44,6 @@ object_container::create_object_container_persistent_metadata(
     // Default values upon creation.
     //
     object_container_persistent_metadata.set_name(object_container_name);
-    object_container_persistent_metadata.set_is_deleted(false);
 
     return object_container_persistent_metadata;
 }
@@ -67,10 +67,16 @@ object_container::set_persistent_metadata(
     object_container_persistent_metadata_ = object_container_persistent_metadata;
 }
 
+void
+object_container::mark_as_deleted()
+{
+    is_deleted_ = true;
+}
+
 bool
 object_container::is_deleted() const
 {
-    return object_container_persistent_metadata_.is_deleted();
+    return is_deleted_;
 }
 
 std::string
@@ -82,7 +88,7 @@ object_container::to_string() const
         "IsDeleted={}}}",
         object_container_persistent_metadata_.name(),
         static_cast<void*>(storage_engine_reference_),
-        object_container_persistent_metadata_.is_deleted());
+        is_deleted_);
 }
 
 } // namespace storage.

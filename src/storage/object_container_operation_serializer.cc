@@ -12,6 +12,7 @@
 #include "storage_engine.hh"
 #include "object_container_index.hh"
 #include "../network/server/server.hh"
+#include "../common/uuid_utilities.hh"
 #include "object_container_operation_serializer.hh"
 
 namespace lazarus
@@ -173,35 +174,116 @@ status::status_code
 object_container_operation_serializer::handle_object_container_removal(
     const schemas::object_container_request_interface& object_container_request)
 {
-    //
-    // All operations in this thread are serialized and this is the only writer thread
-    // that updates the objects containers metadata state for non-deleted object containers.
-    //
-    const status::status_code status = object_container_index_->mark_object_container_as_deleted(
+    const bool object_container_exists = object_container_index_->object_container_exists(
         object_container_request.get_name());
 
-    if (status::succeeded(status))
+    if (!object_container_exists)
     {
-        spdlog::info("Object container deletion marking succeeded. "
+        //
+        // At this point, it is guaranteed that this operation is serialized
+        // and that the object container does not exist; no further action needed.
+        //
+        spdlog::error("Object container creation will be failed as the "
+            "object container does not exist. "
             "Optype={}, "
-            "ObjectContainerName={}, "
-            "Status={:#x}.",
+            "ObjectContainerName={}.",
             static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name(),
-            status);
-    }
-    else
-    {
-        spdlog::error("Object container deletion marking failed. "
-            "Optype={}, "
-            "ObjectContainerName={}, "
-            "Status={:#x}.",
-            static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name(),
-            status);
+            object_container_request.get_name());
+
+        return status::object_container_not_exists;
     }
 
-    return status;
+    //
+    // First, remove the object container from the filesystem internal metadata.
+    // After this operation is completed, the link between the metadat and the actual
+    // object container will be broken, and only the in-memory object container reference
+    // will remain active for the rest of this session and be cleaned up by the garbage collector.
+    //
+    status::status_code status = storage_engine_->remove_object(
+        object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
+        object_container_request.get_name());
+
+    if (status::failed(status))
+    {
+        spdlog::error("Failed to remove object container from the internal filesystem metadata. "
+            "Optype={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name(),
+            status);
+
+        return status;
+    }
+
+    //
+    // At this point, it is guaranteed that the object container has been removed
+    // from the internal filesystem metadata. Now, mark the remaining in-memory index table
+    // metadata as deleted for later garbage collector cleanup. In case a crash occurs in between, the
+    // filesystem object container will be detected as orphaned during startup and will also be cleaned up.
+    //
+    status = object_container_index_->mark_object_container_as_deleted(
+        object_container_request.get_name());
+
+    if (status::failed(status))
+    {
+        //
+        // This should never happen.
+        // This indicates a resource leak for the lifetime of the session.
+        //
+        spdlog::error("Failed to mark the object container as deleted. "
+            "Resource will be leaked for the lifetime of the current session. "
+            "Optype={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name(),
+            status);
+
+        return status;
+    }
+
+    //
+    // Finally, in order to allow immediate object container re-creations
+    // with the same name, apply tombstoning to the in-memory reference.
+    // This tombstoning will only apply for the current session lifetime as it is not persisted.
+    //
+    const std::string tombstoned_object_container_name =
+        std::string(object_container_request.get_name()) + "-" + common::uuid_to_string(common::generate_uuid());
+
+    status = object_container_index_->swap_object_container_name(
+        object_container_request.get_name(),
+        tombstoned_object_container_name.c_str());
+
+    if (status::failed(status))
+    {
+        //
+        // This should never happen.
+        // This indicates that a new object container with the same name
+        // cannot be created until the garbage collector cleans up the previous one.
+        //
+        spdlog::error("Failed to tombstone the object container name after marking it as deleted. "
+            "Optype={}, "
+            "ObjectContainerName={}, "
+            "TombstonedObjectContainerName={}, "
+            "Status={:#x}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name(),
+            tombstoned_object_container_name.c_str(),
+            status);
+
+        return status;
+    }
+
+    spdlog::info("Object container internal metadata deletion marking succeeded. "
+        "Optype={}, "
+        "ObjectContainerName={}, "
+        "TombstonedObjectContainerName={}.",
+        static_cast<std::uint8_t>(object_container_request.get_optype()),
+        object_container_request.get_name(),
+        tombstoned_object_container_name.c_str());
+
+    return status::success;
 }
 
 } // namespace storage.

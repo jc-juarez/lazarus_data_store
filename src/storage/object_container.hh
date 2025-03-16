@@ -76,6 +76,12 @@ public:
         const schemas::object_container_persistent_interface& object_container_persistent_metadata);
 
     //
+    // Marks the object container as deleted.
+    //
+    void
+    mark_as_deleted();
+
+    //
     // Gets the deletion state of the object container.
     //
     bool
@@ -101,9 +107,18 @@ private:
 
     //
     // Pointer to the associated column family for the object container.
-    // This only concerns the storage engine.
+    // This only concerns the storage engine. In-memory only.
     //
     rocksdb::ColumnFamilyHandle* const storage_engine_reference_;
+
+    //
+    // Flag indicating whether this object container reference has been
+    // marked for deletion. In-memory only.
+    // This state does not need to be persisted as it is only set
+    // once the storage engine has deleted the internal filesystem
+    // metadata reference for the object container.
+    //
+    bool is_deleted_;
 };
 
 } // namespace storage.
