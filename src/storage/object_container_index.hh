@@ -69,8 +69,6 @@ public:
         
     //
     // Marks an object container as deleted.
-    // For handling continuous creations of object containers with the same name,
-    // tombstoning is applied by appending a new UUID to the object container name.
     //
     status::status_code
     mark_object_container_as_deleted(
@@ -85,8 +83,9 @@ public:
 
     //
     // Checks if the object container exists in the index internal metadata.
+    // Returns the appropriate status code depending on the state of the object container.
     //
-    bool
+    status::status_code
     object_container_exists(
         const char* object_container_name);
 
@@ -96,15 +95,6 @@ public:
     std::string
     get_object_container_as_string(
         const char* object_container_name);
-
-    //
-    // Swaps an object container memory reference from one name to the other.
-    // The new name of the object container must not exist.
-    //
-    status::status_code
-    swap_object_container_name(
-        const char* old_object_container_name,
-        const char* new_object_container_name);
 
 private:
 

@@ -91,21 +91,26 @@ status::status_code
 object_container_operation_serializer::handle_object_container_creation(
     const schemas::object_container_request_interface& object_container_request)
 {
-    if (object_container_index_->object_container_exists(
-        object_container_request.get_name()))
+    status::status_code status =
+        object_container_index_->object_container_exists(
+            object_container_request.get_name());
+
+    if (status::failed(status))
     {
         //
         // At this point, it is guaranteed that this operation is serialized
-        // and that the object container already exists; no further action needed.
+        // and that the object container is in a non-creatable state; no further action needed.
         //
         spdlog::error("Object container creation will be failed as the "
-            "object container already exists. "
+            "object container is in a non-creatable state. "
             "Optype={}, "
-            "ObjectContainerName={}.",
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
             static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name());
+            object_container_request.get_name(),
+            status);
 
-        return status::object_container_already_exists;
+        return status;
     }
 
     //
@@ -116,7 +121,7 @@ object_container_operation_serializer::handle_object_container_creation(
     // and the garbage collector will be in charge to clean it up.
     //
     rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference;
-    status::status_code status = storage_engine_->create_object_container(
+    status = storage_engine_->create_object_container(
         object_container_request.get_name(),
         &object_container_storage_engine_reference);
 
@@ -174,21 +179,24 @@ status::status_code
 object_container_operation_serializer::handle_object_container_removal(
     const schemas::object_container_request_interface& object_container_request)
 {
-    const bool object_container_exists = object_container_index_->object_container_exists(
-        object_container_request.get_name());
+    status::status_code status =
+        object_container_index_->object_container_exists(
+            object_container_request.get_name());
 
-    if (!object_container_exists)
+    if (status::failed(status))
     {
         //
         // At this point, it is guaranteed that this operation is serialized
-        // and that the object container does not exist; no further action needed.
+        // and that the object container is in a non-deletable state; no further action needed.
         //
         spdlog::error("Object container creation will be failed as the "
-            "object container does not exist. "
+            "object container is in a non-deletable state. "
             "Optype={}, "
-            "ObjectContainerName={}.",
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
             static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name());
+            object_container_request.get_name(),
+            status);
 
         return status::object_container_not_exists;
     }
@@ -199,7 +207,7 @@ object_container_operation_serializer::handle_object_container_removal(
     // object container will be broken, and only the in-memory object container reference
     // will remain active for the rest of this session and be cleaned up by the garbage collector.
     //
-    status::status_code status = storage_engine_->remove_object(
+    status = storage_engine_->remove_object(
         object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
         object_container_request.get_name());
 
@@ -243,45 +251,11 @@ object_container_operation_serializer::handle_object_container_removal(
         return status;
     }
 
-    //
-    // Finally, in order to allow immediate object container re-creations
-    // with the same name, apply tombstoning to the in-memory reference.
-    // This tombstoning will only apply for the current session lifetime as it is not persisted.
-    //
-    const std::string tombstoned_object_container_name =
-        std::string(object_container_request.get_name()) + "-" + common::uuid_to_string(common::generate_uuid());
-
-    status = object_container_index_->swap_object_container_name(
-        object_container_request.get_name(),
-        tombstoned_object_container_name.c_str());
-
-    if (status::failed(status))
-    {
-        //
-        // This should never happen.
-        // This indicates that a new object container with the same name
-        // cannot be created until the garbage collector cleans up the previous one.
-        //
-        spdlog::error("Failed to tombstone the object container name after marking it as deleted. "
-            "Optype={}, "
-            "ObjectContainerName={}, "
-            "TombstonedObjectContainerName={}, "
-            "Status={:#x}.",
-            static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name(),
-            tombstoned_object_container_name.c_str(),
-            status);
-
-        return status;
-    }
-
     spdlog::info("Object container internal metadata deletion marking succeeded. "
         "Optype={}, "
-        "ObjectContainerName={}, "
-        "TombstonedObjectContainerName={}.",
+        "ObjectContainerName={}.",
         static_cast<std::uint8_t>(object_container_request.get_optype()),
-        object_container_request.get_name(),
-        tombstoned_object_container_name.c_str());
+        object_container_request.get_name());
 
     return status::success;
 }

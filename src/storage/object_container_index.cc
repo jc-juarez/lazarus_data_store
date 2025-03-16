@@ -112,7 +112,7 @@ object_container_index::get_object_container_storage_engine_reference(
     return nullptr;
 }
 
-bool
+status::status_code
 object_container_index::object_container_exists(
     const char* object_container_name)
 {
@@ -124,18 +124,16 @@ object_container_index::object_container_exists(
     {
         //
         // Object container present in the index table.
-        // If it is marked as deleted, consider it as non-existent.
-        // Given tombstoning is applied, an outside request should
-        // never be able to hit this with a tombstoned name. But in case the
-        // tombstoned name is leaked, apply this check anyways as safety-in-depth.
+        // If it is marked as deleted, consider it pending deletion.
         //
-        return !(accessor->second->is_deleted());
+        return accessor->second->is_deleted() ?
+            status::object_container_in_deletion_process : status::success;
     }
 
     //
     // Not present in the index table; unknown object container.
     //
-    return false;
+    return status::object_container_not_exists;
 }
 
 std::string
@@ -155,28 +153,6 @@ object_container_index::get_object_container_as_string(
     // Not present in the index table; return an empty string.
     //
     return "";
-}
-
-status::status_code
-object_container_index::swap_object_container_name(
-    const char* old_object_container_name,
-    const char* new_object_container_name)
-{
-    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::accessor accessor;
-
-    if (object_container_index_table_.find(
-        accessor,
-        old_object_container_name))
-    {
-        std::unique_ptr<object_container> temporal_object_container_swap = std::move(accessor->second);
-        object_container_index_table_.erase(accessor);
-        object_container_index_table_.emplace(
-            new_object_container_name,
-            std::move(temporal_object_container_swap));
-        return status::success;
-    }
-
-    return status::object_container_not_exists;
 }
 
 std::optional<schemas::object_container_persistent_interface>

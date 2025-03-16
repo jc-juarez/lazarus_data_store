@@ -81,13 +81,6 @@ public:
         network::server_response_callback&& response_callback);
 
     //
-    // Checks if an object container exists in the object container index.
-    //
-    bool
-    object_container_exists(
-        const char* object_container_name);
-
-    //
     // Validates if an object container operation request.
     //
     status::status_code

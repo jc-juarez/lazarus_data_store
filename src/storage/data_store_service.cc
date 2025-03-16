@@ -135,6 +135,12 @@ data_store_service::populate_object_container_index(
             // This implies this is not a known object container to the persistent metadata.
             // These could be internal metadata or orphaned object containers.
             //
+            const schemas::object_container_persistent_interface object_container_persistent_metadata =
+                object_container::create_object_container_persistent_metadata(object_container_name.c_str());
+            object_container_index_->insert_object_container(
+                object_container_storage_engine_reference,
+                object_container_persistent_metadata);
+
             const bool is_orphaned_object_container =
                 !object_container_index::is_internal_metadata(object_container_name.c_str());
 
@@ -142,29 +148,12 @@ data_store_service::populate_object_container_index(
             {
                 //
                 // If this is not part of the internal metadata, it means that this is an
-                // orphaned object container; also, apply tombstoning so that this stale object
-                // does not interfere with new object container creations with the same name.
+                // orphaned object container; mark it as deleted for the garbage collector to clean it up later.
                 //
-                std::string previous_object_container_name = object_container_name;
-                object_container_name =
-                    object_container_name + "-" + common::uuid_to_string(common::generate_uuid());
-
                 spdlog::warn("Found orphaned object container on startup. "
-                    "ObjectContainerName={}, "
-                    "TombstonedObjectContainerName={}.",
-                    previous_object_container_name.c_str(),
+                    "ObjectContainerName={}.",
                     object_container_name.c_str());
-            }
-
-            const schemas::object_container_persistent_interface object_container_persistent_metadata =
-                object_container::create_object_container_persistent_metadata(object_container_name.c_str());
-            object_container_index_->insert_object_container(
-                object_container_storage_engine_reference,
-                object_container_persistent_metadata);
-
-            if (is_orphaned_object_container)
-            {
-                // Mark it as deleted for the garbage collector to clean it up later.
+                
                 status::status_code status = 
                     object_container_index_->mark_object_container_as_deleted(object_container_name.c_str());
 
@@ -261,14 +250,6 @@ data_store_service::orchestrate_serial_object_container_operation(
         std::move(response_callback));
 }
 
-bool
-data_store_service::object_container_exists(
-    const char* object_container_name)
-{
-    return object_container_index_->object_container_exists(
-        object_container_name);
-}
-
 status::status_code
 data_store_service::validate_object_container_operation_request(
     const schemas::object_container_request_interface& object_container_request)
@@ -277,40 +258,50 @@ data_store_service::validate_object_container_operation_request(
     {
         case schemas::object_container_request_optype::create:
         {
-            if (object_container_index_->object_container_exists(
-                object_container_request.get_name()))
+            const status::status_code status = 
+                object_container_index_->object_container_exists(
+                    object_container_request.get_name());
+
+            if (status::failed(status))
             {
                 //
                 // Fail fast in case the object container already exists.
                 //
                 spdlog::error("Object container creation will be failed as the "
-                    "object container already exists. "
+                    "object container is in a non-creatable state. "
                     "Optype={}, "
-                    "ObjectContainerName={}.",
+                    "ObjectContainerName={}, "
+                    "Status={:#x}.",
                     static_cast<std::uint8_t>(object_container_request.get_optype()),
-                    object_container_request.get_name());
+                    object_container_request.get_name(),
+                    status);
 
-                return status::object_container_already_exists;
+                return status;
             }
 
             break;
         }
         case schemas::object_container_request_optype::remove:
         {
-            if (!object_container_index_->object_container_exists(
-                object_container_request.get_name()))
+            const status::status_code status = 
+                object_container_index_->object_container_exists(
+                    object_container_request.get_name());
+
+            if (status::failed(status))
             {
                 //
                 // Fail fast in case the object container does not exist.
                 //
                 spdlog::error("Object container removal will be failed as the "
-                    "object container does not exist. "
+                    "object container is in a non-deletable state. "
                     "Optype={}, "
-                    "ObjectContainerName={}.",
+                    "ObjectContainerName={}, "
+                    "Status={:#x}.",
                     static_cast<std::uint8_t>(object_container_request.get_optype()),
-                    object_container_request.get_name());
+                    object_container_request.get_name(),
+                    status);
 
-                return status::object_container_not_exists;
+                return status;
             }
 
             break;

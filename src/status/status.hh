@@ -160,5 +160,10 @@ status_code_definition(serialization_failed, 0x8'0000014);
 //
 status_code_definition(object_deletion_failed, 0x8'0000015);
 
+//
+// Specified object container is currently in deletion process.
+//
+status_code_definition(object_container_in_deletion_process, 0x8'0000016);
+
 } // namespace status.
 } // namespace lazarus.
