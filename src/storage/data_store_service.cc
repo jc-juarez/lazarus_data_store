@@ -9,6 +9,7 @@
 
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
+#include "garbage_collector.hh"
 #include "data_store_service.hh"
 #include "object_container_index.hh"
 #include "../common/uuid_utilities.hh"
@@ -35,6 +36,13 @@ data_store_service::data_store_service(
     // Object container operation serializer component allocation.
     //
     object_container_operation_serializer_ = std::make_shared<object_container_operation_serializer>(
+        storage_engine_,
+        object_container_index_);
+
+    //
+    // Garbage collector component allocation.
+    //
+    garbage_collector_ = std::make_unique<garbage_collector>(
         storage_engine_,
         object_container_index_);
 }

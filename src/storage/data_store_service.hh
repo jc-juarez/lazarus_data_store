@@ -25,6 +25,7 @@ namespace storage
 {
 
 class storage_engine;
+class garbage_collector;
 class object_container_index;
 class object_container_operation_serializer;
 
@@ -127,6 +128,11 @@ private:
     // Scalable thread pool for handling async object insertions.
     //
     tbb::task_arena object_insertion_thread_pool_;
+
+    //
+    // Handle for the garbage collector.
+    //
+    std::unique_ptr<garbage_collector> garbage_collector_;
 };
 
 } // namespace storage.
