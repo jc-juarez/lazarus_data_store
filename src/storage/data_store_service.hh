@@ -25,7 +25,6 @@ namespace storage
 {
 
 class storage_engine;
-class garbage_collector;
 class object_container_index;
 class object_container_operation_serializer;
 
@@ -40,7 +39,9 @@ public:
     // Constructor data service.
     //
     data_store_service(
-        std::shared_ptr<storage_engine> storage_engine_handle);
+        std::shared_ptr<storage_engine> storage_engine_handle,
+        std::shared_ptr<object_container_index> object_container_index_handle,
+        std::unique_ptr<object_container_operation_serializer> object_container_operation_serializer_handle);
 
     //
     // Populates the in-memory contents of the object container
@@ -122,17 +123,12 @@ private:
     //
     // Handle for the object container operation serializer component.
     //
-    std::shared_ptr<object_container_operation_serializer> object_container_operation_serializer_;
+    std::unique_ptr<object_container_operation_serializer> object_container_operation_serializer_;
 
     //
     // Scalable thread pool for handling async object insertions.
     //
     tbb::task_arena object_insertion_thread_pool_;
-
-    //
-    // Handle for the garbage collector.
-    //
-    std::unique_ptr<garbage_collector> garbage_collector_;
 };
 
 } // namespace storage.

@@ -28,7 +28,9 @@ class server;
 namespace storage
 {
 class storage_engine;
+class garbage_collector;
 class data_store_service;
+class object_container_index;
 }
 
 //
@@ -94,6 +96,16 @@ private:
     // Data store service handle.
     //
     std::shared_ptr<storage::data_store_service> data_store_service_;
+
+    //
+    // Gargage collector handle.
+    //
+    std::unique_ptr<storage::garbage_collector> garbage_collector_;
+
+    //
+    // Object container index handle.
+    //
+    std::shared_ptr<storage::object_container_index> object_container_index_;
 };
 
 } // namespace lazarus.

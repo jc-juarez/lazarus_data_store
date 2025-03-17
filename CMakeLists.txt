@@ -34,6 +34,7 @@ set(SOURCE_FILES
     src/common/uuid_utilities.cc
     src/storage/data_store_service.cc
     src/storage/storage_engine.cc
+    src/storage/garbage_collector.cc
     src/storage/object_container.cc
     src/storage/object_container_index.cc
     src/storage/object_container_operation_serializer.cc

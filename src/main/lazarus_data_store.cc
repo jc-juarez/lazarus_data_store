@@ -14,9 +14,12 @@
 #include "lazarus_data_store.hh"
 #include "../network/server/server.hh"
 #include "../storage/storage_engine.hh"
+#include "../storage/garbage_collector.hh"
 #include "../storage/data_store_service.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
+#include "../storage/object_container_index.hh"
 #include "../network/server/server_configuration.hh"
+#include "../storage/object_container_operation_serializer.hh"
 
 namespace lazarus
 {
@@ -34,10 +37,32 @@ lazarus_data_store::lazarus_data_store(
         storage_engine_configuration);
 
     //
+    // Object container index component allocation.
+    //
+    object_container_index_ = std::make_shared<storage::object_container_index>(
+        storage_engine_);
+
+    //
+    // Garbage collector component allocation.
+    //
+    garbage_collector_ = std::make_unique<storage::garbage_collector>(
+        storage_engine_,
+        object_container_index_);
+
+    //
+    // Object container operation serializer component allocation.
+    //
+    auto object_container_operation_serializer = std::make_unique<storage::object_container_operation_serializer>(
+        storage_engine_,
+        object_container_index_);
+
+    //
     // Data store service component allocation.
     //
     data_store_service_ = std::make_shared<storage::data_store_service>(
-        storage_engine_);
+        storage_engine_,
+        object_container_index_,
+        std::move(object_container_operation_serializer));
 
     //
     // Server component allocation.
@@ -150,6 +175,11 @@ lazarus_data_store::start_data_store()
 
         return status;
     }
+
+    //
+    // Start the system garbage collector.
+    //
+    garbage_collector_->start();
 
     //
     // Start the server for handling incoming data requests.

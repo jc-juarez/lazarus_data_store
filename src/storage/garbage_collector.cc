@@ -9,6 +9,7 @@
 // ****************************************************
 
 #include <chrono>
+#include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 #include "garbage_collector.hh"
 #include "object_container_index.hh"
@@ -36,6 +37,7 @@ garbage_collector::start()
 void
 garbage_collector::execute_garbage_collection()
 {
+    spdlog::info("Garbage collector running.");
     std::this_thread::sleep_for(std::chrono::seconds(10u));
 }
 

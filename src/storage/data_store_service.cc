@@ -22,30 +22,14 @@ namespace storage
 {
 
 data_store_service::data_store_service(
-    std::shared_ptr<storage_engine> storage_engine_handle)
+    std::shared_ptr<storage_engine> storage_engine_handle,
+    std::shared_ptr<object_container_index> object_container_index_handle,
+    std::unique_ptr<object_container_operation_serializer> object_container_operation_serializer_handle)
     : storage_engine_(std::move(storage_engine_handle)),
+      object_container_index_{std::move(object_container_index_handle)},
+      object_container_operation_serializer_{std::move(object_container_operation_serializer_handle)},
       object_insertion_thread_pool_{16u}
-{
-    //
-    // Object container index component allocation.
-    //
-    object_container_index_ = std::make_shared<object_container_index>(
-        storage_engine_);
-
-    //
-    // Object container operation serializer component allocation.
-    //
-    object_container_operation_serializer_ = std::make_shared<object_container_operation_serializer>(
-        storage_engine_,
-        object_container_index_);
-
-    //
-    // Garbage collector component allocation.
-    //
-    garbage_collector_ = std::make_unique<garbage_collector>(
-        storage_engine_,
-        object_container_index_);
-}
+{}
 
 status::status_code
 data_store_service::populate_object_container_index(
