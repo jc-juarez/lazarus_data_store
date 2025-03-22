@@ -7,6 +7,7 @@
 //      Lazarus data store root object. 
 // ****************************************************
 
+#include <csignal>
 #include <spdlog/async.h>
 #include <spdlog/spdlog.h>
 #include <drogon/drogon.h>
@@ -23,6 +24,8 @@
 
 namespace lazarus
 {
+
+std::stop_source lazarus::lazarus_data_store::stop_source_;
 
 lazarus_data_store::lazarus_data_store(
     const boost::uuids::uuid session_id,
@@ -120,9 +123,20 @@ lazarus_data_store::run()
     return status::succeeded(status) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
+std::stop_token
+lazarus_data_store::get_stop_source_token()
+{
+    return stop_source_.get_token();
+}
+
 status::status_code
 lazarus_data_store::start_data_store()
 {
+    //
+    // Register termination signals to be handled by the system.
+    //
+    register_signals();
+
     //
     // Before starting the server, fetch all persistent object containers from the 
     // filesystem. These are needed for starting the storage engine so that it can
@@ -229,6 +243,25 @@ lazarus_data_store::initialize_logger(
         logger_config.flush_frequency_ms_ ,
         logger_config.log_file_prefix_ ,
         logger_config.logging_session_directory_prefix_);
+}
+
+void
+lazarus_data_store::register_signals()
+{
+    //
+    // The system handles 'Ctrl-C' and 'kill' commands by itself.
+    //
+    std::signal(SIGINT, &lazarus_data_store::signal_handler);
+    std::signal(SIGTERM, &lazarus_data_store::signal_handler);
+}
+
+void
+lazarus_data_store::signal_handler(
+    std::int32_t signal)
+{
+    spdlog::info("Termination signal received. Requesting system stop.");
+    network::server::stop();
+    stop_source_.request_stop();
 }
 
 } // namespace lazarus.

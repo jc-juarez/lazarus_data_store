@@ -28,6 +28,8 @@ namespace network
 
 //
 // Main HTTP server wrapper.
+// This class does not own the internal HTTP server handle as it is a globlal access singleton.
+// Instead, it provides a concise set of APIs for safe access and configurations containerization.
 //
 class server
 {
@@ -46,6 +48,14 @@ public:
     //
     void
     start();
+
+    //
+    // Stops the HTTP server. Handles requests handling termination.
+    // This will exit the event loop and terminate all network IO.
+    //
+    static
+    void
+    stop();
 
     //
     // Register the endpoints that the server needs to handle.

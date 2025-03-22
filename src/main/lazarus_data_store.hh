@@ -10,6 +10,7 @@
 #pragma once
 
 #include <memory>
+#include <stop_token>
 #include "../status/status.hh"
 #include "../common/aliases.hh"
 #include "../common/uuid_utilities.hh"
@@ -56,6 +57,13 @@ public:
     run();
 
     //
+    // Gets the stop source token for listening to termination requests.
+    //
+    static
+    std::stop_token
+    get_stop_source_token();
+
+    //
     // Start the lazarus data store system.
     //
     status::status_code
@@ -71,6 +79,25 @@ private:
     initialize_logger(
         const boost::uuids::uuid session_id,
         const logger::logger_configuration logger_config);
+
+    //
+    // Registers the signals to listen to for termination.
+    //
+    static
+    void
+    register_signals();
+
+    //
+    // Signals termination requests from the OS through the stop source.
+    //
+    static
+    void
+    signal_handler(std::int32_t signal);
+
+    //
+    // Stop source for handling graceful terminations.
+    //
+    static std::stop_source stop_source_;
 
     //
     // Session identifier.

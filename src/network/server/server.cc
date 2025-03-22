@@ -28,7 +28,8 @@ server::server(
     http_server_.setLogPath(server_config_.server_logs_directory_path_)
          .setLogLevel(trantor::Logger::kWarn)
          .addListener(server_config_.server_listener_ip_address_, server_config_.port_number_)
-         .setThreadNum(server_config_.server_number_threads_);
+         .setThreadNum(server_config_.server_number_threads_)
+         .disableSigtermHandling();
 
     if (server_config_.run_as_daemon_)
     {
@@ -48,6 +49,14 @@ server::start()
         server_config_.port_number_);
 
     http_server_.run();
+}
+
+void
+server::stop()
+{
+    spdlog::info("Stopping lazarus data store server.");
+
+    drogon::app().quit();
 }
 
 void

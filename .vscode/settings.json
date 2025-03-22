@@ -82,6 +82,7 @@
         "timer": "cpp",
         "shared_mutex": "cpp",
         "cfenv": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "csignal": "cpp"
     }
 }

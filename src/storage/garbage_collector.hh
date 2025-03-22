@@ -12,6 +12,7 @@
 
 #include <thread>
 #include <memory>
+#include <stop_token>
 
 namespace lazarus
 {
@@ -48,7 +49,8 @@ private:
     // Long-running thread entry point.
     //
     void
-    execute_garbage_collection();
+    execute_garbage_collection(
+        std::stop_token stop_token);
 
     //
     // Handle for the storage enine.
