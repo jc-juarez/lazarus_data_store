@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'data_store_service.cc'
+// 'object_container_management_service.cc'
 // Author: jcjuarez
 // Description:
 //      Accessor core storage operations. 
@@ -10,7 +10,7 @@
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 #include "garbage_collector.hh"
-#include "data_store_service.hh"
+#include "object_container_management_service.hh"
 #include "object_container_index.hh"
 #include "../common/uuid_utilities.hh"
 #include "object_container_operation_serializer.hh"
@@ -21,18 +21,17 @@ namespace lazarus
 namespace storage
 {
 
-data_store_service::data_store_service(
+object_container_management_service::object_container_management_service(
     std::shared_ptr<storage_engine> storage_engine_handle,
     std::shared_ptr<object_container_index> object_container_index_handle,
     std::unique_ptr<object_container_operation_serializer> object_container_operation_serializer_handle)
     : storage_engine_(std::move(storage_engine_handle)),
       object_container_index_{std::move(object_container_index_handle)},
-      object_container_operation_serializer_{std::move(object_container_operation_serializer_handle)},
-      object_insertion_thread_pool_{16u}
+      object_container_operation_serializer_{std::move(object_container_operation_serializer_handle)}
 {}
 
 status::status_code
-data_store_service::populate_object_container_index(
+object_container_management_service::populate_object_container_index(
     std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping)
 {
     //
@@ -170,7 +169,7 @@ data_store_service::populate_object_container_index(
 }
 
 status::status_code
-data_store_service::create_internal_metadata_column_families(
+object_container_management_service::create_internal_metadata_column_families(
     std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping)
 {
     //
@@ -200,45 +199,7 @@ data_store_service::create_internal_metadata_column_families(
 }
 
 void
-data_store_service::enqueue_async_object_insertion(
-    const char* object_id,
-    const byte* object_data_stream,
-    network::server_response_callback&& response_callback)
-{
-    //
-    // Ensure the associated contents of the object are copied before proceeding. 
-    //
-    std::string object_id_to_dispatch{object_id};
-    byte_stream object_data_stream_to_dispatch{object_data_stream};
-
-    //
-    // Enqueue the object insertion action.
-    //
-    object_insertion_thread_pool_.execute(
-        [this,
-        object_id_to_dispatch = std::move(object_id_to_dispatch),
-        object_data_stream_to_dispatch = std::move(object_data_stream_to_dispatch),
-        response_callback = std::move(response_callback)]() mutable
-        {
-            this->object_insertion_dispatch_proxy(
-                std::move(object_id_to_dispatch),
-                std::move(object_data_stream_to_dispatch),
-                std::move(response_callback));
-        });
-}
-
-void
-data_store_service::get_object(
-    const char* object_id,
-    byte_stream& object_data)
-{
-    //storage_engine_->get_object(
-    //    object_id,
-    //    object_data_stream);
-}
-
-void
-data_store_service::orchestrate_serial_object_container_operation(
+object_container_management_service::orchestrate_serial_object_container_operation(
     schemas::object_container_request_interface&& object_container_request,
     network::server_response_callback&& response_callback)
 {
@@ -248,7 +209,7 @@ data_store_service::orchestrate_serial_object_container_operation(
 }
 
 status::status_code
-data_store_service::validate_object_container_operation_request(
+object_container_management_service::validate_object_container_operation_request(
     const schemas::object_container_request_interface& object_container_request)
 {
     switch (object_container_request.get_optype())
@@ -311,27 +272,6 @@ data_store_service::validate_object_container_operation_request(
     }
 
     return status::success;
-}
-
-void
-data_store_service::object_insertion_dispatch_proxy(
-    const std::string&& object_id,
-    const byte_stream&& object_data_stream,
-    network::server_response_callback&& response_callback)
-{
-    //
-    // At this point, it is guaranteed that the memory contents
-    // of the object are safely copied ino the provided containers.
-    //
-    //storage_engine_->insert_object(
-    //    object_id.c_str(),
-    //    object_data_stream.c_str());
-
-    auto resp = drogon::HttpResponse::newHttpResponse();
-    resp->setBody(
-        "Async response. Object has been inserted.");
-    
-    response_callback(resp);
 }
 
 } // namespace storage.

@@ -30,7 +30,7 @@ namespace storage
 {
 class storage_engine;
 class garbage_collector;
-class data_store_service;
+class object_container_management_service;
 class object_container_index;
 }
 
@@ -120,9 +120,9 @@ private:
     std::shared_ptr<storage::storage_engine> storage_engine_;
 
     //
-    // Data store service handle.
+    // Object container management service handle.
     //
-    std::shared_ptr<storage::data_store_service> data_store_service_;
+    std::shared_ptr<storage::object_container_management_service> object_container_management_service_;
 
     //
     // Gargage collector handle.

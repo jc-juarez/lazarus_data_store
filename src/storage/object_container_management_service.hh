@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'data_store_service.hh'
+// 'object_container_management_service.hh'
 // Author: jcjuarez
 // Description:
 //      Accessor core storage operations. 
@@ -31,14 +31,14 @@ class object_container_operation_serializer;
 //
 // Core storage access interface.
 //
-class data_store_service
+class object_container_management_service
 {
 public:
 
     //
     // Constructor data service.
     //
-    data_store_service(
+    object_container_management_service(
         std::shared_ptr<storage_engine> storage_engine_handle,
         std::shared_ptr<object_container_index> object_container_index_handle,
         std::unique_ptr<object_container_operation_serializer> object_container_operation_serializer_handle);
@@ -50,26 +50,6 @@ public:
     status::status_code
     populate_object_container_index(
         std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping);
-
-    //
-    // Inserts a single object into the data store in async fashion.
-    // Ensures that a copy of the object is created before enqueueing the async
-    // task, and notifies back the result of the operation over the provided response_callback.
-    //
-    void
-    enqueue_async_object_insertion(
-        const char* object_id,
-        const byte* object_data_stream,
-        network::server_response_callback&& response_callback);
-
-    //
-    // Get an object from the data store.
-    // Stores the object contents into the data stream if it exists.
-    //
-    void
-    get_object(
-        const char* object_id,
-        byte_stream& object_data);
 
     //
     // Orchestrates possible update operations to the object container index.
@@ -101,16 +81,6 @@ private:
         std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping);
 
     //
-    // Object insertion dispatcher entry point.
-    // Corresponds to the upcall for executing an insertion action.
-    //
-    void
-    object_insertion_dispatch_proxy(
-        const std::string&& object_id,
-        const byte_stream&& object_data_stream,
-        network::server_response_callback&& response_callback);
-
-    //
     // Handle for the storage enine.
     //
     std::shared_ptr<storage_engine> storage_engine_;
@@ -124,11 +94,6 @@ private:
     // Handle for the object container operation serializer component.
     //
     std::unique_ptr<object_container_operation_serializer> object_container_operation_serializer_;
-
-    //
-    // Scalable thread pool for handling async object insertions.
-    //
-    tbb::task_arena object_insertion_thread_pool_;
 };
 
 } // namespace storage.

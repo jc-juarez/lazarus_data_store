@@ -11,7 +11,7 @@
 #include <spdlog/spdlog.h>
 #include "../server/server.hh"
 #include "object_container_endpoint.hh"
-#include "../../storage/data_store_service.hh"
+#include "../../storage/object_container_management_service.hh"
 #include "../../schemas/request-interfaces/object_container_request_interface.hh"
 
 namespace lazarus
@@ -20,8 +20,8 @@ namespace network
 {
 
 object_container_endpoint::object_container_endpoint(
-    std::shared_ptr<storage::data_store_service> data_store_service_handle)
-    : data_store_service_{std::move(data_store_service_handle)}
+    std::shared_ptr<storage::object_container_management_service> object_container_management_service_handle)
+    : object_container_management_service_{std::move(object_container_management_service_handle)}
 {}
 
 void
@@ -38,7 +38,7 @@ object_container_endpoint::create_object_container(
         static_cast<std::uint8_t>(object_container_request.get_optype()),
         object_container_request.get_name());
 
-    const status::status_code status = data_store_service_->validate_object_container_operation_request(
+    const status::status_code status = object_container_management_service_->validate_object_container_operation_request(
         object_container_request);
 
     if (status::failed(status))
@@ -63,7 +63,7 @@ object_container_endpoint::create_object_container(
     // container in async serialized fashion.
     // Response will be provided by a separate thread.
     //
-    data_store_service_->orchestrate_serial_object_container_operation(
+    object_container_management_service_->orchestrate_serial_object_container_operation(
         std::move(object_container_request),
         std::move(response_callback));
 }
@@ -88,7 +88,7 @@ object_container_endpoint::remove_object_container(
         static_cast<std::uint8_t>(object_container_request.get_optype()),
         object_container_request.get_name());
 
-    const status::status_code status = data_store_service_->validate_object_container_operation_request(
+    const status::status_code status = object_container_management_service_->validate_object_container_operation_request(
         object_container_request);
 
     if (status::failed(status))
@@ -113,7 +113,7 @@ object_container_endpoint::remove_object_container(
     // container in async serialized fashion.
     // Response will be provided by a separate thread.
     //
-    data_store_service_->orchestrate_serial_object_container_operation(
+    object_container_management_service_->orchestrate_serial_object_container_operation(
         std::move(object_container_request),
         std::move(response_callback));
 }

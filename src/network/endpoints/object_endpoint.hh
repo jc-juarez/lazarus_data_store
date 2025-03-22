@@ -18,7 +18,7 @@ namespace lazarus
 
 namespace storage
 {
-class data_store_service;
+class object_container_management_service;
 }
 
 namespace network
@@ -32,7 +32,7 @@ public:
   // Endpoint constructor.
   //
   object_endpoint(
-    std::shared_ptr<storage::data_store_service> data_store_service_handle);
+    std::shared_ptr<storage::object_container_management_service> object_container_management_service_handle);
 
   METHOD_LIST_BEGIN
   METHOD_ADD(object_endpoint::insert_object, "/", drogon::Post);
@@ -58,9 +58,9 @@ public:
 private:
 
   //
-  // Data store service handle.
+  // Object container management service handle.
   //
-  std::shared_ptr<storage::data_store_service> data_store_service_;
+  std::shared_ptr<storage::object_container_management_service> object_container_management_service_;
 };
 
 } // namespace network.

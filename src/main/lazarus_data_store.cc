@@ -16,7 +16,7 @@
 #include "../network/server/server.hh"
 #include "../storage/storage_engine.hh"
 #include "../storage/garbage_collector.hh"
-#include "../storage/data_store_service.hh"
+#include "../storage/object_container_management_service.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "../storage/object_container_index.hh"
 #include "../network/server/server_configuration.hh"
@@ -61,9 +61,9 @@ lazarus_data_store::lazarus_data_store(
         object_container_index_);
 
     //
-    // Data store service component allocation.
+    // Object container management service component allocation.
     //
-    data_store_service_ = std::make_shared<storage::data_store_service>(
+    object_container_management_service_ = std::make_shared<storage::object_container_management_service>(
         storage_engine_,
         object_container_index_,
         std::move(object_container_operation_serializer));
@@ -73,7 +73,7 @@ lazarus_data_store::lazarus_data_store(
     //
     server_ = std::make_shared<network::server>(
         server_config,
-        data_store_service_);
+        object_container_management_service_);
 }
 
 exit_code
@@ -179,7 +179,7 @@ lazarus_data_store::start_data_store()
     // Populate the in-memory object container index with the
     // references obtained when the storage engine was started.
     //
-    data_store_service_->populate_object_container_index(
+    object_container_management_service_->populate_object_container_index(
         &storage_engine_references_mapping);
 
     if (status::failed(status))
