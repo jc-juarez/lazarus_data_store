@@ -120,7 +120,7 @@ object_container_operation_serializer::handle_object_container_creation(
     // In case the data store crashes in between, the object container will be orphaned
     // and the garbage collector will be in charge to clean it up.
     //
-    rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference;
+    storage_engine_reference_handle* object_container_storage_engine_reference;
     status = storage_engine_->create_object_container(
         object_container_request.get_name(),
         &object_container_storage_engine_reference);

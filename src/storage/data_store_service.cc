@@ -33,7 +33,7 @@ data_store_service::data_store_service(
 
 status::status_code
 data_store_service::populate_object_container_index(
-    std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>* storage_engine_references_mapping)
+    std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping)
 {
     //
     // Keep track of the internal metadata object containers.
@@ -69,7 +69,7 @@ data_store_service::populate_object_container_index(
         return status::object_containers_internal_metadata_lookup_failed;
     }
 
-    rocksdb::ColumnFamilyHandle* object_containers_internal_metadata_storage_engine_reference =
+    storage_engine_reference_handle* object_containers_internal_metadata_storage_engine_reference =
         storage_engine_references_mapping->at(object_container_index::object_containers_internal_metadata_name);
 
     //
@@ -93,7 +93,7 @@ data_store_service::populate_object_container_index(
     for (const auto& storage_engine_references_pair : *storage_engine_references_mapping)
     {
         std::string object_container_name = storage_engine_references_pair.first;
-        rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference = storage_engine_references_pair.second;
+        storage_engine_reference_handle* object_container_storage_engine_reference = storage_engine_references_pair.second;
 
         if (objects.find(object_container_name) != objects.end())
         {
@@ -171,12 +171,12 @@ data_store_service::populate_object_container_index(
 
 status::status_code
 data_store_service::create_internal_metadata_column_families(
-    std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>* storage_engine_references_mapping)
+    std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping)
 {
     //
     // Create the object containers column family on the storage engine.
     //
-    rocksdb::ColumnFamilyHandle* object_containers_internal_metadata_storage_engine_reference;
+    storage_engine_reference_handle* object_containers_internal_metadata_storage_engine_reference;
     status::status_code status = storage_engine_->create_object_container(
         object_container_index::object_containers_internal_metadata_name,
         &object_containers_internal_metadata_storage_engine_reference);

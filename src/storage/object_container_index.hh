@@ -59,13 +59,13 @@ public:
     //
     void
     insert_object_container(
-        rocksdb::ColumnFamilyHandle* storage_engine_reference,
+        storage_engine_reference_handle* storage_engine_reference,
         const schemas::object_container_persistent_interface& object_container_persistent_metadata);
 
     //
     // Gets the storage engine reference of the object containers internal metadata column family.
     //
-    rocksdb::ColumnFamilyHandle*
+    storage_engine_reference_handle*
     get_object_containers_internal_metadata_storage_engine_reference() const;
 
     //

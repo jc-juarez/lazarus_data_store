@@ -12,8 +12,8 @@
 #include <memory>
 #include <optional>
 #include <tbb/tbb.h>
-#include <rocksdb/db.h>
 #include "../status/status.hh"
+#include "../common/aliases.hh"
 #include "../common/aliases.hh"
 #include <drogon/HttpController.h>
 #include "../network/server/server.hh"
@@ -49,7 +49,7 @@ public:
     //
     status::status_code
     populate_object_container_index(
-        std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>* storage_engine_references_mapping);
+        std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping);
 
     //
     // Inserts a single object into the data store in async fashion.
@@ -98,7 +98,7 @@ private:
     //
     status::status_code
     create_internal_metadata_column_families(
-        std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>* storage_engine_references_mapping);
+        std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping);
 
     //
     // Object insertion dispatcher entry point.

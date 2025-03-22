@@ -13,7 +13,6 @@
 
 #include <string>
 #include <shared_mutex>
-#include <rocksdb/db.h>
 #include "../common/aliases.hh"
 #include "object_container_persistent_interface.pb.h"
 
@@ -38,7 +37,7 @@ public:
     //
     object_container(
         std::shared_ptr<storage_engine> storage_engine_handle,
-        rocksdb::ColumnFamilyHandle* storage_engine_reference,
+        storage_engine_reference_handle* storage_engine_reference,
         const schemas::object_container_persistent_interface& object_container_persistent_metadata);
 
     //
@@ -60,7 +59,7 @@ public:
     //
     // Gets the associated storage engine reference for the object container.
     //
-    rocksdb::ColumnFamilyHandle*
+    storage_engine_reference_handle*
     get_storage_engine_reference() const;
 
     //
@@ -97,7 +96,7 @@ private:
     // Pointer to the associated column family for the object container.
     // This only concerns the storage engine. In-memory only.
     //
-    rocksdb::ColumnFamilyHandle* const storage_engine_reference_;
+    storage_engine_reference_handle* const storage_engine_reference_;
 
     //
     // Flag indicating whether this object container reference has been

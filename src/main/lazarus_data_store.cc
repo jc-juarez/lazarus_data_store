@@ -7,10 +7,10 @@
 //      Lazarus data store root object. 
 // ****************************************************
 
-#include <rocksdb/db.h>
 #include <spdlog/async.h>
 #include <spdlog/spdlog.h>
 #include <drogon/drogon.h>
+#include "../common/aliases.hh"
 #include "lazarus_data_store.hh"
 #include "../network/server/server.hh"
 #include "../storage/storage_engine.hh"
@@ -146,7 +146,7 @@ lazarus_data_store::start_data_store()
     // Start the storage engine. On success, it will associate the object
     // containers names to their respective column family reference.
     //
-    std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*> storage_engine_references_mapping;
+    std::unordered_map<std::string, storage::storage_engine_reference_handle*> storage_engine_references_mapping;
     status = storage_engine_->start(
         object_containers_names,
         &storage_engine_references_mapping);

@@ -37,7 +37,7 @@ object_container_index::is_internal_metadata(
 
 void
 object_container_index::insert_object_container(
-    rocksdb::ColumnFamilyHandle* storage_engine_reference,
+    storage_engine_reference_handle* storage_engine_reference,
     const schemas::object_container_persistent_interface& object_container_persistent_metadata)
 {
     //
@@ -71,7 +71,7 @@ object_container_index::insert_object_container(
     assert(false);
 }
 
-rocksdb::ColumnFamilyHandle*
+storage_engine_reference_handle*
 object_container_index::get_object_containers_internal_metadata_storage_engine_reference() const
 {
     const std::shared_ptr<object_container> object_container =

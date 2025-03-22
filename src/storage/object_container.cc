@@ -20,7 +20,7 @@ namespace storage
 
 object_container::object_container(
     std::shared_ptr<storage_engine> storage_engine_handle,
-    rocksdb::ColumnFamilyHandle* storage_engine_reference,
+    storage_engine_reference_handle* storage_engine_reference,
     const schemas::object_container_persistent_interface& object_container_persistent_metadata)
     : storage_engine_{std::move(storage_engine_handle)},
       storage_engine_reference_{storage_engine_reference},
@@ -48,7 +48,7 @@ object_container::create_object_container_persistent_metadata(
     return object_container_persistent_metadata;
 }
 
-rocksdb::ColumnFamilyHandle*
+storage_engine_reference_handle*
 object_container::get_storage_engine_reference() const
 {
     std::shared_lock<std::shared_mutex> {lock_};

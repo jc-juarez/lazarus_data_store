@@ -25,7 +25,7 @@ storage_engine::storage_engine(
 status::status_code
 storage_engine::start(
     const std::vector<std::string>& object_containers_names,
-    std::unordered_map<std::string, rocksdb::ColumnFamilyHandle*>* storage_engine_references_mapping)
+    std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping)
 {
     std::vector<rocksdb::ColumnFamilyDescriptor> column_family_descriptors;
     
@@ -42,7 +42,7 @@ storage_engine::start(
     rocksdb::DB* database_handle;
     rocksdb::Options options;
     options.create_if_missing = true;
-    std::vector<rocksdb::ColumnFamilyHandle*> storage_engine_references;
+    std::vector<storage_engine_reference_handle*> storage_engine_references;
 
     const rocksdb::Status status = rocksdb::DB::Open(
         options,
@@ -84,7 +84,7 @@ storage_engine::start(
 
 status::status_code
 storage_engine::insert_object(
-    rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference,
+    storage_engine_reference_handle* object_container_storage_engine_reference,
     const char* object_id,
     const byte* object_data)
 {
@@ -114,7 +114,7 @@ storage_engine::insert_object(
 
 status::status_code
 storage_engine::get_object(
-    rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference,
+    storage_engine_reference_handle* object_container_storage_engine_reference,
     const char* object_id,
     byte_stream* object_data)
 {
@@ -145,7 +145,7 @@ storage_engine::get_object(
 status::status_code
 storage_engine::create_object_container(
     const char* object_container_name,
-    rocksdb::ColumnFamilyHandle** object_container_storage_engine_reference)
+    storage_engine_reference_handle** object_container_storage_engine_reference)
 {
     const rocksdb::Status status = core_database_->CreateColumnFamily(
         rocksdb::ColumnFamilyOptions(),
@@ -175,7 +175,7 @@ storage_engine::create_object_container(
 
 status::status_code
 storage_engine::get_all_objects_from_object_container(
-    rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference,
+    storage_engine_reference_handle* object_container_storage_engine_reference,
     std::unordered_map<std::string, byte_stream>* objects)
 {
     rocksdb::ReadOptions read_options;
@@ -256,7 +256,7 @@ storage_engine::fetch_object_containers_from_disk(
 
 status::status_code
 storage_engine::close_object_container_storage_engine_reference(
-    rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference)
+    storage_engine_reference_handle* object_container_storage_engine_reference)
 {
     const rocksdb::Status status = core_database_->DestroyColumnFamilyHandle(
         object_container_storage_engine_reference);
@@ -279,7 +279,7 @@ storage_engine::close_object_container_storage_engine_reference(
 
 status::status_code
 storage_engine::remove_object(
-    rocksdb::ColumnFamilyHandle* object_container_storage_engine_reference,
+    storage_engine_reference_handle* object_container_storage_engine_reference,
     const char* object_id)
 {
     const rocksdb::Status status = core_database_->Delete(

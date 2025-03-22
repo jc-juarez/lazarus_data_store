@@ -37,7 +37,7 @@ namespace storage
 {
 using byte = char;
 using byte_stream = std::string;
-using storage_engine_reference = rocksdb::ColumnFamilyHandle;
+using storage_engine_reference_handle = rocksdb::ColumnFamilyHandle;
 }
 
 } // namespace lazarus.
