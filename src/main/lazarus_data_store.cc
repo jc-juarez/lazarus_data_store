@@ -30,14 +30,14 @@ std::stop_source lazarus::lazarus_data_store::stop_source_;
 lazarus_data_store::lazarus_data_store(
     const boost::uuids::uuid session_id,
     const network::server_configuration& server_config,
-    const storage::storage_engine_configuration& storage_engine_configuration)
+    const storage::storage_configuration& storage_configuration)
     : session_id_{session_id}
 {
     //
     // Storage engine component allocation.
     //
     storage_engine_ = std::make_shared<storage::storage_engine>(
-        storage_engine_configuration);
+        storage_configuration);
 
     //
     // Object container index component allocation.
@@ -49,6 +49,7 @@ lazarus_data_store::lazarus_data_store(
     // Garbage collector component allocation.
     //
     garbage_collector_ = std::make_unique<storage::garbage_collector>(
+        storage_configuration,
         storage_engine_,
         object_container_index_);
 
@@ -104,7 +105,7 @@ lazarus_data_store::run()
         lazarus::lazarus_data_store lazarus_ds{
             session_id,
             lazarus::network::server_configuration{},
-            lazarus::storage::storage_engine_configuration{}};
+            lazarus::storage::storage_configuration{}};
 
         //
         // Start the data store system. This will start the core 
@@ -192,6 +193,8 @@ lazarus_data_store::start_data_store()
 
     //
     // Start the system garbage collector.
+    // This needs to be started after all initial orphaned
+    // object containers are discovered for proper initial cleanup.
     //
     garbage_collector_->start();
 

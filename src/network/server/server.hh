@@ -28,7 +28,7 @@ namespace network
 
 //
 // Main HTTP server wrapper.
-// This class does not own the internal HTTP server handle as it is a globlal access singleton.
+// This class does not own the internal HTTP server handle as it is a global access singleton.
 // Instead, it provides a concise set of APIs for safe access and configurations containerization.
 //
 class server

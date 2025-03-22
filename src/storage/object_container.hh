@@ -63,6 +63,12 @@ public:
     get_storage_engine_reference() const;
 
     //
+    // Gets the name of the object container.
+    //
+    std::string
+    get_name() const;
+
+    //
     // Marks the object container as deleted.
     //
     void

@@ -10,6 +10,7 @@
 // ****************************************************
 
 #include <format>
+#include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 #include "object_container.hh"
 
@@ -30,6 +31,10 @@ object_container::object_container(
 
 object_container::~object_container()
 {
+    spdlog::info("Removing last object container reference from memory. "
+        "ObjectContainerMetadata={}.",
+        to_string());
+
     storage_engine_->close_object_container_storage_engine_reference(
         storage_engine_reference_);
 }
@@ -53,6 +58,13 @@ object_container::get_storage_engine_reference() const
 {
     std::shared_lock<std::shared_mutex> {lock_};
     return storage_engine_reference_;
+}
+
+std::string
+object_container::get_name() const
+{
+    std::shared_lock<std::shared_mutex> {lock_};
+    return object_container_persistent_metadata_.name();
 }
 
 void

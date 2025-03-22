@@ -83,6 +83,20 @@ public:
     get_object_container(
         const char* object_container_name) const;
 
+    //
+    // Gets a list of all the object containers.
+    //
+    std::vector<std::shared_ptr<object_container>>
+    get_all_object_containers() const;
+
+    //
+    // Removes an object container from the index table. After this, all subsequent
+    // API calls to the object container index will not contain the object container.
+    //
+    status::status_code
+    remove_object_container(
+        const char* object_container_name);
+
 private:
 
     //

@@ -15,7 +15,7 @@
 #include <rocksdb/db.h>
 #include "../status/status.hh"
 #include "../common/aliases.hh"
-#include "storage_engine_configuration.hh"
+#include "storage_configuration.hh"
 
 namespace lazarus
 {
@@ -33,7 +33,7 @@ public:
     // Constructor for the storage engine.
     //
     storage_engine(
-        const storage_engine_configuration& storage_engine_configuration);
+        const storage_configuration& storage_configuration);
 
     //
     // Starts the storage engine.
@@ -109,6 +109,13 @@ public:
         storage_engine_reference_handle* object_container_storage_engine_reference,
         const char* object_id);
 
+    //
+    // Removes an object container permanently from the filesystem.
+    //
+    status::status_code
+    remove_object_container(
+        storage_engine_reference_handle* object_container_storage_engine_reference);
+
 private:
 
     //
@@ -117,9 +124,9 @@ private:
     std::unique_ptr<rocksdb::DB> core_database_;
 
     //
-    // Configuration for the storage engine.
+    // Configuration for the storage subsystem.
     //
-    const storage_engine_configuration storage_engine_configuration_;
+    const storage_configuration storage_configuration_;
 };
 
 } // namespace storage.

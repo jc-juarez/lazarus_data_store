@@ -1,11 +1,11 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'storage_engine_configuration.hh'
+// 'storage_configuration.hh'
 // Author: jcjuarez
 // Description:
 //      Container that stores the default
-//      configurations for the storage engine.
+//      configurations for the storage subsystem.
 // ****************************************************
 
 #pragma once
@@ -21,16 +21,17 @@ namespace storage
 {
 
 //
-// Storage engine configuration container.
+// Storage configurations container.
 //
-struct storage_engine_configuration
+struct storage_configuration
 {
     //
     // Constructor for the storage engine configurations.
     // Specifies the default values to be used by the storage engine.
     //
-    storage_engine_configuration()
-        : core_database_path_{""}
+    storage_configuration()
+        : core_database_path_{""},
+          garbage_collector_periodic_interval_ms_{10'000u}
     {
         //
         // Set the core database path with the default home directory path if no path
@@ -57,6 +58,11 @@ struct storage_engine_configuration
     // Directory path for the core database.
     //
     std::string core_database_path_;
+
+    //
+    // Periodic garbage collector interval in milliseconds.
+    //
+    std::uint32_t garbage_collector_periodic_interval_ms_;
 };
 
 } // namespace storage.

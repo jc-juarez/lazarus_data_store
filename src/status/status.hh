@@ -165,5 +165,10 @@ status_code_definition(object_deletion_failed, 0x8'0000015);
 //
 status_code_definition(object_container_in_deletion_process, 0x8'0000016);
 
+//
+// Object container storage engine deletion failed.
+//
+status_code_definition(object_container_storage_engine_deletion_failed, 0x8'0000017);
+
 } // namespace status.
 } // namespace lazarus.

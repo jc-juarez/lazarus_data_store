@@ -203,7 +203,7 @@ object_container_operation_serializer::handle_object_container_removal(
 
     //
     // First, remove the object container from the filesystem internal metadata.
-    // After this operation is completed, the link between the metadat and the actual
+    // After this operation is completed, the link between the metadata and the actual
     // object container will be broken, and only the in-memory object container reference
     // will remain active for the rest of this session and be cleaned up by the garbage collector.
     //

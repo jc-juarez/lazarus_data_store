@@ -15,8 +15,8 @@
 #include "../common/aliases.hh"
 #include "../common/uuid_utilities.hh"
 #include "../logger/logger_configuration.hh"
+#include "../storage/storage_configuration.hh"
 #include "../network/server/server_configuration.hh"
-#include "../storage/storage_engine_configuration.hh"
 
 namespace lazarus
 {
@@ -47,7 +47,7 @@ public:
     lazarus_data_store(
         const boost::uuids::uuid session_id,
         const network::server_configuration& server_config,
-        const storage::storage_engine_configuration& storage_engine_configuration);
+        const storage::storage_configuration& storage_configuration);
 
     //
     // Entry point for the data store.

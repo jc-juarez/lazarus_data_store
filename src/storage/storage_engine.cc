@@ -17,8 +17,8 @@ namespace storage
 {
 
 storage_engine::storage_engine(
-    const storage_engine_configuration& storage_engine_configuration)
-    : storage_engine_configuration_{storage_engine_configuration},
+    const storage_configuration& storage_configuration)
+    : storage_configuration_{storage_configuration},
       core_database_(nullptr)
 {}
 
@@ -46,7 +46,7 @@ storage_engine::start(
 
     const rocksdb::Status status = rocksdb::DB::Open(
         options,
-        storage_engine_configuration_.core_database_path_,
+        storage_configuration_.core_database_path_,
         column_family_descriptors,
         &storage_engine_references,
         &database_handle);
@@ -222,7 +222,7 @@ storage_engine::fetch_object_containers_from_disk(
 {
     const rocksdb::Status status = rocksdb::DB::ListColumnFamilies(
         rocksdb::DBOptions(),
-        storage_engine_configuration_.core_database_path_,
+        storage_configuration_.core_database_path_,
         object_containers_names);
 
     //
@@ -300,6 +300,29 @@ storage_engine::remove_object(
             static_cast<std::uint32_t>(status.subcode()));
 
         return status::object_deletion_failed;
+    }
+
+    return status::success;
+}
+
+status::status_code
+storage_engine::remove_object_container(
+    storage_engine_reference_handle* object_container_storage_engine_reference)
+{
+    const rocksdb::Status status = core_database_->DropColumnFamily(
+        object_container_storage_engine_reference);
+
+    if (!status.ok())
+    {
+        spdlog::error("Failed to remove object container from the storage engine. "
+            "ObjectContainerStorageEngineReference={}, "
+            "StorageEngineCode={}, "
+            "StorageEngineSubCode={}.",
+            static_cast<void*>(object_container_storage_engine_reference),
+            static_cast<std::uint32_t>(status.code()),
+            static_cast<std::uint32_t>(status.subcode()));
+
+        return status::object_container_storage_engine_deletion_failed;
     }
 
     return status::success;

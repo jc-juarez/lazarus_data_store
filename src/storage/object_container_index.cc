@@ -131,5 +131,40 @@ object_container_index::get_object_container(
     return nullptr;
 }
 
+std::vector<std::shared_ptr<object_container>>
+object_container_index::get_all_object_containers() const
+{
+    std::vector<std::shared_ptr<object_container>> object_containers;
+
+    for (const auto& entry : object_container_index_table_)
+    {
+        object_containers.push_back(entry.second);
+    }
+
+    return object_containers;
+}
+
+status::status_code
+object_container_index::remove_object_container(
+    const char* object_container_name)
+{
+    index_table_type::accessor accessor;
+
+    if (object_container_index_table_.find(
+        accessor,
+        object_container_name))
+    {
+        spdlog::info("Deleting object container reference from the index table. "
+            "ObjectContainerMetadata={}.",
+            accessor->second->to_string());
+
+        object_container_index_table_.erase(accessor);
+
+        return status::success;
+    }
+
+    return status::object_container_not_exists;
+}
+
 } // namespace storage.
 } // namespace lazarus.
