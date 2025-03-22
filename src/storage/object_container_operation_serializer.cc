@@ -92,10 +92,10 @@ object_container_operation_serializer::handle_object_container_creation(
     const schemas::object_container_request_interface& object_container_request)
 {
     status::status_code status =
-        object_container_index_->object_container_exists(
+        object_container_index_->get_object_container_existence_status(
             object_container_request.get_name());
 
-    if (status::failed(status))
+    if (status != status::object_container_not_exists)
     {
         //
         // At this point, it is guaranteed that this operation is serialized
@@ -180,10 +180,10 @@ object_container_operation_serializer::handle_object_container_removal(
     const schemas::object_container_request_interface& object_container_request)
 {
     status::status_code status =
-        object_container_index_->object_container_exists(
+        object_container_index_->get_object_container_existence_status(
             object_container_request.get_name());
 
-    if (status::failed(status))
+    if (status != status::object_container_already_exists)
     {
         //
         // At this point, it is guaranteed that this operation is serialized
@@ -230,10 +230,11 @@ object_container_operation_serializer::handle_object_container_removal(
     // metadata as deleted for later garbage collector cleanup. In case a crash occurs in between, the
     // filesystem object container will be detected as orphaned during startup and will also be cleaned up.
     //
-    status = object_container_index_->mark_object_container_as_deleted(
-        object_container_request.get_name());
+    std::shared_ptr<object_container> object_container =
+        object_container_index_->get_object_container(
+            object_container_request.get_name());
 
-    if (status::failed(status))
+    if (object_container == nullptr)
     {
         //
         // This should never happen.
@@ -248,8 +249,13 @@ object_container_operation_serializer::handle_object_container_removal(
             object_container_request.get_name(),
             status);
 
-        return status;
+        return status::object_container_not_exists;
     }
+
+    //
+    // Marking it as deleted.
+    //
+    object_container->mark_as_deleted();
 
     spdlog::info("Object container internal metadata deletion marking succeeded. "
         "Optype={}, "

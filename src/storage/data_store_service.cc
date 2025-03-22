@@ -251,10 +251,10 @@ data_store_service::validate_object_container_operation_request(
         case schemas::object_container_request_optype::create:
         {
             const status::status_code status = 
-                object_container_index_->object_container_exists(
+                object_container_index_->get_object_container_existence_status(
                     object_container_request.get_name());
 
-            if (status::failed(status))
+            if (status != status::object_container_not_exists)
             {
                 //
                 // Fail fast in case the object container already exists.
@@ -276,10 +276,10 @@ data_store_service::validate_object_container_operation_request(
         case schemas::object_container_request_optype::remove:
         {
             const status::status_code status = 
-                object_container_index_->object_container_exists(
+                object_container_index_->get_object_container_existence_status(
                     object_container_request.get_name());
 
-            if (status::failed(status))
+            if (status != status::object_container_already_exists)
             {
                 //
                 // Fail fast in case the object container does not exist.

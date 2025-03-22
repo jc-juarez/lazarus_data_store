@@ -86,7 +86,7 @@ public:
     // Returns the appropriate status code depending on the state of the object container.
     //
     status::status_code
-    object_container_exists(
+    get_object_container_existence_status(
         const char* object_container_name);
 
     //
@@ -94,6 +94,13 @@ public:
     //
     std::string
     get_object_container_as_string(
+        const char* object_container_name);
+
+    //
+    // Gets a reference an object container.
+    //
+    std::shared_ptr<object_container>
+    get_object_container(
         const char* object_container_name);
 
 private:
@@ -119,7 +126,7 @@ private:
     // Maps an object container identifier to the
     // respective object container memory reference.
     //
-    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>> object_container_index_table_;
+    tbb::concurrent_hash_map<std::string, std::shared_ptr<object_container>> object_container_index_table_;
 
     //
     // Max number of object containers allowed to be created

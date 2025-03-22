@@ -51,12 +51,14 @@ object_container::create_object_container_persistent_metadata(
 rocksdb::ColumnFamilyHandle*
 object_container::get_storage_engine_reference() const
 {
+    std::shared_lock<std::shared_mutex> {lock_};
     return storage_engine_reference_;
 }
 
 schemas::object_container_persistent_interface
 object_container::get_persistent_metadata_snapshot() const
 {
+    std::shared_lock<std::shared_mutex> {lock_};
     return object_container_persistent_metadata_;
 }
 
@@ -64,24 +66,28 @@ void
 object_container::set_persistent_metadata(
     const schemas::object_container_persistent_interface& object_container_persistent_metadata)
 {
+    std::unique_lock<std::shared_mutex> {lock_};
     object_container_persistent_metadata_ = object_container_persistent_metadata;
 }
 
 void
 object_container::mark_as_deleted()
 {
+    std::unique_lock<std::shared_mutex> {lock_};
     is_deleted_ = true;
 }
 
 bool
 object_container::is_deleted() const
 {
+    std::shared_lock<std::shared_mutex> {lock_};
     return is_deleted_;
 }
 
 std::string
 object_container::to_string() const
 {
+    std::shared_lock<std::shared_mutex> {lock_};
     return std::format(
         "{{Name={}, "
         "StorageEngineReference={}, "

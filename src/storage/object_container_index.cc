@@ -19,6 +19,8 @@ namespace lazarus
 namespace storage
 {
 
+using index_table_type = tbb::concurrent_hash_map<std::string, std::shared_ptr<object_container>>;
+
 object_container_index::object_container_index(
     std::shared_ptr<storage_engine> storage_engine_handle)
     : storage_engine_{std::move(storage_engine_handle)},
@@ -80,7 +82,7 @@ status::status_code
 object_container_index::mark_object_container_as_deleted(
     const char* object_container_name)
 {
-    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::accessor accessor;
+    index_table_type::accessor accessor;
 
     if (object_container_index_table_.find(
         accessor,
@@ -97,7 +99,7 @@ rocksdb::ColumnFamilyHandle*
 object_container_index::get_object_container_storage_engine_reference(
     const char* object_container_name) const
 {
-    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::const_accessor accessor;
+    index_table_type::const_accessor accessor;
 
     if (object_container_index_table_.find(
         accessor,
@@ -113,10 +115,10 @@ object_container_index::get_object_container_storage_engine_reference(
 }
 
 status::status_code
-object_container_index::object_container_exists(
+object_container_index::get_object_container_existence_status(
     const char* object_container_name)
 {
-    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::const_accessor accessor;
+    index_table_type::const_accessor accessor;
 
     if (object_container_index_table_.find(
         accessor,
@@ -127,7 +129,7 @@ object_container_index::object_container_exists(
         // If it is marked as deleted, consider it pending deletion.
         //
         return accessor->second->is_deleted() ?
-            status::object_container_in_deletion_process : status::success;
+            status::object_container_in_deletion_process : status::object_container_already_exists;
     }
 
     //
@@ -140,7 +142,7 @@ std::string
 object_container_index::get_object_container_as_string(
     const char* object_container_name)
 {
-    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::const_accessor accessor;
+    index_table_type::const_accessor accessor;
 
     if (object_container_index_table_.find(
         accessor,
@@ -155,11 +157,30 @@ object_container_index::get_object_container_as_string(
     return "";
 }
 
+std::shared_ptr<object_container>
+object_container_index::get_object_container(
+    const char* object_container_name)
+{
+    index_table_type::const_accessor accessor;
+
+    if (object_container_index_table_.find(
+        accessor,
+        object_container_name))
+    {
+        return accessor->second;
+    }
+
+    //
+    // Not present in the index table; return an null reference.
+    //
+    return nullptr;
+}
+
 std::optional<schemas::object_container_persistent_interface>
 object_container_index::get_object_container_persistent_metatadata_snapshot(
     const char* object_container_name) const
 {
-    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::const_accessor accessor;
+    index_table_type::const_accessor accessor;
 
     if (object_container_index_table_.find(
         accessor,
@@ -179,7 +200,7 @@ object_container_index::set_object_container_persistent_metadata(
     const char* object_container_name,
     const schemas::object_container_persistent_interface& object_container_persistent_metadata)
 {
-    tbb::concurrent_hash_map<std::string, std::unique_ptr<object_container>>::accessor accessor;
+    index_table_type::accessor accessor;
 
     if (object_container_index_table_.find(
         accessor,

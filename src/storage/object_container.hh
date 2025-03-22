@@ -12,6 +12,7 @@
 #pragma once
 
 #include <string>
+#include <shared_mutex>
 #include <rocksdb/db.h>
 #include "../common/aliases.hh"
 #include "object_container_persistent_interface.pb.h"
@@ -119,6 +120,11 @@ private:
     // metadata reference for the object container.
     //
     bool is_deleted_;
+
+    //
+    // Lock for synchronizing access to the object.
+    //
+    mutable std::shared_mutex lock_;
 };
 
 } // namespace storage.

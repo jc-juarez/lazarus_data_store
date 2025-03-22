@@ -37,8 +37,11 @@ garbage_collector::start()
 void
 garbage_collector::execute_garbage_collection()
 {
-    spdlog::info("Garbage collector running.");
-    std::this_thread::sleep_for(std::chrono::seconds(10u));
+    for (;;)
+    {
+        spdlog::info("Garbage collector running.");
+        std::this_thread::sleep_for(std::chrono::seconds(10u));
+    }
 }
 
 } // namespace storage.
