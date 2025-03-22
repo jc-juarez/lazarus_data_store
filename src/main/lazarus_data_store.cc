@@ -82,6 +82,11 @@ lazarus_data_store::run()
     const boost::uuids::uuid session_id = common::generate_uuid();
 
     //
+    // Register termination signals to be handled by the system.
+    //
+    register_signals();
+
+    //
     // Initialize the logger to be used by the system.
     // This must be placed outside the root exception handler for
     // ensuring the system throws with an unhandled exception if initialization
@@ -132,11 +137,6 @@ lazarus_data_store::get_stop_source_token()
 status::status_code
 lazarus_data_store::start_data_store()
 {
-    //
-    // Register termination signals to be handled by the system.
-    //
-    register_signals();
-
     //
     // Before starting the server, fetch all persistent object containers from the 
     // filesystem. These are needed for starting the storage engine so that it can

@@ -145,7 +145,7 @@ data_store_service::populate_object_container_index(
                 // If this is not part of the internal metadata, it means that this is an
                 // orphaned object container; mark it as deleted for the garbage collector to clean it up later.
                 //
-                spdlog::warn("Found orphaned object container on startup. "
+                spdlog::warn("Found orphaned object container on startup to be cleaned up by the garbage collector. "
                     "ObjectContainerName={}.",
                     object_container_name.c_str());
                 
