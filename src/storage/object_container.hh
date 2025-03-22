@@ -64,19 +64,6 @@ public:
     get_storage_engine_reference() const;
 
     //
-    // Returns the object container persistent metadata as a snapshot copy.
-    //
-    schemas::object_container_persistent_interface
-    get_persistent_metadata_snapshot() const;
-
-    //
-    // Sets the object container persistent metadata.
-    //
-    void
-    set_persistent_metadata(
-        const schemas::object_container_persistent_interface& object_container_persistent_metadata);
-
-    //
     // Marks the object container as deleted.
     //
     void
@@ -89,7 +76,7 @@ public:
     is_deleted() const;
 
     //
-    // Returns an string of the object container object.
+    // Returns the object container contents in a string format.
     //
     std::string
     to_string() const;

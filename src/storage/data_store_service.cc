@@ -117,9 +117,12 @@ data_store_service::populate_object_container_index(
                 object_container_storage_engine_reference,
                 object_container_persistent_metadata);
 
+            const std::shared_ptr<object_container> object_container =
+                object_container_index_->get_object_container(object_container_name.c_str());
+
             spdlog::info("Found object container on startup. Indexing into the object containers metadata table. "
                 "ObjectContainerMetadata={}.",
-                object_container_index_->get_object_container_as_string(object_container_name.c_str()));
+                object_container->to_string());
         }
         else
         {
@@ -146,10 +149,10 @@ data_store_service::populate_object_container_index(
                     "ObjectContainerName={}.",
                     object_container_name.c_str());
                 
-                status::status_code status = 
-                    object_container_index_->mark_object_container_as_deleted(object_container_name.c_str());
+                std::shared_ptr<object_container> object_container = 
+                    object_container_index_->get_object_container(object_container_name.c_str());
 
-                if (status::failed(status))
+                if (object_container == nullptr)
                 {
                     spdlog::critical("Failed to mark object container as deleted on startup. "
                         "ObjectContainerName={}.",
@@ -157,6 +160,8 @@ data_store_service::populate_object_container_index(
 
                     return status;
                 }
+
+                object_container->mark_as_deleted();
             }
         }
     }

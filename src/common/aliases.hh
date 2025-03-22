@@ -11,6 +11,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <rocksdb/db.h>
 #include <drogon/drogon.h>
 
 namespace lazarus
@@ -36,6 +37,7 @@ namespace storage
 {
 using byte = char;
 using byte_stream = std::string;
+using storage_engine_reference = rocksdb::ColumnFamilyHandle;
 }
 
 } // namespace lazarus.

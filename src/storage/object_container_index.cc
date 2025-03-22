@@ -74,49 +74,20 @@ object_container_index::insert_object_container(
 rocksdb::ColumnFamilyHandle*
 object_container_index::get_object_containers_internal_metadata_storage_engine_reference() const
 {
-    return get_object_container_storage_engine_reference(
-        object_containers_internal_metadata_name);
-}
-
-status::status_code
-object_container_index::mark_object_container_as_deleted(
-    const char* object_container_name)
-{
-    index_table_type::accessor accessor;
-
-    if (object_container_index_table_.find(
-        accessor,
-        object_container_name))
-    {
-        accessor->second->mark_as_deleted();
-        return status::success;
-    }
-
-    return status::object_container_not_exists;
-}
-
-rocksdb::ColumnFamilyHandle*
-object_container_index::get_object_container_storage_engine_reference(
-    const char* object_container_name) const
-{
-    index_table_type::const_accessor accessor;
-
-    if (object_container_index_table_.find(
-        accessor,
-        object_container_name))
-    {
-        return accessor->second->get_storage_engine_reference();
-    }
+    const std::shared_ptr<object_container> object_container =
+        get_object_container(object_containers_internal_metadata_name);
 
     //
-    // On failure, return a null reference.
+    // The object containers internal metadata should always be valid.
     //
-    return nullptr;
+    assert(object_container != nullptr);
+
+    return object_container->get_storage_engine_reference();
 }
 
 status::status_code
 object_container_index::get_object_container_existence_status(
-    const char* object_container_name)
+    const char* object_container_name) const
 {
     index_table_type::const_accessor accessor;
 
@@ -138,46 +109,8 @@ object_container_index::get_object_container_existence_status(
     return status::object_container_not_exists;
 }
 
-std::string
-object_container_index::get_object_container_as_string(
-    const char* object_container_name)
-{
-    index_table_type::const_accessor accessor;
-
-    if (object_container_index_table_.find(
-        accessor,
-        object_container_name))
-    {
-        return accessor->second->to_string();
-    }
-
-    //
-    // Not present in the index table; return an empty string.
-    //
-    return "";
-}
-
 std::shared_ptr<object_container>
 object_container_index::get_object_container(
-    const char* object_container_name)
-{
-    index_table_type::const_accessor accessor;
-
-    if (object_container_index_table_.find(
-        accessor,
-        object_container_name))
-    {
-        return accessor->second;
-    }
-
-    //
-    // Not present in the index table; return an null reference.
-    //
-    return nullptr;
-}
-
-std::optional<schemas::object_container_persistent_interface>
-object_container_index::get_object_container_persistent_metatadata_snapshot(
     const char* object_container_name) const
 {
     index_table_type::const_accessor accessor;
@@ -186,33 +119,16 @@ object_container_index::get_object_container_persistent_metatadata_snapshot(
         accessor,
         object_container_name))
     {
-        return accessor->second->get_persistent_metadata_snapshot();
+        //
+        // Object container present in the index table.
+        //
+        return accessor->second;
     }
 
     //
-    // On failure, return a null optional.
+    // Not present in the index table; unknown object container.
     //
-    return std::nullopt;
-}
-
-status::status_code
-object_container_index::set_object_container_persistent_metadata(
-    const char* object_container_name,
-    const schemas::object_container_persistent_interface& object_container_persistent_metadata)
-{
-    index_table_type::accessor accessor;
-
-    if (object_container_index_table_.find(
-        accessor,
-        object_container_name))
-    {
-        accessor->second->set_persistent_metadata(
-            object_container_persistent_metadata);
-
-        return status::success;
-    }
-
-    return status::object_container_not_exists;
+    return nullptr;
 }
 
 } // namespace storage.

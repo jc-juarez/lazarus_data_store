@@ -40,7 +40,8 @@ public:
     // user-created object containers and their metadata.
     // This name is reserved for the data store use.
     //
-    static constexpr const char* object_containers_internal_metadata_name = "_internal_metadata_:object_containers";
+    static constexpr const char* object_containers_internal_metadata_name =
+        "_internal_metadata_:object_containers";
 
     //
     // Checks if an object container is part of the internal metadata.
@@ -66,20 +67,6 @@ public:
     //
     rocksdb::ColumnFamilyHandle*
     get_object_containers_internal_metadata_storage_engine_reference() const;
-        
-    //
-    // Marks an object container as deleted.
-    //
-    status::status_code
-    mark_object_container_as_deleted(
-        const char* object_container_name);
-
-    //
-    // Gets the storage engine reference for a particular object container.
-    //
-    rocksdb::ColumnFamilyHandle*
-    get_object_container_storage_engine_reference(
-        const char* object_container_name) const;
 
     //
     // Checks if the object container exists in the index internal metadata.
@@ -87,39 +74,16 @@ public:
     //
     status::status_code
     get_object_container_existence_status(
-        const char* object_container_name);
-
-    //
-    // Gets the object container format as a string.
-    //
-    std::string
-    get_object_container_as_string(
-        const char* object_container_name);
+        const char* object_container_name) const;
 
     //
     // Gets a reference an object container.
     //
     std::shared_ptr<object_container>
     get_object_container(
-        const char* object_container_name);
-
-private:
-
-    //
-    // Gets a snapshot of the current object containers internal metadata persistent metadata.
-    // Used for modification of the metadata from a single writer thread (serializer).
-    //
-    std::optional<schemas::object_container_persistent_interface>
-    get_object_container_persistent_metatadata_snapshot(
         const char* object_container_name) const;
 
-    //
-    // Sets the persistent metadata for a given object container.
-    //
-    status::status_code
-    set_object_container_persistent_metadata(
-        const char* object_container_name,
-        const schemas::object_container_persistent_interface& object_container_persistent_metadata);
+private:
 
     //
     // Index table for object containers in the system.
