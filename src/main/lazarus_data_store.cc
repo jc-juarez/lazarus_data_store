@@ -136,8 +136,7 @@ lazarus_data_store::get_stop_source_token()
 }
 
 status::status_code
-lazarus_data_store::start_data_store()
-{
+lazarus_data_store::start_data_store() const {
     //
     // Before starting the server, fetch all persistent object containers from the 
     // filesystem. These are needed for starting the storage engine so that it can

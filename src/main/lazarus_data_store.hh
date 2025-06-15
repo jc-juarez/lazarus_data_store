@@ -67,7 +67,7 @@ public:
     // Start the lazarus data store system.
     //
     status::status_code
-    start_data_store();
+    start_data_store() const;
 
 private:
 

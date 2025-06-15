@@ -7,5 +7,6 @@
 #      Ignore certain files for tracking. 
 # *************************************
 
+.idea/
 .vscode/
 build/
