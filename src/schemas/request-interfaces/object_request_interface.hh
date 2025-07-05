@@ -57,7 +57,7 @@ public:
     // Gets the object data.
     // Returns a non-owning pointer to the byte stream.
     //
-    byte*
+    const storage::byte*
     get_object_data() const;
 
     //
@@ -82,7 +82,7 @@ private:
     // Object data.
     // Owning byte stream.
     //
-    byte_stream object_data_;
+    storage::byte_stream object_data_;
 
     //
     // Expected object container name key tag in the client request.

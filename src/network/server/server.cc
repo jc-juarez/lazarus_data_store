@@ -11,8 +11,9 @@
 #include <format>
 #include "server.hh"
 #include <spdlog/spdlog.h>
-#include "../../storage/object_container_management_service.hh"
+#include "../endpoints/object_endpoint.hh"
 #include "../endpoints/object_container_endpoint.hh"
+#include "../../storage/object_container_management_service.hh"
 
 namespace lazarus
 {
@@ -67,6 +68,12 @@ server::register_endpoints(
     // Object container endpoint.
     //
     http_server_.registerController(std::make_shared<object_container_endpoint>(
+        object_container_management_service_handle));
+
+    //
+    // Object endpoint.
+    //
+    http_server_.registerController(std::make_shared<object_endpoint>(
         object_container_management_service_handle));
 }
 

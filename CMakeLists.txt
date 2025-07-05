@@ -40,6 +40,7 @@ set(SOURCE_FILES
     src/storage/object_container_index.cc
     src/storage/object_container_operation_serializer.cc
     src/schemas/request-interfaces/object_container_request_interface.cc
+    src/schemas/request-interfaces/object_request_interface.cc
 )
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})
