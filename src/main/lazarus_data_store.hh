@@ -31,6 +31,7 @@ namespace storage
 class storage_engine;
 class garbage_collector;
 class object_container_management_service;
+class object_management_service;
 class object_container_index;
 }
 
@@ -125,7 +126,12 @@ private:
     std::shared_ptr<storage::object_container_management_service> object_container_management_service_;
 
     //
-    // Gargage collector handle.
+    // Object management service handle.
+    //
+    std::shared_ptr<storage::object_management_service> object_management_service_;
+
+    //
+    // Garbage collector handle.
     //
     std::unique_ptr<storage::garbage_collector> garbage_collector_;
 

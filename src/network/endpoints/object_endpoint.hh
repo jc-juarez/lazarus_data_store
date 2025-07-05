@@ -32,7 +32,7 @@ public:
   // Endpoint constructor.
   //
   object_endpoint(
-    std::shared_ptr<storage::object_container_management_service> object_container_management_service_handle);
+    std::shared_ptr<storage::object_management_service> object_management_service);
 
   METHOD_LIST_BEGIN
   METHOD_ADD(object_endpoint::insert_object, "/", drogon::Post);
@@ -67,9 +67,9 @@ public:
 private:
 
   //
-  // Object container management service handle.
+  // Object management service handle.
   //
-  std::shared_ptr<storage::object_container_management_service> object_container_management_service_;
+  std::shared_ptr<storage::object_management_service> object_management_service_;
 };
 
 } // namespace network.

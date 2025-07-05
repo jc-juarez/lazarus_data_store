@@ -16,10 +16,11 @@
 #include "../network/server/server.hh"
 #include "../storage/storage_engine.hh"
 #include "../storage/garbage_collector.hh"
-#include "../storage/object_container_management_service.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "../storage/object_container_index.hh"
+#include "../storage/object_management_service.hh"
 #include "../network/server/server_configuration.hh"
+#include "../storage/object_container_management_service.hh"
 #include "../storage/object_container_operation_serializer.hh"
 
 namespace lazarus
@@ -69,11 +70,18 @@ lazarus_data_store::lazarus_data_store(
         std::move(object_container_operation_serializer));
 
     //
+    // Object management service component allocation.
+    //
+    object_management_service_ = std::make_shared<storage::object_management_service>(
+        object_container_index_);
+
+    //
     // Server component allocation.
     //
     server_ = std::make_shared<network::server>(
         server_config,
-        object_container_management_service_);
+        object_container_management_service_,
+        object_management_service_);
 }
 
 exit_code

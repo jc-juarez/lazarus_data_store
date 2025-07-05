@@ -13,6 +13,7 @@
 #include "object_endpoint.hh"
 #include "../../storage/object_container_management_service.hh"
 #include "../../schemas/request-interfaces/object_request_interface.hh"
+#include "../../storage/object_management_service.hh"
 
 namespace lazarus
 {
@@ -20,8 +21,8 @@ namespace network
 {
 
 object_endpoint::object_endpoint(
-    std::shared_ptr<storage::object_container_management_service> object_container_management_service_handle)
-    : object_container_management_service_{std::move(object_container_management_service_handle)}
+    std::shared_ptr<storage::object_management_service> object_management_service)
+    : object_management_service_{std::move(object_management_service)}
 {}
 
 void
@@ -29,7 +30,19 @@ object_endpoint::insert_object(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback)
 {
-    spdlog::info("Insert object request received.");
+    schemas::object_request_interface object_request{
+        request};
+
+    spdlog::info("Insert object request received. "
+        "Optype={}, "
+        "ObjectId={}, "
+        "ObjectContainerName={}.",
+        static_cast<std::uint8_t>(object_request.get_optype()),
+        object_request.get_object_id(),
+        object_request.get_object_container_name());
+
+    const status::status_code status = object_management_service_->validate_object_operation_request(
+        object_request);
 }
 
 void
