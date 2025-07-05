@@ -37,6 +37,7 @@ public:
   METHOD_LIST_BEGIN
   METHOD_ADD(object_endpoint::insert_object, "/", drogon::Post);
   METHOD_ADD(object_endpoint::get_object, "/", drogon::Get);
+  METHOD_ADD(object_endpoint::remove_object, "/", drogon::Delete);
   METHOD_LIST_END
 
   //
@@ -52,6 +53,14 @@ public:
   //
   void
   get_object(
+    const drogon::HttpRequestPtr& request,
+    server_response_callback&& response_callback);
+
+  //
+  // Removes an object from an object container.
+  //
+  void
+  remove_object(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback);
 

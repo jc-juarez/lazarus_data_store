@@ -31,6 +31,7 @@ set(SOURCE_FILES
     src/main/lazarus_data_store.cc
     src/network/server/server.cc
     src/network/endpoints/object_container_endpoint.cc
+    src/network/endpoints/object_endpoint.cc
     src/common/uuid_utilities.cc
     src/storage/object_container_management_service.cc
     src/storage/storage_engine.cc
