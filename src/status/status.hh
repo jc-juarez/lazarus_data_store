@@ -200,5 +200,15 @@ status_code_definition(object_id_empty, 0x8'0000022);
 //
 status_code_definition(object_data_empty, 0x8'0000023);
 
+//
+// Object ID exceeds max size limit.
+//
+status_code_definition(object_id_exceeds_size_limit, 0x8'0000024);
+
+//
+// Object data stream exceeds max size limit.
+//
+status_code_definition(object_data_exceeds_size_limit, 0x8'0000025);
+
 } // namespace status.
 } // namespace lazarus.

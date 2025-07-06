@@ -56,7 +56,7 @@ validate_object_id(
         //
         // Given object ID exceeds size limit.
         //
-        return status::object_container_name_exceeds_size_limit;
+        return status::object_id_exceeds_size_limit;
     }
 
     return status::success;
@@ -81,7 +81,7 @@ validate_object_data(
         //
         // Given object data stream exceeds size limit.
         //
-        return status::object_container_name_exceeds_size_limit;
+        return status::object_data_exceeds_size_limit;
     }
 
     return status::success;
