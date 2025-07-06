@@ -45,6 +45,13 @@ public:
 private:
 
     //
+    // Validates the object request parameters.
+    //
+    status::status_code
+    validate_request_parameters(
+        const schemas::object_request_interface& object_request);
+
+    //
     // Configurations for the storage subsystem.
     //
     const storage_configuration storage_configuration_;

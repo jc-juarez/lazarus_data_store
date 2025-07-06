@@ -43,14 +43,16 @@ public:
 
     //
     // Gets the object container name.
+    // Returns an immutable reference to the container name.
     //
-    const char*
+    const std::string&
     get_object_container_name() const;
 
     //
     // Gets the object ID.
+    // Returns an immutable reference to the ID.
     //
-    const char*
+    const std::string&
     get_object_id() const;
 
     //

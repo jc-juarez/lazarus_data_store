@@ -32,9 +32,7 @@ object_management_service::validate_object_operation_request(
         case schemas::object_request_optype::get:
         case schemas::object_request_optype::remove:
         {
-            //
-            // Valid optype; continue.
-            //
+            return validate_request_parameters(object_request);
             break;
         }
         default:
@@ -52,16 +50,14 @@ object_management_service::validate_object_operation_request(
         }
     }
 
-    if (object_request.get_object_data().size() > 1'000u)
-    {
-        //
-        // Object data exceeds bytes size limit.
-        //
-    }
+    return status::unreachable;
+}
 
+status::status_code
+object_management_service::validate_request_parameters(
+    const schemas::object_request_interface& object_request)
+{
 
-
-    return status::success;
 }
 
 } // namespace storage.

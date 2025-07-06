@@ -12,6 +12,7 @@
 #include "storage_engine.hh"
 #include "garbage_collector.hh"
 #include "object_container_index.hh"
+#include "../common/request_validations.hh"
 #include "object_container_management_service.hh"
 #include "object_container_operation_serializer.hh"
 #include "object_container_persistent_interface.pb.h"
@@ -214,23 +215,29 @@ status::status_code
 object_container_management_service::validate_object_container_operation_request(
     const schemas::object_container_request_interface& object_container_request)
 {
-    if (object_container_request.get_name().size() >
-        storage_configuration_.max_object_container_name_size_bytes_)
+    status::status_code status = common::request_validations::validate_object_container_name(
+        object_container_request.get_name(),
+        storage_configuration_);
+
+    if (status::failed(status))
     {
         //
-        // Given object container name exceeds limits; fail the operation.
-        // Not logging the container name as to avoid potential large-buffer attacks.
+        // Given object container name is invalid.
+        // Not logging the container name as to avoid potential
+        // large-buffer attacks in case the name is too big.
         //
         spdlog::error("Object container operation will be failed as the "
-            "object container name specified exceeds the maximum name size. "
+            "object container name is invalid. "
             "Optype={}, "
             "ObjectContainerNameSizeInBytes={}, "
-            "ObjectContainerNameMaxSizeInBytes={}.",
+            "ObjectContainerNameMaxSizeInBytes={}, "
+            "Status={:#x}.",
             static_cast<std::uint8_t>(object_container_request.get_optype()),
             object_container_request.get_name().size(),
-            storage_configuration_.max_object_container_name_size_bytes_);
+            storage_configuration_.max_object_container_name_size_bytes_,
+            status);
 
-        return status::object_container_name_exceeds_size_limit;
+        return status;
     }
 
     switch (object_container_request.get_optype())

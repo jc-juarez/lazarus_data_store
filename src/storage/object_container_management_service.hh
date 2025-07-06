@@ -83,10 +83,16 @@ private:
     create_internal_metadata_column_families(
         std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping);
 
+    //
+    // Validates if the given create request is valid.
+    //
     status::status_code
     validate_object_container_create_request(
         const schemas::object_container_request_interface& object_container_request);
 
+    //
+    // Validates if the given remove request is valid.
+    //
     status::status_code
     validate_object_container_remove_request(
         const schemas::object_container_request_interface& object_container_request);

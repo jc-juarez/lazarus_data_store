@@ -185,5 +185,20 @@ status_code_definition(unreachable, 0x8'0000019);
 //
 status_code_definition(max_number_object_containers_reached, 0x8'0000020);
 
+//
+// Given object container name is empty.
+//
+status_code_definition(object_container_name_empty, 0x8'0000021);
+
+//
+// Given object ID is empty.
+//
+status_code_definition(object_id_empty, 0x8'0000022);
+
+//
+// Given object data stream is empty.
+//
+status_code_definition(object_data_empty, 0x8'0000023);
+
 } // namespace status.
 } // namespace lazarus.
