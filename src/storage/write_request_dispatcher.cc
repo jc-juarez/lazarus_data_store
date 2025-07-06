@@ -116,10 +116,35 @@ write_request_dispatcher::execute_insert_operation(
     storage_engine_reference_handle* object_container_storage_engine_reference,
     const schemas::object_request_interface& object_request)
 {
-    return storage_engine_->insert_object(
+    status::status_code status = storage_engine_->insert_object(
         object_container_storage_engine_reference,
         object_request.get_object_id().c_str(),
         object_request.get_object_data());
+
+    if (status::succeeded(status))
+    {
+        spdlog::info("Object insertion succeeded. "
+            "Optype={}, "
+            "ObjectId={}, "
+            "ObjectContainerName={}.",
+            static_cast<std::uint8_t>(object_request.get_optype()),
+            object_request.get_object_id(),
+            object_request.get_object_container_name());
+    }
+    else
+    {
+        spdlog::info("Object insertion failed. "
+            "Optype={}, "
+            "ObjectId={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            static_cast<std::uint8_t>(object_request.get_optype()),
+            object_request.get_object_id(),
+            object_request.get_object_container_name(),
+            status);
+    }
+
+    return status;
 }
 
 status::status_code
@@ -127,9 +152,34 @@ write_request_dispatcher::execute_remove_operation(
     storage_engine_reference_handle* object_container_storage_engine_reference,
     const schemas::object_request_interface& object_request)
 {
-    return storage_engine_->remove_object(
+    status::status_code status = storage_engine_->remove_object(
         object_container_storage_engine_reference,
         object_request.get_object_id().c_str());
+
+    if (status::succeeded(status))
+    {
+        spdlog::info("Object removal succeeded. "
+            "Optype={}, "
+            "ObjectId={}, "
+            "ObjectContainerName={}.",
+            static_cast<std::uint8_t>(object_request.get_optype()),
+            object_request.get_object_id(),
+            object_request.get_object_container_name());
+    }
+    else
+    {
+        spdlog::info("Object removal failed. "
+            "Optype={}, "
+            "ObjectId={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            static_cast<std::uint8_t>(object_request.get_optype()),
+            object_request.get_object_id(),
+            object_request.get_object_container_name(),
+            status);
+    }
+
+    return status;
 }
 
 } // namespace lazarus::common.
