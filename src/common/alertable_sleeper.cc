@@ -22,7 +22,7 @@ alertable_sleeper::wait_for_and_alert_if_stopped(
     std::stop_token stop_token,
     const std::uint32_t wait_time_milliseconds)
 {
-    std::unique_lock<std::mutex> lock(lock_);
+    std::unique_lock<std::mutex> lock {lock_};
     return condition_variable_.wait_for(
         lock,
         stop_token,

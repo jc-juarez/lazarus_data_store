@@ -56,35 +56,35 @@ object_container::create_object_container_persistent_metadata(
 storage_engine_reference_handle*
 object_container::get_storage_engine_reference() const
 {
-    std::shared_lock<std::shared_mutex> {lock_};
+    std::shared_lock<std::shared_mutex> lock {lock_};
     return storage_engine_reference_;
 }
 
 std::string
 object_container::get_name() const
 {
-    std::shared_lock<std::shared_mutex> {lock_};
+    std::shared_lock<std::shared_mutex> lock {lock_};
     return object_container_persistent_metadata_.name();
 }
 
 void
 object_container::mark_as_deleted()
 {
-    std::unique_lock<std::shared_mutex> {lock_};
+    std::unique_lock<std::shared_mutex> lock {lock_};
     is_deleted_ = true;
 }
 
 bool
 object_container::is_deleted() const
 {
-    std::shared_lock<std::shared_mutex> {lock_};
+    std::shared_lock<std::shared_mutex> lock {lock_};
     return is_deleted_;
 }
 
 std::string
 object_container::to_string() const
 {
-    std::shared_lock<std::shared_mutex> {lock_};
+    std::shared_lock<std::shared_mutex> lock {lock_};
     return std::format(
         "{{Name={}, "
         "StorageEngineReference={}, "
