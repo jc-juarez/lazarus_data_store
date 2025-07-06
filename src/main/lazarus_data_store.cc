@@ -83,7 +83,8 @@ lazarus_data_store::lazarus_data_store(
     //
     object_management_service_ = std::make_shared<storage::object_management_service>(
         storage_configuration,
-        object_container_index_);
+        object_container_index_,
+        write_request_dispatcher_);
 
     //
     // Server component allocation.
