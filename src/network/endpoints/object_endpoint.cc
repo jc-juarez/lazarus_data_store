@@ -30,8 +30,24 @@ object_endpoint::insert_object(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback)
 {
-    schemas::object_request_interface object_request{
-        request};
+    schemas::object_request_interface object_request{request};
+
+    status::status_code status = object_management_service_->validate_object_operation_request(
+        object_request);
+
+    if (status::failed(status))
+    {
+        //
+        // Request validation failed. Do not log the request parameters
+        // here as to avoid logging potentially malformed parameters.
+        // The required logging should be taken care of by the management service.
+        //
+        network::server::send_response(
+            response_callback,
+            status);
+
+        return;
+    }
 
     spdlog::info("Insert object request received. "
         "Optype={}, "
@@ -41,8 +57,9 @@ object_endpoint::insert_object(
         object_request.get_object_id(),
         object_request.get_object_container_name());
 
-    const status::status_code status = object_management_service_->validate_object_operation_request(
-        object_request);
+    network::server::send_response(
+        response_callback,
+        status::success);
 }
 
 void

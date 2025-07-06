@@ -240,6 +240,10 @@ object_container_management_service::validate_object_container_operation_request
         return status;
     }
 
+    //
+    // Only log the request parameters after
+    // they have been validated to be well-formed.
+    //
     switch (object_container_request.get_optype())
     {
         case schemas::object_container_request_optype::create:
