@@ -22,9 +22,9 @@ namespace storage
 
 object_container_operation_serializer::object_container_operation_serializer(
     std::shared_ptr<storage_engine> storage_engine_handle,
-    std::shared_ptr<object_container_index> object_cotainer_index_handle)
+    std::shared_ptr<object_container_index> object_container_index)
     : storage_engine_{std::move(storage_engine_handle)},
-      object_container_index_{std::move(object_cotainer_index_handle)},
+      object_container_index_{std::move(object_container_index)},
       serializer_queue_{1u} // Must always be a single-threaded task queue.
 {}
 
@@ -93,7 +93,7 @@ object_container_operation_serializer::handle_object_container_creation(
 {
     status::status_code status =
         object_container_index_->get_object_container_existence_status(
-            object_container_request.get_name());
+            object_container_request.get_name().c_str());
 
     if (status != status::object_container_not_exists)
     {
@@ -122,7 +122,7 @@ object_container_operation_serializer::handle_object_container_creation(
     //
     storage_engine_reference_handle* object_container_storage_engine_reference;
     status = storage_engine_->create_object_container(
-        object_container_request.get_name(),
+        object_container_request.get_name().c_str(),
         &object_container_storage_engine_reference);
 
     if (status::failed(status))
@@ -140,13 +140,13 @@ object_container_operation_serializer::handle_object_container_creation(
     // Insert the metadata for the newly created object container to the storage engine.
     //
     const schemas::object_container_persistent_interface object_container_persistent_metadata =
-        object_container::create_object_container_persistent_metadata(object_container_request.get_name());
+        object_container::create_object_container_persistent_metadata(object_container_request.get_name().c_str());
     byte_stream serialized_object_container_persistent_metadata;
     object_container_persistent_metadata.SerializeToString(&serialized_object_container_persistent_metadata);
     status = storage_engine_->insert_object(
         object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
-        object_container_request.get_name(),
-        serialized_object_container_persistent_metadata.c_str());
+        object_container_request.get_name().c_str(),
+        serialized_object_container_persistent_metadata);
 
     if (status::failed(status))
     {
@@ -181,7 +181,7 @@ object_container_operation_serializer::handle_object_container_removal(
 {
     status::status_code status =
         object_container_index_->get_object_container_existence_status(
-            object_container_request.get_name());
+            object_container_request.get_name().c_str());
 
     if (status != status::object_container_already_exists)
     {
@@ -209,7 +209,7 @@ object_container_operation_serializer::handle_object_container_removal(
     //
     status = storage_engine_->remove_object(
         object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
-        object_container_request.get_name());
+        object_container_request.get_name().c_str());
 
     if (status::failed(status))
     {
@@ -232,7 +232,7 @@ object_container_operation_serializer::handle_object_container_removal(
     //
     std::shared_ptr<object_container> object_container =
         object_container_index_->get_object_container(
-            object_container_request.get_name());
+            object_container_request.get_name().c_str());
 
     if (object_container == nullptr)
     {

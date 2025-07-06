@@ -52,7 +52,7 @@ public:
     insert_object(
         storage_engine_reference_handle* object_container_storage_engine_reference,
         const char* object_id,
-        const byte* object_data);
+        const byte_stream& object_data);
 
     //
     // Get an object from the data store.
@@ -124,7 +124,7 @@ private:
     std::unique_ptr<rocksdb::DB> core_database_;
 
     //
-    // Configuration for the storage subsystem.
+    // Configurations for the storage subsystem.
     //
     const storage_configuration storage_configuration_;
 };

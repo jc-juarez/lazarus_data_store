@@ -55,9 +55,9 @@ public:
 
     //
     // Gets the object data.
-    // Returns a non-owning pointer to the byte stream.
+    // Returns an immutable reference to the byte stream.
     //
-    const storage::byte*
+    const storage::byte_stream&
     get_object_data() const;
 
     //

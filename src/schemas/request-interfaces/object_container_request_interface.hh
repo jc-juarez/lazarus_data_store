@@ -42,8 +42,9 @@ public:
 
     //
     // Gets the object container name.
+    // Returns an immutable reference to the name.
     //
-    const char*
+    const std::string&
     get_name() const;
 
     //

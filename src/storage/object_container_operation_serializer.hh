@@ -36,7 +36,7 @@ public:
     //
     object_container_operation_serializer(
         std::shared_ptr<storage_engine> storage_engine_handle,
-        std::shared_ptr<object_container_index> object_cotainer_index_handle);
+        std::shared_ptr<object_container_index> object_container_index);
 
     //
     // Enqueues a serialized object container operation into the serializer.

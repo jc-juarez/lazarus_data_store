@@ -55,10 +55,10 @@ object_container_request_interface::object_container_request_interface(
       optype_{std::move(other.optype_)}
 {}
 
-const char*
+const std::string&
 object_container_request_interface::get_name() const
 {
-    return name_.c_str();
+    return name_;
 }
 
 object_container_request_optype

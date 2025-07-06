@@ -65,6 +65,7 @@ lazarus_data_store::lazarus_data_store(
     // Object container management service component allocation.
     //
     object_container_management_service_ = std::make_shared<storage::object_container_management_service>(
+        storage_configuration,
         storage_engine_,
         object_container_index_,
         std::move(object_container_operation_serializer));
@@ -73,6 +74,7 @@ lazarus_data_store::lazarus_data_store(
     // Object management service component allocation.
     //
     object_management_service_ = std::make_shared<storage::object_management_service>(
+        storage_configuration,
         object_container_index_);
 
     //

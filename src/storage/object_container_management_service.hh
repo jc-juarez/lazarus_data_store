@@ -4,7 +4,8 @@
 // 'object_container_management_service.hh'
 // Author: jcjuarez
 // Description:
-//      Accessor core storage operations. 
+//      Management service for object container
+//      operations.
 // ****************************************************
 
 #pragma once
@@ -16,6 +17,7 @@
 #include "../common/aliases.hh"
 #include "../common/aliases.hh"
 #include <drogon/HttpController.h>
+#include "storage_configuration.hh"
 #include "../network/server/server.hh"
 #include "../schemas/request-interfaces/object_container_request_interface.hh"
 
@@ -39,6 +41,7 @@ public:
     // Constructor data service.
     //
     object_container_management_service(
+        const storage_configuration& storage_configuration,
         std::shared_ptr<storage_engine> storage_engine_handle,
         std::shared_ptr<object_container_index> object_container_index_handle,
         std::unique_ptr<object_container_operation_serializer> object_container_operation_serializer_handle);
@@ -80,8 +83,21 @@ private:
     create_internal_metadata_column_families(
         std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping);
 
+    status::status_code
+    validate_object_container_create_request(
+        const schemas::object_container_request_interface& object_container_request);
+
+    status::status_code
+    validate_object_container_remove_request(
+        const schemas::object_container_request_interface& object_container_request);
+
     //
-    // Handle for the storage enine.
+    // Configurations for the storage subsystem.
+    //
+    const storage_configuration storage_configuration_;
+
+    //
+    // Handle for the storage engine.
     //
     std::shared_ptr<storage_engine> storage_engine_;
 

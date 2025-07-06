@@ -4,15 +4,15 @@
 // 'object_container_management_service.cc'
 // Author: jcjuarez
 // Description:
-//      Accessor core storage operations. 
+//      Management service for object container
+//      operations.
 // ****************************************************
 
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 #include "garbage_collector.hh"
-#include "object_container_management_service.hh"
 #include "object_container_index.hh"
-#include "../common/uuid_utilities.hh"
+#include "object_container_management_service.hh"
 #include "object_container_operation_serializer.hh"
 #include "object_container_persistent_interface.pb.h"
 
@@ -22,10 +22,12 @@ namespace storage
 {
 
 object_container_management_service::object_container_management_service(
+    const storage_configuration& storage_configuration,
     std::shared_ptr<storage_engine> storage_engine_handle,
     std::shared_ptr<object_container_index> object_container_index_handle,
     std::unique_ptr<object_container_operation_serializer> object_container_operation_serializer_handle)
-    : storage_engine_(std::move(storage_engine_handle)),
+    : storage_configuration_{storage_configuration},
+      storage_engine_(std::move(storage_engine_handle)),
       object_container_index_{std::move(object_container_index_handle)},
       object_container_operation_serializer_{std::move(object_container_operation_serializer_handle)}
 {}
@@ -212,63 +214,104 @@ status::status_code
 object_container_management_service::validate_object_container_operation_request(
     const schemas::object_container_request_interface& object_container_request)
 {
+    if (object_container_request.get_name().size() >
+        storage_configuration_.max_object_container_name_size_bytes_)
+    {
+        //
+        // Given object container name exceeds limits; fail the operation.
+        // Not logging the container name as to avoid potential large-buffer attacks.
+        //
+        spdlog::error("Object container operation will be failed as the "
+            "object container name specified exceeds the maximum name size. "
+            "Optype={}, "
+            "ObjectContainerNameSizeInBytes={}, "
+            "ObjectContainerNameMaxSizeInBytes={}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name().size(),
+            storage_configuration_.max_object_container_name_size_bytes_);
+
+        return status::object_container_name_exceeds_size_limit;
+    }
+
     switch (object_container_request.get_optype())
     {
         case schemas::object_container_request_optype::create:
         {
-            const status::status_code status = 
-                object_container_index_->get_object_container_existence_status(
-                    object_container_request.get_name());
-
-            if (status != status::object_container_not_exists)
-            {
-                //
-                // Fail fast in case the object container already exists.
-                //
-                spdlog::error("Object container creation will be failed as the "
-                    "object container is in a non-creatable state. "
-                    "Optype={}, "
-                    "ObjectContainerName={}, "
-                    "Status={:#x}.",
-                    static_cast<std::uint8_t>(object_container_request.get_optype()),
-                    object_container_request.get_name(),
-                    status);
-
-                return status;
-            }
-
+            return validate_object_container_create_request(object_container_request);
             break;
         }
         case schemas::object_container_request_optype::remove:
         {
-            const status::status_code status = 
-                object_container_index_->get_object_container_existence_status(
-                    object_container_request.get_name());
-
-            if (status != status::object_container_already_exists)
-            {
-                //
-                // Fail fast in case the object container does not exist.
-                //
-                spdlog::error("Object container removal will be failed as the "
-                    "object container is in a non-deletable state. "
-                    "Optype={}, "
-                    "ObjectContainerName={}, "
-                    "Status={:#x}.",
-                    static_cast<std::uint8_t>(object_container_request.get_optype()),
-                    object_container_request.get_name(),
-                    status);
-
-                return status;
-            }
-
+            return validate_object_container_remove_request(object_container_request);
             break;
         }
         default:
         {
+            spdlog::error("Invalid optype received for object operation. "
+                "Optype={}, "
+                "ObjectContainerName={}.",
+                static_cast<std::uint8_t>(object_container_request.get_optype()),
+                object_container_request.get_name());
+
             return status::invalid_operation;
             break;
         }
+    }
+
+    return status::unreachable;
+}
+
+status::status_code
+object_container_management_service::validate_object_container_create_request(
+    const schemas::object_container_request_interface& object_container_request)
+{
+    const status::status_code status =
+        object_container_index_->get_object_container_existence_status(
+            object_container_request.get_name().c_str());
+
+    if (status != status::object_container_not_exists)
+    {
+        //
+        // Fail fast in case the object container already exists.
+        //
+        spdlog::error("Object container creation will be failed as the "
+            "object container is in a non-creatable state. "
+            "Optype={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name(),
+            status);
+
+        return status;
+    }
+
+    return status::success;
+}
+
+status::status_code
+object_container_management_service::validate_object_container_remove_request(
+    const schemas::object_container_request_interface& object_container_request)
+{
+    const status::status_code status =
+        object_container_index_->get_object_container_existence_status(
+            object_container_request.get_name().c_str());
+
+    if (status != status::object_container_already_exists)
+    {
+        //
+        // Fail fast in case the object container does not exist.
+        //
+        spdlog::error("Object container removal will be failed as the "
+            "object container is in a non-deletable state. "
+            "Optype={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name(),
+            status);
+
+        return status;
     }
 
     return status::success;

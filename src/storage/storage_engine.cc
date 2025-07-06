@@ -86,7 +86,7 @@ status::status_code
 storage_engine::insert_object(
     storage_engine_reference_handle* object_container_storage_engine_reference,
     const char* object_id,
-    const byte* object_data)
+    const byte_stream& object_data)
 {
     const rocksdb::Status status = core_database_->Put(
         rocksdb::WriteOptions(),

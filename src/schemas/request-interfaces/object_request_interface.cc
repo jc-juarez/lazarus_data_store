@@ -79,10 +79,10 @@ object_request_interface::get_object_id() const
     return object_id_.c_str();
 }
 
-const storage::byte*
+const storage::byte_stream&
 object_request_interface::get_object_data() const
 {
-    return object_data_.data();
+    return object_data_;
 }
 
 object_request_optype

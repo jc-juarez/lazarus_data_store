@@ -11,6 +11,7 @@
 
 #include <memory>
 #include "../status/status.hh"
+#include "storage_configuration.hh"
 #include "../schemas/request-interfaces/object_request_interface.hh"
 
 namespace lazarus
@@ -31,6 +32,7 @@ public:
     // Constructor.
     //
     object_management_service(
+        const storage_configuration& storage_configuration,
         std::shared_ptr<object_container_index> object_container_index);
 
     //
@@ -41,6 +43,11 @@ public:
         const schemas::object_request_interface& object_request);
 
 private:
+
+    //
+    // Configurations for the storage subsystem.
+    //
+    const storage_configuration storage_configuration_;
 
     //
     // Handle for the object container index component.

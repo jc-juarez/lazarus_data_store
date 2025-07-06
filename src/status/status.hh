@@ -170,5 +170,15 @@ status_code_definition(object_container_in_deletion_process, 0x8'0000016);
 //
 status_code_definition(object_container_storage_engine_deletion_failed, 0x8'0000017);
 
+//
+// Object container name exceeds max size limit.
+//
+status_code_definition(object_container_name_exceeds_size_limit, 0x8'0000018);
+
+//
+// Error for unreachable code blocks.
+//
+status_code_definition(unreachable, 0x8'0000019);
+
 } // namespace status.
 } // namespace lazarus.
