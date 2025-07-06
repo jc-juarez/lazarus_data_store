@@ -82,6 +82,9 @@ object_container_operation_serializer::object_container_operation_serial_proxy(
         }
     }
 
+    //
+    // Provide the response back to the client over the async callback.
+    //
     network::server::send_response(
         response_callback,
         status);

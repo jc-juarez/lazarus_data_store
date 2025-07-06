@@ -35,7 +35,8 @@ struct storage_configuration
           max_object_container_name_size_bytes_{512u},
           max_object_id_size_bytes_{1'024u},
           max_object_data_size_bytes_{1'024u * 1'024u},
-          max_number_object_containers_{10'000}
+          max_number_object_containers_{10'000},
+          number_write_io_threads_{32u}
     {
         //
         // Set the core database path with the default home directory path if no path
@@ -87,6 +88,11 @@ struct storage_configuration
     // Max number of object containers to be present on the data store.
     //
     std::uint32_t max_number_object_containers_;
+
+    //
+    // Number of threads for the write IO dispatcher thread pool.
+    //
+    std::uint32_t number_write_io_threads_;
 };
 
 } // namespace storage.

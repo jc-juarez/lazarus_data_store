@@ -52,7 +52,7 @@ object_container_index::insert_object_container(
             object_container_persistent_metadata)))
     {
         //
-        // Key did not exist and metadata register was succesful.
+        // Key did not exist and metadata register was successful.
         // Exit execution.
         //
         return;
@@ -67,7 +67,9 @@ object_container_index::insert_object_container(
         "ObjectContainerName={}.",
         object_container_persistent_metadata.name());
 
+    spdlog::shutdown();
     assert(false);
+    std::abort();
 }
 
 storage_engine_reference_handle*

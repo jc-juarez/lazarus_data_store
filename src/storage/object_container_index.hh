@@ -78,6 +78,7 @@ public:
 
     //
     // Gets a reference an object container.
+    // Returns nullptr in case it does not exist.
     //
     std::shared_ptr<object_container>
     get_object_container(

@@ -9,11 +9,12 @@
 // ****************************************************
 
 #include <spdlog/spdlog.h>
-#include "../server/server.hh"
 #include "object_endpoint.hh"
+#include "../server/server.hh"
+#include "../../storage/object_container.hh"
+#include "../../storage/object_management_service.hh"
 #include "../../storage/object_container_management_service.hh"
 #include "../../schemas/request-interfaces/object_request_interface.hh"
-#include "../../storage/object_management_service.hh"
 
 namespace lazarus
 {
@@ -57,9 +58,53 @@ object_endpoint::insert_object(
         object_request.get_object_id(),
         object_request.get_object_container_name());
 
-    network::server::send_response(
-        response_callback,
-        status::success);
+    std::shared_ptr<storage::object_container> object_container =
+        object_management_service_->get_object_container_reference(object_request.get_object_container_name());
+
+    if (object_container == nullptr)
+    {
+        spdlog::error("Object container provided for object operation does not exist. "
+            "Optype={}, "
+            "ObjectId={}, "
+            "ObjectContainerName={}.",
+            static_cast<std::uint8_t>(object_request.get_optype()),
+            object_request.get_object_id(),
+            object_request.get_object_container_name());
+
+        network::server::send_response(
+            response_callback,
+            status::object_container_not_exists);
+
+        return;
+    }
+
+    //
+    // At this point, it is guaranteed that ref-counted reference
+    // to the object container is held, so enqueue a concurrent write
+    // operation. The response will be provided asynchronously over the
+    // provided callback if the enqueue operation is successful.
+    //
+    status = object_management_service_->orchestrate_concurrent_write_request(
+        std::move(object_request),
+        object_container,
+        std::move(response_callback));
+
+    if (status::failed(status))
+    {
+        spdlog::error("Failed to enqueue object request operation. "
+            "Optype={}, "
+            "ObjectId={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            static_cast<std::uint8_t>(object_request.get_optype()),
+            object_request.get_object_id(),
+            object_request.get_object_container_name(),
+            status);
+
+        network::server::send_response(
+            response_callback,
+            status);
+    }
 }
 
 void

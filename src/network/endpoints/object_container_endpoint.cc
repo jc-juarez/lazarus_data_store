@@ -29,34 +29,30 @@ object_container_endpoint::create_object_container(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback)
 {
-    schemas::object_container_request_interface object_container_request{
-        request};
-
-    spdlog::info("Create object container request received. "
-        "Optype={}, "
-        "ObjectContainerName={}.",
-        static_cast<std::uint8_t>(object_container_request.get_optype()),
-        object_container_request.get_name());
+    schemas::object_container_request_interface object_container_request{request};
 
     const status::status_code status = object_container_management_service_->validate_object_container_operation_request(
         object_container_request);
 
     if (status::failed(status))
     {
-        spdlog::error("Object container creation request validation failed. "
-            "Optype={}, "
-            "ObjectContainerName={}, "
-            "Status={:#x}.",
-            static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name(),
-            status);
-
+        //
+        // Request validation failed. Do not log the request parameters
+        // here as to avoid logging potentially malformed parameters.
+        // The required logging should be taken care of by the management service.
+        //
         network::server::send_response(
             response_callback,
             status);
 
         return;
     }
+
+    spdlog::info("Create object container request received. "
+        "Optype={}, "
+        "ObjectContainerName={}.",
+        static_cast<std::uint8_t>(object_container_request.get_optype()),
+        object_container_request.get_name());
 
     //
     // Orchestrate the creation of the object
@@ -79,34 +75,30 @@ object_container_endpoint::remove_object_container(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback)
 {
-    schemas::object_container_request_interface object_container_request{
-        request};
-
-    spdlog::info("Remove object container request received. "
-        "Optype={}, "
-        "ObjectContainerName={}.",
-        static_cast<std::uint8_t>(object_container_request.get_optype()),
-        object_container_request.get_name());
+    schemas::object_container_request_interface object_container_request{request};
 
     const status::status_code status = object_container_management_service_->validate_object_container_operation_request(
         object_container_request);
 
     if (status::failed(status))
     {
-        spdlog::error("Object container removal request validation failed. "
-            "Optype={}, "
-            "ObjectContainerName={}, "
-            "Status={:#x}.",
-            static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name(),
-            status);
-
+        //
+        // Request validation failed. Do not log the request parameters
+        // here as to avoid logging potentially malformed parameters.
+        // The required logging should be taken care of by the management service.
+        //
         network::server::send_response(
             response_callback,
             status);
 
         return;
     }
+
+    spdlog::info("Remove object container request received. "
+        "Optype={}, "
+        "ObjectContainerName={}.",
+        static_cast<std::uint8_t>(object_container_request.get_optype()),
+        object_container_request.get_name());
 
     //
     // Orchestrate the removal of the object

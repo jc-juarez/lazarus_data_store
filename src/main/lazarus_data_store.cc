@@ -18,6 +18,7 @@
 #include "../storage/garbage_collector.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "../storage/object_container_index.hh"
+#include "../storage/write_request_dispatcher.hh"
 #include "../storage/object_management_service.hh"
 #include "../network/server/server_configuration.hh"
 #include "../storage/object_container_management_service.hh"
@@ -69,6 +70,13 @@ lazarus_data_store::lazarus_data_store(
         storage_engine_,
         object_container_index_,
         std::move(object_container_operation_serializer));
+
+    //
+    // Write request dispatcher component allocation.
+    //
+    write_request_dispatcher_ = std::make_shared<storage::write_request_dispatcher>(
+        storage_configuration.number_write_io_threads_,
+        storage_engine_);
 
     //
     // Object management service component allocation.
@@ -236,6 +244,7 @@ lazarus_data_store::initialize_logger(
         logger_config.max_number_files_for_session_);
 
     spdlog::set_default_logger(logger);
+    spdlog::flush_on(spdlog::level::critical);
     spdlog::flush_every(std::chrono::milliseconds(logger_config.flush_frequency_ms_));
 
     spdlog::info("Logger has been initialized successfully. "
