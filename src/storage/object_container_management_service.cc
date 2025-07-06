@@ -286,6 +286,27 @@ object_container_management_service::validate_object_container_create_request(
         return status;
     }
 
+    if (object_container_index_->get_total_number_object_containers() >=
+        storage_configuration_.max_number_object_containers_)
+    {
+        //
+        // The total number of object containers present on the
+        // system exceeds the limit. Fail the new creation operation.
+        //
+        spdlog::error("Object container creation will be failed as the "
+            "current number of object containers exceeds the limit. "
+            "Optype={}, "
+            "ObjectContainerName={}, "
+            "TotalNumberOfObjectContainers={}, "
+            "MaxNumberOfObjectContainers={}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name(),
+            object_container_index_->get_total_number_object_containers(),
+            storage_configuration_.max_number_object_containers_);
+
+        return status::max_number_object_containers_reached;
+    }
+
     return status::success;
 }
 

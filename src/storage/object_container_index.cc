@@ -23,8 +23,7 @@ using index_table_type = tbb::concurrent_hash_map<std::string, std::shared_ptr<o
 
 object_container_index::object_container_index(
     std::shared_ptr<storage_engine> storage_engine_handle)
-    : storage_engine_{std::move(storage_engine_handle)},
-      max_number_object_containers_{100u}
+    : storage_engine_{std::move(storage_engine_handle)}
 {}
 
 bool
@@ -164,6 +163,12 @@ object_container_index::remove_object_container(
     }
 
     return status::object_container_not_exists;
+}
+
+std::size_t
+object_container_index::get_total_number_object_containers()
+{
+    return object_container_index_table_.size();
 }
 
 } // namespace storage.

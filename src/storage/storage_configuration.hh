@@ -30,12 +30,12 @@ struct storage_configuration
     // Specifies the default values to be used by the storage components.
     //
     storage_configuration()
-        :
-        core_database_path_{},
-        garbage_collector_periodic_interval_ms_{10'000u},
-        max_object_container_name_size_bytes_{512u},
-        max_object_id_size_bytes_{1'024u},
-        max_object_data_size_bytes_{1'024u * 1'024u}
+        : core_database_path_{},
+          garbage_collector_periodic_interval_ms_{10'000u},
+          max_object_container_name_size_bytes_{512u},
+          max_object_id_size_bytes_{1'024u},
+          max_object_data_size_bytes_{1'024u * 1'024u},
+          max_number_object_containers_{10'000}
     {
         //
         // Set the core database path with the default home directory path if no path
@@ -82,6 +82,11 @@ struct storage_configuration
     // Max size for the object data content in bytes.
     //
     std::uint32_t max_object_data_size_bytes_;
+
+    //
+    // Max number of object containers to be present on the data store.
+    //
+    std::uint32_t max_number_object_containers_;
 };
 
 } // namespace storage.

@@ -180,5 +180,10 @@ status_code_definition(object_container_name_exceeds_size_limit, 0x8'0000018);
 //
 status_code_definition(unreachable, 0x8'0000019);
 
+//
+// Max number of object containers reached.
+//
+status_code_definition(max_number_object_containers_reached, 0x8'0000020);
+
 } // namespace status.
 } // namespace lazarus.

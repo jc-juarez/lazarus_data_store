@@ -97,6 +97,14 @@ public:
     remove_object_container(
         const char* object_container_name);
 
+    //
+    // Gets the total current number of
+    // object containers present in the system.
+    // This API returns the total number of active and soft-deleted containers.
+    //
+    std::size_t
+    get_total_number_object_containers();
+
 private:
 
     //
@@ -107,13 +115,7 @@ private:
     tbb::concurrent_hash_map<std::string, std::shared_ptr<object_container>> object_container_index_table_;
 
     //
-    // Max number of object containers allowed to be created
-    // within the data store.
-    //
-    std::size_t max_number_object_containers_;
-
-    //
-    // Handle for the storage enine.
+    // Handle for the storage engine.
     //
     std::shared_ptr<storage_engine> storage_engine_;
 };
