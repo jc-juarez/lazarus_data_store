@@ -14,6 +14,7 @@
 #include <memory>
 #include <stop_token>
 #include "storage_configuration.hh"
+#include "../common/alertable_sleeper.hh"
 
 namespace lazarus
 {
@@ -86,6 +87,11 @@ private:
     // Resets on every startup.
     //
     std::uint64_t iteration_count_;
+
+    //
+    // Alertable sleeper for stopping midway sleep cycles.
+    //
+    common::alertable_sleeper alertable_sleeper_;
 };
 
 } // namespace storage.

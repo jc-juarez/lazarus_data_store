@@ -66,8 +66,17 @@ garbage_collector::execute_garbage_collection(
 
         ++iteration_count_;
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(
-            storage_configuration_.garbage_collector_periodic_interval_ms_));
+        const bool is_stop_requested = alertable_sleeper_.wait_for_and_alert_if_stopped(
+            stop_token,
+            storage_configuration_.garbage_collector_periodic_interval_ms_);
+
+        if (is_stop_requested)
+        {
+            //
+            // Stop has been requested; stop the garbage collector.
+            //
+            break;
+        }
     }
 
     spdlog::info("Stopping lazarus data store garbage collector thread.");
