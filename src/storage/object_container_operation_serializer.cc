@@ -24,8 +24,7 @@ object_container_operation_serializer::object_container_operation_serializer(
     std::shared_ptr<storage_engine> storage_engine_handle,
     std::shared_ptr<object_container_index> object_container_index)
     : storage_engine_{std::move(storage_engine_handle)},
-      object_container_index_{std::move(object_container_index)},
-      serializer_queue_{1u} // Must always be a single-threaded task queue.
+      object_container_index_{std::move(object_container_index)}
 {}
 
 void
@@ -37,21 +36,21 @@ object_container_operation_serializer::enqueue_object_container_operation(
     // Enqueue the async object container operation action.
     // This is a single-threaded execution for serialization purposes.
     //
-    serializer_queue_.execute(
+    object_container_operations_serializer_.enqueue_serialized_task(
         [this,
         object_container_request = std::move(object_container_request),
-        response_callback = std::move(response_callback)]() mutable
+        response_callback = std::move(response_callback)]()
         {
             this->object_container_operation_serial_proxy(
-                std::move(object_container_request),
-                std::move(response_callback));
+                object_container_request,
+                response_callback);
         });
 }
 
 void
 object_container_operation_serializer::object_container_operation_serial_proxy(
-    const schemas::object_container_request_interface&& object_container_request,
-    network::server_response_callback&& response_callback)
+    const schemas::object_container_request_interface& object_container_request,
+    const network::server_response_callback& response_callback)
 {
     spdlog::info("Executing serialized object container operation action. "
         "OpType={}, "

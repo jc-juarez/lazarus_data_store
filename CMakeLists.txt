@@ -46,6 +46,7 @@ set(SOURCE_FILES
     src/storage/write_request_dispatcher.cc
     src/common/alertable_sleeper.cc
     src/common/request_validations.cc
+    src/common/task_serializer.cc
 )
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})

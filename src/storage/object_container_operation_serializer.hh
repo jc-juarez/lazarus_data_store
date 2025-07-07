@@ -11,9 +11,9 @@
 #pragma once
 
 #include <memory>
-#include <tbb/tbb.h>
 #include "../status/status.hh"
 #include "../network/server/server.hh"
+#include "../common/task_serializer.hh"
 #include "../schemas/request-interfaces/object_container_request_interface.hh"
 
 namespace lazarus
@@ -55,8 +55,8 @@ private:
     //
     void
     object_container_operation_serial_proxy(
-        const schemas::object_container_request_interface&& object_container_request,
-        network::server_response_callback&& response_callback);
+        const schemas::object_container_request_interface& object_container_request,
+        const network::server_response_callback& response_callback);
 
     //
     // Orchestrates the object container creation process.
@@ -74,9 +74,8 @@ private:
 
     //
     // Serializer task queue for executing object container operations serially.
-    // Implemented using a single threaded thread pool.
     //
-    tbb::task_arena serializer_queue_;
+    common::task_serializer object_container_operations_serializer_;
 
     //
     // Reference for the storage engine component.

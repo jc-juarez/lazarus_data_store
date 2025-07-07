@@ -97,7 +97,7 @@ public:
     static
     void
     send_response(
-        server_response_callback& response_callback,
+        const server_response_callback& response_callback,
         const status::status_code status);
 
 private:
