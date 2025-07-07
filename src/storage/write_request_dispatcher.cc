@@ -133,7 +133,7 @@ write_request_dispatcher::execute_insert_operation(
     }
     else
     {
-        spdlog::info("Object insertion failed. "
+        spdlog::error("Object insertion failed. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}, "
@@ -168,7 +168,7 @@ write_request_dispatcher::execute_remove_operation(
     }
     else
     {
-        spdlog::info("Object removal failed. "
+        spdlog::error("Object removal failed. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}, "

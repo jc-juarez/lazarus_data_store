@@ -61,15 +61,25 @@ object_endpoint::insert_object(
     std::shared_ptr<storage::object_container> object_container =
         object_management_service_->get_object_container_reference(object_request.get_object_container_name());
 
-    if (object_container == nullptr)
+    //
+    // If the object container is in deleted state, fail the operation.
+    //
+    const bool is_object_container_deleted =
+        object_container != nullptr ? object_container->is_deleted() : false;
+
+    if (object_container == nullptr ||
+        is_object_container_deleted)
     {
-        spdlog::error("Object container provided for object operation does not exist. "
+        spdlog::error("Object container provided for object operation "
+            "does not exist or is in deletion process. "
             "Optype={}, "
             "ObjectId={}, "
-            "ObjectContainerName={}.",
+            "ObjectContainerName={}, "
+            "IsDeleted={}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
             object_request.get_object_id(),
-            object_request.get_object_container_name());
+            object_request.get_object_container_name(),
+            is_object_container_deleted);
 
         network::server::send_response(
             response_callback,
