@@ -7,6 +7,8 @@
 //      Core storage engine for handling IO operations. 
 // ****************************************************
 
+#include <thread>
+#include "rocksdb/table.h"
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 #include "../status/status.hh"
@@ -19,7 +21,7 @@ namespace storage
 storage_engine::storage_engine(
     const storage_configuration& storage_configuration)
     : storage_configuration_{storage_configuration},
-      core_database_(nullptr)
+      core_database_{nullptr}
 {}
 
 status::status_code
@@ -40,10 +42,13 @@ storage_engine::start(
     }
 
     rocksdb::DB* database_handle;
-    rocksdb::Options options;
-    options.create_if_missing = true;
+    const rocksdb::Options options = get_engine_configurations();
     std::vector<storage_engine_reference_handle*> storage_engine_references;
 
+    //
+    // Start the engine. At this point the system will start
+    // spinning up all internal resources for handling IO operations.
+    //
     const rocksdb::Status status = rocksdb::DB::Open(
         options,
         storage_configuration_.core_database_path_,
@@ -326,6 +331,36 @@ storage_engine::remove_object_container(
     }
 
     return status::success;
+}
+
+rocksdb::Options
+storage_engine::get_engine_configurations() const
+{
+    rocksdb::Options options;
+    options.create_if_missing = true;
+
+    //
+    // Increase the number of flushing threads to the
+    // same as the number of logical cores on the system.
+    //
+    options.IncreaseParallelism(
+        static_cast<std::int32_t>(std::thread::hardware_concurrency()));
+
+    //
+    // Optimize the compaction for
+    // avoiding write stalls under heavy load.
+    //
+    options.OptimizeLevelStyleCompaction();
+
+    //
+    // The engine will start with a block cache with an LRU-backed policy.
+    //
+    rocksdb::BlockBasedTableOptions table_options;
+    table_options.block_cache = rocksdb::NewLRUCache(
+        storage_configuration_.storage_engine_block_cache_size_mib_ * 1024u * 1024u);
+    options.table_factory.reset(NewBlockBasedTableFactory(table_options));
+
+    return options;
 }
 
 } // namespace storage.

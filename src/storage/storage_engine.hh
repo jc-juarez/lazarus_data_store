@@ -119,6 +119,12 @@ public:
 private:
 
     //
+    // Gets the configurations to be used by the engine.
+    //
+    rocksdb::Options
+    get_engine_configurations() const;
+
+    //
     // Main handle for the underlying storage backend database.
     //
     std::unique_ptr<rocksdb::DB> core_database_;

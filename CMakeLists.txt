@@ -47,6 +47,8 @@ set(SOURCE_FILES
     src/common/alertable_sleeper.cc
     src/common/request_validations.cc
     src/common/task_serializer.cc
+    src/storage/orphaned_container_scavenger.cc
+    src/storage/orphaned_container_scavenger.hh
 )
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})

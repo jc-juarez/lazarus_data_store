@@ -20,7 +20,7 @@ write_request_dispatcher::write_request_dispatcher(
     const std::uint32_t number_write_io_threads,
     std::shared_ptr<storage_engine> storage_engine)
     : storage_engine_{std::move(storage_engine)},
-      write_io_thread_pool_{static_cast<std::int32_t>(number_write_io_threads)}
+      write_io_thread_pool_{number_write_io_threads}
 {}
 
 void
@@ -33,7 +33,7 @@ write_request_dispatcher::enqueue_write_request(
     // Enqueue the async write IO action.
     // This is a concurrent operation.
     //
-    write_io_thread_pool_.execute(
+    boost::asio::post(write_io_thread_pool_,
         [this,
         object_request = std::move(object_request),
         object_container = std::move(object_container),

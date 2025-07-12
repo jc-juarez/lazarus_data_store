@@ -14,7 +14,7 @@ namespace lazarus::common
 {
 
 task_serializer::task_serializer()
-    : serializer_queue_{1u} // Must always be a single-threaded task queue.
+    : serializer_thread_pool_{1u} // Must always be a single-threaded task queue.
 {}
 
 } // namespace lazarus::common.

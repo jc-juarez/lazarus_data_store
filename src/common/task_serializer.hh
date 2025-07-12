@@ -10,8 +10,7 @@
 
 #pragma once
 
-#include <tbb/tbb.h>
-#include <functional>
+#include <boost/asio.hpp>
 
 namespace lazarus::common
 {
@@ -31,15 +30,15 @@ public:
     template<typename F>
     void enqueue_serialized_task(F&& task)
     {
-        serializer_queue_.enqueue(std::forward<F>(task));
+        boost::asio::post(serializer_thread_pool_, std::forward<F>(task));
     }
 
 private:
 
     //
-    // Internal task arena queue for handling tasks dispatching.
+    // Internal single-threaded thread pool for tasks dispatching.
     //
-    tbb::task_arena serializer_queue_;
+    boost::asio::thread_pool serializer_thread_pool_;
 };
 
 } // namespace lazarus::common.

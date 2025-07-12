@@ -11,6 +11,7 @@
 #pragma once
 
 #include <string>
+#include <thread>
 #include <cstdlib>
 #include <stdexcept>
 #include <filesystem>
@@ -36,7 +37,8 @@ struct storage_configuration
           max_object_id_size_bytes_{1'024u},
           max_object_data_size_bytes_{1'024u * 1'024u},
           max_number_object_containers_{10'000},
-          number_write_io_threads_{32u}
+          number_write_io_threads_{4u},
+          storage_engine_block_cache_size_mib_{512u}
     {
         //
         // Set the core database path with the default home directory path if no path
@@ -91,8 +93,14 @@ struct storage_configuration
 
     //
     // Number of threads for the write IO dispatcher thread pool.
+    // Should ideally be a low number as to avoid oversubscribing the storage engine.
     //
     std::uint32_t number_write_io_threads_;
+
+    //
+    // Storage engine block cache size in MiB.
+    //
+    std::uint64_t storage_engine_block_cache_size_mib_;
 };
 
 } // namespace storage.

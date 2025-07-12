@@ -11,7 +11,7 @@
 #pragma once
 
 #include <memory>
-#include <tbb/tbb.h>
+#include <boost/asio.hpp>
 #include "../network/server/server.hh"
 #include "../schemas/request-interfaces/object_request_interface.hh"
 
@@ -71,7 +71,7 @@ private:
     //
     // Write IO thread pool for dispatching storage engine operations.
     //
-    tbb::task_arena write_io_thread_pool_;
+    boost::asio::thread_pool write_io_thread_pool_;
 };
 
 } // namespace lazarus::common.
