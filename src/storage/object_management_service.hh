@@ -21,7 +21,7 @@ namespace storage
 
 class object_container;
 class object_container_index;
-class write_request_dispatcher;
+class write_io_dispatcher;
 
 //
 // Core storage access interface.
@@ -36,7 +36,7 @@ public:
     object_management_service(
         const storage_configuration& storage_configuration,
         std::shared_ptr<object_container_index> object_container_index,
-        std::shared_ptr<write_request_dispatcher> write_request_dispatcher);
+        std::shared_ptr<write_io_dispatcher> write_request_dispatcher);
 
     //
     // Validates if an object operation request can be executed.
@@ -99,7 +99,7 @@ private:
     //
     // Handle for the write request dispatcher component.
     //
-    std::shared_ptr<write_request_dispatcher> write_request_dispatcher_;
+    std::shared_ptr<write_io_dispatcher> write_request_dispatcher_;
 };
 
 } // namespace storage.

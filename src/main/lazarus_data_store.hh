@@ -31,7 +31,7 @@ namespace storage
 class storage_engine;
 class garbage_collector;
 class object_container_index;
-class write_request_dispatcher;
+class write_io_dispatcher;
 class object_management_service;
 class object_container_management_service;
 }
@@ -144,7 +144,7 @@ private:
     //
     // Write request dispatcher handle.
     //
-    std::shared_ptr<storage::write_request_dispatcher> write_request_dispatcher_;
+    std::shared_ptr<storage::write_io_dispatcher> write_request_dispatcher_;
 };
 
 } // namespace lazarus.

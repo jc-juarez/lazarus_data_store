@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'write_request_dispatcher.hh'
+// 'write_io_dispatcher.hh'
 // Author: jcjuarez
 // Description:
 //      Write request dispatcher module for IO.
@@ -11,43 +11,21 @@
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 #include "object_container.hh"
-#include "write_request_dispatcher.hh"
+#include "write_io_dispatcher.hh"
 
 namespace lazarus::storage
 {
 
-write_request_dispatcher::write_request_dispatcher(
+write_io_dispatcher::write_io_dispatcher(
     const std::uint32_t number_write_io_threads,
     std::shared_ptr<storage_engine> storage_engine)
-    : storage_engine_{std::move(storage_engine)},
-      write_io_thread_pool_{number_write_io_threads}
+    : concurrent_io_dispatcher{
+        number_write_io_threads,
+        std::move(storage_engine)}
 {}
 
 void
-write_request_dispatcher::enqueue_write_request(
-    schemas::object_request_interface&& object_request,
-    std::shared_ptr<object_container> object_container,
-    network::server_response_callback&& response_callback)
-{
-    //
-    // Enqueue the async write IO action.
-    // This is a concurrent operation.
-    //
-    boost::asio::post(write_io_thread_pool_,
-        [this,
-        object_request = std::move(object_request),
-        object_container = std::move(object_container),
-        response_callback = std::move(response_callback)]() mutable
-        {
-            this->write_request_concurrent_proxy(
-                std::move(object_request),
-                object_container,
-                std::move(response_callback));
-        });
-}
-
-void
-write_request_dispatcher::write_request_concurrent_proxy(
+write_io_dispatcher::concurrent_io_request_proxy(
     schemas::object_request_interface&& object_request,
     std::shared_ptr<object_container> object_container,
     network::server_response_callback&& response_callback)
@@ -86,7 +64,6 @@ write_request_dispatcher::write_request_concurrent_proxy(
             //
             // This should never happen given this should have been
             // taken care of before enqueuing the task to the thread pool.
-            // Log the issue and assert.
             //
             spdlog::critical("Invalid write request optype for object "
                 "operation scheduled in the write IO thread pool. "
@@ -97,9 +74,8 @@ write_request_dispatcher::write_request_concurrent_proxy(
                 object_request.get_object_id(),
                 object_request.get_object_container_name());
 
-            spdlog::shutdown();
-            assert(false);
-            std::abort();
+            status = status::invalid_operation;
+            break;
         }
     }
 
@@ -112,7 +88,7 @@ write_request_dispatcher::write_request_concurrent_proxy(
 }
 
 status::status_code
-write_request_dispatcher::execute_insert_operation(
+write_io_dispatcher::execute_insert_operation(
     storage_engine_reference_handle* object_container_storage_engine_reference,
     const schemas::object_request_interface& object_request)
 {
@@ -148,7 +124,7 @@ write_request_dispatcher::execute_insert_operation(
 }
 
 status::status_code
-write_request_dispatcher::execute_remove_operation(
+write_io_dispatcher::execute_remove_operation(
     storage_engine_reference_handle* object_container_storage_engine_reference,
     const schemas::object_request_interface& object_request)
 {

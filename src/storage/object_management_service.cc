@@ -9,7 +9,7 @@
 
 #include <spdlog/spdlog.h>
 #include "object_container_index.hh"
-#include "write_request_dispatcher.hh"
+#include "write_io_dispatcher.hh"
 #include "object_management_service.hh"
 #include "../common/request_validations.hh"
 
@@ -21,7 +21,7 @@ namespace storage
 object_management_service::object_management_service(
     const storage_configuration& storage_configuration,
     std::shared_ptr<object_container_index> object_container_index,
-    std::shared_ptr<write_request_dispatcher> write_request_dispatcher)
+    std::shared_ptr<write_io_dispatcher> write_request_dispatcher)
     : storage_configuration_{storage_configuration},
       object_container_index_{std::move(object_container_index)},
       write_request_dispatcher_{std::move(write_request_dispatcher)}
@@ -173,7 +173,7 @@ object_management_service::orchestrate_concurrent_write_request(
         return status::invalid_operation;
     }
 
-    write_request_dispatcher_->enqueue_write_request(
+    write_request_dispatcher_->enqueue_concurrent_io_request(
         std::move(object_request),
         object_container,
         std::move(response_callback));
