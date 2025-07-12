@@ -16,9 +16,10 @@
 #include "../network/server/server.hh"
 #include "../storage/storage_engine.hh"
 #include "../storage/garbage_collector.hh"
+#include "../storage/read_io_dispatcher.hh"
+#include "../storage/write_io_dispatcher.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "../storage/object_container_index.hh"
-#include "../storage/write_io_dispatcher.hh"
 #include "../storage/object_management_service.hh"
 #include "../network/server/server_configuration.hh"
 #include "../storage/object_container_management_service.hh"
@@ -79,12 +80,20 @@ lazarus_data_store::lazarus_data_store(
         storage_engine_);
 
     //
+    // Read request dispatcher component allocation.
+    //
+    read_request_dispatcher_ = std::make_shared<storage::read_io_dispatcher>(
+        storage_configuration.number_read_io_threads_,
+        storage_engine_);
+
+    //
     // Object management service component allocation.
     //
     object_management_service_ = std::make_shared<storage::object_management_service>(
         storage_configuration,
         object_container_index_,
-        write_request_dispatcher_);
+        write_request_dispatcher_,
+        read_request_dispatcher_);
 
     //
     // Server component allocation.

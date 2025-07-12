@@ -42,15 +42,14 @@ set(SOURCE_FILES
     src/schemas/request-interfaces/object_container_request_interface.cc
     src/schemas/request-interfaces/object_request_interface.cc
     src/storage/object_management_service.cc
-    src/storage/read_request_dispatcher.cc
-        src/storage/write_io_dispatcher.cc
+    src/storage/read_io_dispatcher.cc
+    src/storage/write_io_dispatcher.cc
     src/common/alertable_sleeper.cc
     src/common/request_validations.cc
     src/common/task_serializer.cc
     src/storage/orphaned_container_scavenger.cc
     src/storage/orphaned_container_scavenger.hh
-        src/storage/concurrent_io_dispatcher.cc
-        src/storage/concurrent_io_dispatcher.hh
+    src/storage/concurrent_io_dispatcher.cc
 )
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})

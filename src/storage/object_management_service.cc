@@ -8,8 +8,9 @@
 // ****************************************************
 
 #include <spdlog/spdlog.h>
-#include "object_container_index.hh"
+#include "read_io_dispatcher.hh"
 #include "write_io_dispatcher.hh"
+#include "object_container_index.hh"
 #include "object_management_service.hh"
 #include "../common/request_validations.hh"
 
@@ -21,10 +22,12 @@ namespace storage
 object_management_service::object_management_service(
     const storage_configuration& storage_configuration,
     std::shared_ptr<object_container_index> object_container_index,
-    std::shared_ptr<write_io_dispatcher> write_request_dispatcher)
+    std::shared_ptr<write_io_dispatcher> write_request_dispatcher,
+    std::shared_ptr<read_io_dispatcher> read_request_dispatcher)
     : storage_configuration_{storage_configuration},
       object_container_index_{std::move(object_container_index)},
-      write_request_dispatcher_{std::move(write_request_dispatcher)}
+      write_request_dispatcher_{std::move(write_request_dispatcher)},
+      read_request_dispatcher_{std::move(read_request_dispatcher)}
 {}
 
 status::status_code
@@ -181,6 +184,37 @@ object_management_service::orchestrate_concurrent_write_request(
     return status::success;
 }
 
+status::status_code
+object_management_service::orchestrate_concurrent_read_request(
+    schemas::object_request_interface&& object_request,
+    std::shared_ptr<object_container> object_container,
+    network::server_response_callback&& response_callback)
+{
+    //
+    // Sanity check for the operation type before
+    // delegating the task to the thread pool.
+    //
+    if (!is_object_request_read_io_operation(object_request.get_optype()))
+    {
+        spdlog::error("Invalid read request optype for object operation. "
+                      "Optype={}, "
+                      "ObjectId={}, "
+                      "ObjectContainerName={}.",
+                      static_cast<std::uint8_t>(object_request.get_optype()),
+                      object_request.get_object_id(),
+                      object_request.get_object_container_name());
+
+        return status::invalid_operation;
+    }
+
+    read_request_dispatcher_->enqueue_concurrent_io_request(
+        std::move(object_request),
+        object_container,
+        std::move(response_callback));
+
+    return status::success;
+}
+
 bool
 object_management_service::is_object_operation_optype_valid(
     const schemas::object_request_optype optype)
@@ -196,6 +230,13 @@ object_management_service::is_object_request_write_io_operation(
 {
     return optype == schemas::object_request_optype::insert ||
            optype == schemas::object_request_optype::remove;
+}
+
+bool
+object_management_service::is_object_request_read_io_operation(
+    schemas::object_request_optype optype)
+{
+    return optype == schemas::object_request_optype::get;
 }
 
 } // namespace storage.

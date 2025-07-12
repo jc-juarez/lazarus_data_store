@@ -22,6 +22,7 @@ namespace storage
 class object_container;
 class object_container_index;
 class write_io_dispatcher;
+class read_io_dispatcher;
 
 //
 // Core storage access interface.
@@ -36,7 +37,8 @@ public:
     object_management_service(
         const storage_configuration& storage_configuration,
         std::shared_ptr<object_container_index> object_container_index,
-        std::shared_ptr<write_io_dispatcher> write_request_dispatcher);
+        std::shared_ptr<write_io_dispatcher> write_request_dispatcher,
+        std::shared_ptr<read_io_dispatcher> read_request_dispatcher);
 
     //
     // Validates if an object operation request can be executed.
@@ -57,6 +59,15 @@ public:
     //
     status::status_code
     orchestrate_concurrent_write_request(
+        schemas::object_request_interface&& object_request,
+        std::shared_ptr<object_container> object_container,
+        network::server_response_callback&& response_callback);
+
+    //
+    // Enqueues the concurrent read request to the thread pool if successful.
+    //
+    status::status_code
+    orchestrate_concurrent_read_request(
         schemas::object_request_interface&& object_request,
         std::shared_ptr<object_container> object_container,
         network::server_response_callback&& response_callback);
@@ -87,6 +98,14 @@ private:
         schemas::object_request_optype optype);
 
     //
+    // Checks if the given operation is read-oriented.
+    //
+    static
+    bool
+    is_object_request_read_io_operation(
+        schemas::object_request_optype optype);
+
+    //
     // Configurations for the storage subsystem.
     //
     const storage_configuration storage_configuration_;
@@ -100,6 +119,11 @@ private:
     // Handle for the write request dispatcher component.
     //
     std::shared_ptr<write_io_dispatcher> write_request_dispatcher_;
+
+    //
+    // Handle for the read request dispatcher component.
+    //
+    std::shared_ptr<read_io_dispatcher> read_request_dispatcher_;
 };
 
 } // namespace storage.

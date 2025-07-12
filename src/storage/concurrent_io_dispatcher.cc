@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'concurrent_io_dispatcher.hh'
+// 'concurrent_io_dispatcher.cc'
 // Author: jcjuarez
 // Description:
 //      Thread pool based dispatcher

@@ -38,6 +38,7 @@ struct storage_configuration
           max_object_data_size_bytes_{1'024u * 1'024u},
           max_number_object_containers_{10'000},
           number_write_io_threads_{4u},
+          number_read_io_threads_{std::thread::hardware_concurrency()},
           storage_engine_block_cache_size_mib_{512u}
     {
         //
@@ -96,6 +97,13 @@ struct storage_configuration
     // Should ideally be a low number as to avoid oversubscribing the storage engine.
     //
     std::uint32_t number_write_io_threads_;
+
+    //
+    // Number of threads for the read IO dispatcher thread pool.
+    // The engine allows efficient retrieval with high concurrency,
+    // so the total number of logical cores is ideal.
+    //
+    std::uint32_t number_read_io_threads_;
 
     //
     // Storage engine block cache size in MiB.
