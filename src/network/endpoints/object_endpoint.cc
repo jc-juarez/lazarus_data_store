@@ -14,7 +14,7 @@
 #include "../../storage/container.hh"
 #include "../../storage/object_management_service.hh"
 #include "../../storage/container_management_service.hh"
-#include "../../schemas/request-interfaces/object_request_interface.hh"
+#include "../../schemas/request-interfaces/object_request.hh"
 
 namespace lazarus
 {
@@ -31,7 +31,7 @@ object_endpoint::insert_object(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback)
 {
-    schemas::object_request_interface object_request{request};
+    schemas::object_request object_request{request};
 
     status::status_code status = object_management_service_->validate_object_operation_request(
         object_request);
@@ -122,7 +122,7 @@ object_endpoint::get_object(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback)
 {
-    schemas::object_request_interface object_request{request};
+    schemas::object_request object_request{request};
 
     status::status_code status = object_management_service_->validate_object_operation_request(
         object_request);
@@ -213,7 +213,7 @@ object_endpoint::remove_object(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback)
 {
-    schemas::object_request_interface object_request{request};
+    schemas::object_request object_request{request};
 
     status::status_code status = object_management_service_->validate_object_operation_request(
         object_request);

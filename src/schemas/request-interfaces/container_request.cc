@@ -1,21 +1,21 @@
 // ****************************************************
 // Lazarus Data Store
 // Schemas
-// 'object_container_request_interface.cc'
+// 'container_request.cc'
 // Author: jcjuarez
 // Description:
 //      Structure for defining an object container
 //      from a network request. 
 // ****************************************************
 
-#include "object_container_request_interface.hh"
+#include "container_request.hh"
 
 namespace lazarus
 {
 namespace schemas
 {
 
-object_container_request_interface::object_container_request_interface(
+container_request::container_request(
     const drogon::HttpRequestPtr& request)
     : name_{""}
 {
@@ -33,36 +33,36 @@ object_container_request_interface::object_container_request_interface(
     {
         case drogon::HttpMethod::Put:
         {
-            optype_ = object_container_request_optype::create;
+            optype_ = container_request_optype::create;
             break;
         }
         case drogon::HttpMethod::Delete:
         {
-            optype_ = object_container_request_optype::remove;
+            optype_ = container_request_optype::remove;
             break;
         }
         default:
         {
-            optype_ = object_container_request_optype::invalid;
+            optype_ = container_request_optype::invalid;
             break;
         }
     }
 }
 
-object_container_request_interface::object_container_request_interface(
-    object_container_request_interface&& other)
+container_request::container_request(
+    container_request&& other)
     : name_{std::move(other.name_)},
       optype_{std::move(other.optype_)}
 {}
 
 const std::string&
-object_container_request_interface::get_name() const
+container_request::get_name() const
 {
     return name_;
 }
 
-object_container_request_optype
-object_container_request_interface::get_optype() const
+container_request_optype
+container_request::get_optype() const
 {
     return optype_;
 }

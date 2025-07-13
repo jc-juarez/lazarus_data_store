@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Network
-// 'object_container_endpoint.hh'
+// 'container_endpoint.hh'
 // Author: jcjuarez
 // Description:
 //      Object container controller endpoints collection.
@@ -10,26 +10,26 @@
 
 #include <spdlog/spdlog.h>
 #include "../server/server.hh"
-#include "object_container_endpoint.hh"
+#include "container_endpoint.hh"
 #include "../../storage/container_management_service.hh"
-#include "../../schemas/request-interfaces/object_container_request_interface.hh"
+#include "../../schemas/request-interfaces/container_request.hh"
 
 namespace lazarus
 {
 namespace network
 {
 
-object_container_endpoint::object_container_endpoint(
+container_endpoint::container_endpoint(
     std::shared_ptr<storage::container_management_service> object_container_management_service_handle)
     : object_container_management_service_{std::move(object_container_management_service_handle)}
 {}
 
 void
-object_container_endpoint::create_object_container(
+container_endpoint::create_object_container(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback)
 {
-    schemas::object_container_request_interface object_container_request{request};
+    schemas::container_request object_container_request{request};
 
     const status::status_code status = object_container_management_service_->validate_object_container_operation_request(
         object_container_request);
@@ -65,17 +65,17 @@ object_container_endpoint::create_object_container(
 }
 
 void
-object_container_endpoint::get_object_container(
+container_endpoint::get_object_container(
     const drogon::HttpRequestPtr& request,
     std::function<void(const drogon::HttpResponsePtr &)>&& response_callback)
 {}
 
 void
-object_container_endpoint::remove_object_container(
+container_endpoint::remove_object_container(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback)
 {
-    schemas::object_container_request_interface object_container_request{request};
+    schemas::container_request object_container_request{request};
 
     const status::status_code status = object_container_management_service_->validate_object_container_operation_request(
         object_container_request);

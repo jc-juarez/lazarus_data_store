@@ -14,7 +14,7 @@
 #include "../status/status.hh"
 #include "../network/server/server.hh"
 #include "../common/task_serializer.hh"
-#include "../schemas/request-interfaces/object_container_request_interface.hh"
+#include "../schemas/request-interfaces/container_request.hh"
 
 namespace lazarus
 {
@@ -44,7 +44,7 @@ public:
     //
     void
     enqueue_object_container_operation(
-        schemas::object_container_request_interface&& object_container_request,
+        schemas::container_request&& object_container_request,
         network::server_response_callback&& response_callback);
 
 private:
@@ -55,7 +55,7 @@ private:
     //
     void
     object_container_operation_serial_proxy(
-        const schemas::object_container_request_interface& object_container_request,
+        const schemas::container_request& object_container_request,
         const network::server_response_callback& response_callback);
 
     //
@@ -63,14 +63,14 @@ private:
     //
     status::status_code
     handle_object_container_creation(
-        const schemas::object_container_request_interface& object_container_request);
+        const schemas::container_request& object_container_request);
 
     //
     // Orchestrates the object container removal process.
     //
     status::status_code
     handle_object_container_removal(
-        const schemas::object_container_request_interface& object_container_request);
+        const schemas::container_request& object_container_request);
 
     //
     // Serializer task queue for executing object container operations serially.

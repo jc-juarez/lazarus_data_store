@@ -13,7 +13,7 @@
 #include <memory>
 #include <boost/asio.hpp>
 #include "../network/server/server.hh"
-#include "../schemas/request-interfaces/object_request_interface.hh"
+#include "../schemas/request-interfaces/object_request.hh"
 
 namespace lazarus::storage
 {
@@ -38,7 +38,7 @@ public:
     //
     void
     enqueue_concurrent_io_request(
-        schemas::object_request_interface&& object_request,
+        schemas::object_request&& object_request,
         std::shared_ptr<container> container,
         network::server_response_callback&& response_callback);
 
@@ -51,7 +51,7 @@ protected:
     virtual
     void
     concurrent_io_request_proxy(
-        schemas::object_request_interface&& object_request,
+        schemas::object_request&& object_request,
         std::shared_ptr<container> container,
         network::server_response_callback&& response_callback) = 0;
 

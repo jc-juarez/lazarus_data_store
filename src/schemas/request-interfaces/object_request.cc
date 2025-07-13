@@ -1,21 +1,21 @@
 // ****************************************************
 // Lazarus Data Store
 // Schemas
-// 'object_request_interface.cc'
+// 'object_request.cc'
 // Author: jcjuarez
 // Description:
 //      Structure for defining an object
 //      from a network request.
 // ****************************************************
 
-#include "object_request_interface.hh"
+#include "object_request.hh"
 
 namespace lazarus
 {
 namespace schemas
 {
 
-object_request_interface::object_request_interface(
+object_request::object_request(
     const drogon::HttpRequestPtr& request)
     : object_container_name_{},
       object_id_{},
@@ -59,8 +59,8 @@ object_request_interface::object_request_interface(
     }
 }
 
-object_request_interface::object_request_interface(
-    object_request_interface&& other)
+object_request::object_request(
+    object_request&& other)
     : object_container_name_{std::move(other.object_container_name_)},
       object_id_{std::move(other.object_id_)},
       object_data_{std::move(other.object_data_)},
@@ -68,25 +68,25 @@ object_request_interface::object_request_interface(
 {}
 
 const std::string&
-object_request_interface::get_object_container_name() const
+object_request::get_object_container_name() const
 {
     return object_container_name_;
 }
 
 const std::string&
-object_request_interface::get_object_id() const
+object_request::get_object_id() const
 {
     return object_id_;
 }
 
 const storage::byte_stream&
-object_request_interface::get_object_data() const
+object_request::get_object_data() const
 {
     return object_data_;
 }
 
 object_request_optype
-object_request_interface::get_optype() const
+object_request::get_optype() const
 {
     return optype_;
 }

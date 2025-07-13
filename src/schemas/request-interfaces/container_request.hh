@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Schemas
-// 'object_container_request_interface.hh'
+// 'container_request.hh'
 // Author: jcjuarez
 // Description:
 //      Structure for defining an object container
@@ -13,7 +13,7 @@
 #include <string>
 #include <cstdint>
 #include <drogon/HttpController.h>
-#include "../request-optypes/object_container_request_optype.hh"
+#include "../request-optypes/container_request_optype.hh"
 
 namespace lazarus
 {
@@ -24,21 +24,21 @@ namespace schemas
 // Structure for holding the request
 // data for an object container.
 //
-class object_container_request_interface
+class container_request
 {
 public:
 
     //
     // Constructor for the request interface.
     //
-    object_container_request_interface(
+    container_request(
         const drogon::HttpRequestPtr& request);
 
     //
     // Move constructor for the request interface.
     //
-    object_container_request_interface(
-        object_container_request_interface&& other);
+    container_request(
+        container_request&& other);
 
     //
     // Gets the object container name.
@@ -50,7 +50,7 @@ public:
     //
     // Gets the object container request optype.
     //
-    object_container_request_optype
+    container_request_optype
     get_optype() const;
 
 
@@ -69,7 +69,7 @@ private:
     //
     // Optype for the object container operation.
     //
-    object_container_request_optype optype_;
+    container_request_optype optype_;
 };
 
 } // namespace schemas.

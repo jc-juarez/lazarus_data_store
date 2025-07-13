@@ -32,7 +32,7 @@ object_management_service::object_management_service(
 
 status::status_code
 object_management_service::validate_object_operation_request(
-    const schemas::object_request_interface& object_request)
+    const schemas::object_request& object_request)
 {
     status::status_code status = validate_request_parameters(object_request);
 
@@ -66,7 +66,7 @@ object_management_service::validate_object_operation_request(
 
 status::status_code
 object_management_service::validate_request_parameters(
-    const schemas::object_request_interface& object_request)
+    const schemas::object_request& object_request)
 {
     status::status_code status = common::request_validations::validate_object_container_name(
         object_request.get_object_container_name(),
@@ -155,7 +155,7 @@ object_management_service::get_object_container_reference(
 
 status::status_code
 object_management_service::orchestrate_concurrent_write_request(
-    schemas::object_request_interface&& object_request,
+    schemas::object_request&& object_request,
     std::shared_ptr<container> object_container,
     network::server_response_callback&& response_callback)
 {
@@ -186,7 +186,7 @@ object_management_service::orchestrate_concurrent_write_request(
 
 status::status_code
 object_management_service::orchestrate_concurrent_read_request(
-    schemas::object_request_interface&& object_request,
+    schemas::object_request&& object_request,
     std::shared_ptr<container> object_container,
     network::server_response_callback&& response_callback)
 {

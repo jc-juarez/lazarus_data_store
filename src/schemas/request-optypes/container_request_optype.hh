@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Schemas
-// 'object_container_request_optype.hh'
+// 'container_request_optype.hh'
 // Author: jcjuarez
 // Description:
 //      Optypes for object container requests. 
@@ -19,7 +19,7 @@ namespace schemas
 //
 // Optype for describing object container operations.
 //
-enum class object_container_request_optype : std::uint8_t
+enum class container_request_optype : std::uint8_t
 {
     //
     // Invalid optype. Operation should not be processed.

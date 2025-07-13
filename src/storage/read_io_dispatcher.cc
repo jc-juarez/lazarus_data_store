@@ -26,7 +26,7 @@ read_io_dispatcher::read_io_dispatcher(
 
 void
 read_io_dispatcher::concurrent_io_request_proxy(
-    schemas::object_request_interface&& object_request,
+    schemas::object_request&& object_request,
     std::shared_ptr<container> object_container,
     network::server_response_callback&& response_callback)
 {
@@ -80,7 +80,7 @@ read_io_dispatcher::concurrent_io_request_proxy(
         // Only send the response fields if the request succeeded.
         //
         network::response_fields response_fields
-            {{schemas::object_request_interface::object_data_key_tag, std::move(object_data)}};
+            {{schemas::object_request::object_data_key_tag, std::move(object_data)}};
 
         network::server::send_response(
             response_callback,
@@ -101,7 +101,7 @@ read_io_dispatcher::concurrent_io_request_proxy(
 status::status_code
 read_io_dispatcher::execute_get_operation(
     storage_engine_reference_handle* object_container_storage_engine_reference,
-    const schemas::object_request_interface& object_request,
+    const schemas::object_request& object_request,
     byte_stream& object_data)
 {
     status::status_code status = storage_engine_->get_object(

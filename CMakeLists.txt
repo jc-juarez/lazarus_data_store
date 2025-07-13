@@ -21,7 +21,7 @@ find_package(Protobuf REQUIRED)
 
 # Define and process .proto files.
 set(PROTO_FILES
-    src/schemas/persistent-interfaces/object_container_persistent_interface.proto
+        src/schemas/persistent-interfaces/container_persistent_interface.proto
 )
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 
@@ -30,17 +30,17 @@ set(SOURCE_FILES
     src/main/main.cc
     src/main/lazarus_data_store.cc
     src/network/server/server.cc
-    src/network/endpoints/object_container_endpoint.cc
+    src/network/endpoints/container_endpoint.cc
     src/network/endpoints/object_endpoint.cc
     src/common/uuid_utilities.cc
-        src/storage/container_management_service.cc
+    src/storage/container_management_service.cc
     src/storage/storage_engine.cc
     src/storage/garbage_collector.cc
     src/storage/container.cc
-        src/storage/container_index.cc
-        src/storage/container_operation_serializer.cc
-    src/schemas/request-interfaces/object_container_request_interface.cc
-    src/schemas/request-interfaces/object_request_interface.cc
+    src/storage/container_index.cc
+    src/storage/container_operation_serializer.cc
+    src/schemas/request-interfaces/container_request.cc
+    src/schemas/request-interfaces/object_request.cc
     src/storage/object_management_service.cc
     src/storage/read_io_dispatcher.cc
     src/storage/write_io_dispatcher.cc
@@ -53,6 +53,7 @@ set(SOURCE_FILES
     src/common/response_utilities.cc
     src/storage/container_bucket.cc
     src/storage/cache_shard.cc
+    src/storage/object.cc
 )
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})

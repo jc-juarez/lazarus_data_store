@@ -12,7 +12,7 @@
 #include <memory>
 #include "../status/status.hh"
 #include "storage_configuration.hh"
-#include "../schemas/request-interfaces/object_request_interface.hh"
+#include "../schemas/request-interfaces/object_request.hh"
 
 namespace lazarus
 {
@@ -45,7 +45,7 @@ public:
     //
     status::status_code
     validate_object_operation_request(
-        const schemas::object_request_interface& object_request);
+        const schemas::object_request& object_request);
 
     //
     // Fetches the object container reference from the index.
@@ -59,7 +59,7 @@ public:
     //
     status::status_code
     orchestrate_concurrent_write_request(
-        schemas::object_request_interface&& object_request,
+        schemas::object_request&& object_request,
         std::shared_ptr<container> container,
         network::server_response_callback&& response_callback);
 
@@ -68,7 +68,7 @@ public:
     //
     status::status_code
     orchestrate_concurrent_read_request(
-        schemas::object_request_interface&& object_request,
+        schemas::object_request&& object_request,
         std::shared_ptr<container> container,
         network::server_response_callback&& response_callback);
 
@@ -79,7 +79,7 @@ private:
     //
     status::status_code
     validate_request_parameters(
-        const schemas::object_request_interface& object_request);
+        const schemas::object_request& object_request);
 
     //
     // Checks whether the given object operation optype is valid.

@@ -12,7 +12,7 @@
 
 #include "concurrent_io_dispatcher.hh"
 #include "../network/server/server.hh"
-#include "../schemas/request-interfaces/object_request_interface.hh"
+#include "../schemas/request-interfaces/object_request.hh"
 
 namespace lazarus::storage
 {
@@ -35,7 +35,7 @@ private:
     //
     void
     concurrent_io_request_proxy(
-        schemas::object_request_interface&& object_request,
+        schemas::object_request&& object_request,
         std::shared_ptr<container> container,
         network::server_response_callback&& response_callback) override;
 
@@ -45,7 +45,7 @@ private:
     status::status_code
     execute_get_operation(
         storage_engine_reference_handle* object_container_storage_engine_reference,
-        const schemas::object_request_interface& object_request,
+        const schemas::object_request& object_request,
         byte_stream& object_data);
 };
 

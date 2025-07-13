@@ -29,7 +29,7 @@ container_operation_serializer::container_operation_serializer(
 
 void
 container_operation_serializer::enqueue_object_container_operation(
-    schemas::object_container_request_interface&& object_container_request,
+    schemas::container_request&& object_container_request,
     network::server_response_callback&& response_callback)
 {
     //
@@ -49,7 +49,7 @@ container_operation_serializer::enqueue_object_container_operation(
 
 void
 container_operation_serializer::object_container_operation_serial_proxy(
-    const schemas::object_container_request_interface& object_container_request,
+    const schemas::container_request& object_container_request,
     const network::server_response_callback& response_callback)
 {
     spdlog::info("Executing serialized object container operation action. "
@@ -62,13 +62,13 @@ container_operation_serializer::object_container_operation_serial_proxy(
 
     switch (object_container_request.get_optype())
     {
-        case schemas::object_container_request_optype::create:
+        case schemas::container_request_optype::create:
         {
             status = handle_object_container_creation(
                 object_container_request);
             break;
         }
-        case schemas::object_container_request_optype::remove:
+        case schemas::container_request_optype::remove:
         {
             status = handle_object_container_removal(
                 object_container_request);
@@ -91,7 +91,7 @@ container_operation_serializer::object_container_operation_serial_proxy(
 
 status::status_code
 container_operation_serializer::handle_object_container_creation(
-    const schemas::object_container_request_interface& object_container_request)
+    const schemas::container_request& object_container_request)
 {
     status::status_code status =
         object_container_index_->get_object_container_existence_status(
@@ -196,7 +196,7 @@ container_operation_serializer::handle_object_container_creation(
 
 status::status_code
 container_operation_serializer::handle_object_container_removal(
-    const schemas::object_container_request_interface& object_container_request)
+    const schemas::container_request& object_container_request)
 {
     status::status_code status =
         object_container_index_->get_object_container_existence_status(

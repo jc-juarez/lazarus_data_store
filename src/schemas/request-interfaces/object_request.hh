@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Schemas
-// 'object_request_interface.hh'
+// 'object_request.hh'
 // Author: jcjuarez
 // Description:
 //      Structure for defining an object
@@ -25,21 +25,21 @@ namespace schemas
 // Structure for holding the request
 // data for an object.
 //
-class object_request_interface
+class object_request
 {
 public:
 
     //
     // Constructor for the request interface.
     //
-    object_request_interface(
+    object_request(
         const drogon::HttpRequestPtr& request);
 
     //
     // Move constructor for the request interface.
     //
-    object_request_interface(
-        object_request_interface&& other);
+    object_request(
+        object_request&& other);
 
     //
     // Gets the object container name.

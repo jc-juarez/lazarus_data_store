@@ -225,7 +225,7 @@ container_management_service::create_internal_metadata_column_families(
 
 void
 container_management_service::orchestrate_serial_object_container_operation(
-    schemas::object_container_request_interface&& object_container_request,
+    schemas::container_request&& object_container_request,
     network::server_response_callback&& response_callback)
 {
     object_container_operation_serializer_->enqueue_object_container_operation(
@@ -235,7 +235,7 @@ container_management_service::orchestrate_serial_object_container_operation(
 
 status::status_code
 container_management_service::validate_object_container_operation_request(
-    const schemas::object_container_request_interface& object_container_request)
+    const schemas::container_request& object_container_request)
 {
     status::status_code status = common::request_validations::validate_object_container_name(
         object_container_request.get_name(),
@@ -268,12 +268,12 @@ container_management_service::validate_object_container_operation_request(
     //
     switch (object_container_request.get_optype())
     {
-        case schemas::object_container_request_optype::create:
+        case schemas::container_request_optype::create:
         {
             return validate_object_container_create_request(object_container_request);
             break;
         }
-        case schemas::object_container_request_optype::remove:
+        case schemas::container_request_optype::remove:
         {
             return validate_object_container_remove_request(object_container_request);
             break;
@@ -296,7 +296,7 @@ container_management_service::validate_object_container_operation_request(
 
 status::status_code
 container_management_service::validate_object_container_create_request(
-    const schemas::object_container_request_interface& object_container_request)
+    const schemas::container_request& object_container_request)
 {
     const status::status_code status =
         object_container_index_->get_object_container_existence_status(
@@ -345,7 +345,7 @@ container_management_service::validate_object_container_create_request(
 
 status::status_code
 container_management_service::validate_object_container_remove_request(
-    const schemas::object_container_request_interface& object_container_request)
+    const schemas::container_request& object_container_request)
 {
     const status::status_code status =
         object_container_index_->get_object_container_existence_status(

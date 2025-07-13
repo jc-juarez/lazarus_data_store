@@ -26,7 +26,7 @@ write_io_dispatcher::write_io_dispatcher(
 
 void
 write_io_dispatcher::concurrent_io_request_proxy(
-    schemas::object_request_interface&& object_request,
+    schemas::object_request&& object_request,
     std::shared_ptr<container> object_container,
     network::server_response_callback&& response_callback)
 {
@@ -90,7 +90,7 @@ write_io_dispatcher::concurrent_io_request_proxy(
 status::status_code
 write_io_dispatcher::execute_insert_operation(
     storage_engine_reference_handle* object_container_storage_engine_reference,
-    const schemas::object_request_interface& object_request)
+    const schemas::object_request& object_request)
 {
     status::status_code status = storage_engine_->insert_object(
         object_container_storage_engine_reference,
@@ -126,7 +126,7 @@ write_io_dispatcher::execute_insert_operation(
 status::status_code
 write_io_dispatcher::execute_remove_operation(
     storage_engine_reference_handle* object_container_storage_engine_reference,
-    const schemas::object_request_interface& object_request)
+    const schemas::object_request& object_request)
 {
     status::status_code status = storage_engine_->remove_object(
         object_container_storage_engine_reference,
