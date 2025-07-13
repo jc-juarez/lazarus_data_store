@@ -110,11 +110,11 @@ void
 server::send_response(
     const server_response_callback& response_callback,
     const status::status_code& status,
-    std::unordered_map<std::string, std::string>* additional_parameters)
+    response_fields* response_fields)
 {
     auto response = drogon::HttpResponse::newHttpResponse();
     response->setStatusCode(static_cast<drogon::HttpStatusCode>(status.get_http_status_code()));
-    response->setBody(common::response_utilities::generate_server_json_response(status.get_internal_status_code(), additional_parameters));
+    response->setBody(common::response_utilities::generate_server_json_response(status.get_internal_status_code(), response_fields));
     response_callback(response);
 }
 

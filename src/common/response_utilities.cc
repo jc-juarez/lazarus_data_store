@@ -17,14 +17,14 @@ namespace lazarus::common::response_utilities
 std::string
 generate_server_json_response(
     const std::uint32_t internal_status_code,
-    std::unordered_map<std::string, std::string>* additional_parameters)
+    network::response_fields* response_fields)
 {
     nlohmann::json response_body;
     response_body["internal_status_code"] = std::format("{:#x}", internal_status_code);
 
-    if (additional_parameters != nullptr)
+    if (response_fields != nullptr)
     {
-        for (auto&& [key, value] : std::move(*additional_parameters))
+        for (auto&& [key, value] : std::move(*response_fields))
         {
             response_body[key] = std::move(value);
         }

@@ -11,6 +11,7 @@
 
 #include <string>
 #include <cstdint>
+#include "aliases.hh"
 #include <unordered_map>
 
 namespace lazarus::common::response_utilities
@@ -24,6 +25,6 @@ namespace lazarus::common::response_utilities
 std::string
 generate_server_json_response(
     const std::uint32_t internal_status_code,
-    std::unordered_map<std::string, std::string>* additional_parameters);
+    network::response_fields* response_fields);
 
 } // namespace lazarus::common::response_utilities.

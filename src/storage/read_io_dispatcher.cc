@@ -79,8 +79,8 @@ read_io_dispatcher::concurrent_io_request_proxy(
         //
         // Only send the response fields if the request succeeded.
         //
-        std::unordered_map<std::string, std::string> response_fields
-            {{"object_data", std::move(object_data)}};
+        network::response_fields response_fields
+            {{schemas::object_request_interface::object_data_key_tag, std::move(object_data)}};
 
         network::server::send_response(
             response_callback,

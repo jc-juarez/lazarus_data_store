@@ -100,7 +100,7 @@ public:
     send_response(
         const server_response_callback& response_callback,
         const status::status_code& status,
-        std::unordered_map<std::string, std::string>* additional_parameters = nullptr);
+        response_fields* response_fields = nullptr);
 
 private:
 

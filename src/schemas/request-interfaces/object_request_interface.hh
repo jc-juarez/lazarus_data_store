@@ -68,6 +68,21 @@ public:
     object_request_optype
     get_optype() const;
 
+    //
+    // Expected object container name key tag in the client request.
+    //
+    static constexpr const char* object_container_name_key_tag = "object_container_name";
+
+    //
+    // Expected object ID key tag in the client request.
+    //
+    static constexpr const char* object_id_key_tag = "object_id";
+
+    //
+    // Expected object data key tag in the client request.
+    //
+    static constexpr const char* object_data_key_tag = "object_data";
+
 private:
 
     //
@@ -85,21 +100,6 @@ private:
     // Owning byte stream.
     //
     storage::byte_stream object_data_;
-
-    //
-    // Expected object container name key tag in the client request.
-    //
-    static constexpr const char* object_container_name_key_tag = "object_container_name";
-
-    //
-    // Expected object ID key tag in the client request.
-    //
-    static constexpr const char* object_id_key_tag = "object_id";
-
-    //
-    // Expected object data key tag in the client request.
-    //
-    static constexpr const char* object_data_key_tag = "object_data";
 
     //
     // Optype for the object operation.

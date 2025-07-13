@@ -28,6 +28,7 @@ using exit_code = std::int32_t;
 namespace network
 {
 using server_response_callback = std::function<void(const drogon::HttpResponsePtr&)>;
+using response_fields = std::unordered_map<std::string, std::string>;
 }
 
 //
