@@ -50,7 +50,7 @@ container_bucket::insert_container(
         // Exit execution.
         //
         spdlog::info("Inserted container to the bucket map. "
-            "ObjectContainerName={}, "
+            "ContainerName={}, "
             "ContainerBucketIndex={}.",
             object_container_persistent_metadata.name().c_str(),
             index_);
@@ -110,13 +110,13 @@ container_bucket::remove_object_container(
         accessor,
         object_container_name))
     {
-        spdlog::info("Deleted object container reference from the bucket map. "
-            "ObjectContainerMetadata={}, "
-            "ContainerBucketIndex={}.",
-            accessor->second->to_string(),
-            index_);
-
         container_bucket_map_.erase(accessor);
+
+        spdlog::info("Deleted object container reference from the bucket map. "
+            "ContainerName={}, "
+            "ContainerBucketIndex={}.",
+            object_container_name.c_str(),
+            index_);
 
         return status::success;
     }
