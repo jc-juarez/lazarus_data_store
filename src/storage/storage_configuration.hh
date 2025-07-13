@@ -40,7 +40,7 @@ struct storage_configuration
           number_write_io_threads_{4u},
           number_read_io_threads_{std::thread::hardware_concurrency()},
           storage_engine_block_cache_size_mib_{512u},
-          container_index_number_buckets_{32u}
+          container_index_number_buckets_{8u}
     {
         //
         // Set the core database path with the default home directory path if no path
