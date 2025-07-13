@@ -110,13 +110,13 @@ container_bucket::remove_object_container(
         accessor,
         object_container_name))
     {
-        container_bucket_map_.erase(accessor);
-
         spdlog::info("Deleted object container reference from the bucket map. "
             "ObjectContainerMetadata={}, "
             "ContainerBucketIndex={}.",
             accessor->second->to_string(),
             index_);
+
+        container_bucket_map_.erase(accessor);
 
         return status::success;
     }
