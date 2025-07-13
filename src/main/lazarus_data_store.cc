@@ -46,6 +46,7 @@ lazarus_data_store::lazarus_data_store(
     // Object container index component allocation.
     //
     object_container_index_ = std::make_shared<storage::object_container_index>(
+        storage_configuration.container_index_number_buckets_,
         storage_engine_);
 
     //

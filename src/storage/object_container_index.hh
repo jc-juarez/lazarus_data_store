@@ -10,8 +10,11 @@
 
 #pragma once
 
+#include <vector>
 #include <memory>
 #include <tbb/tbb.h>
+#include <functional>
+#include "container_bucket.hh"
 #include "object_container.hh"
 #include "../status/status.hh"
 #include "object_container_persistent_interface.pb.h"
@@ -34,7 +37,8 @@ public:
     // Constructor for the object container index.
     //
     object_container_index(
-        std::shared_ptr<storage_engine> storage_engine_handle);
+        const std::uint16_t number_container_buckets,
+        std::shared_ptr<storage_engine> storage_engine);
 
     //
     // Internal column family name for persisting
@@ -58,7 +62,7 @@ public:
     // object container insertion or as the initial disk fetching process.
     // This is only executed after a well-known commited disk write.
     //
-    void
+    status::status_code
     insert_object_container(
         storage_engine_reference_handle* storage_engine_reference,
         const schemas::object_container_persistent_interface& object_container_persistent_metadata);
@@ -75,7 +79,7 @@ public:
     //
     status::status_code
     get_object_container_existence_status(
-        const char* object_container_name) const;
+        const std::string& object_container_name) const;
 
     //
     // Gets a reference an object container.
@@ -83,13 +87,14 @@ public:
     //
     std::shared_ptr<object_container>
     get_object_container(
-        const char* object_container_name) const;
+        const std::string& object_container_name) const;
 
     //
-    // Gets a list of all the object containers.
+    // Gets a list of all the object containers in a given bucket.
     //
     std::vector<std::shared_ptr<object_container>>
-    get_all_object_containers() const;
+    get_all_object_containers_from_bucket(
+        const std::uint16_t bucket_index) const;
 
     //
     // Removes an object container from the index table. After this, all subsequent
@@ -97,7 +102,7 @@ public:
     //
     status::status_code
     remove_object_container(
-        const char* object_container_name);
+        const std::string& object_container_name);
 
     //
     // Gets the total current number of
@@ -105,21 +110,46 @@ public:
     // This API returns the total number of active and soft-deleted containers.
     //
     std::size_t
-    get_total_number_object_containers();
+    get_total_number_object_containers() const;
+
+    //
+    // Gets the number of buckets in the index table.
+    // Useful for executing index-based traversals.
+    //
+    std::uint16_t
+    get_number_container_buckets() const;
 
 private:
+
+    //
+    // Gets the container bucket index by hashing the given container name.
+    //
+    std::uint16_t
+    get_associated_bucket_index(
+        const std::string& container_name) const;
 
     //
     // Index table for object containers in the system.
     // Maps an object container identifier to the
     // respective object container memory reference.
     //
-    tbb::concurrent_hash_map<std::string, std::shared_ptr<object_container>> object_container_index_table_;
+    std::vector<container_bucket> container_index_table_;
 
     //
-    // Handle for the storage engine.
+    // Hasher for routing a container name to its respective bucket.
     //
-    std::shared_ptr<storage_engine> storage_engine_;
+    std::hash<std::string> hasher_;
+
+    //
+    // Number of container buckets in the index table.
+    //
+    const std::uint16_t number_container_buckets_;
+
+    //
+    // Keeps track of the total number of object containers in the system.
+    // This is running-value as to avoid iterating over all buckets and asking for their sizes.
+    //
+    std::atomic<std::uint32_t> number_object_containers_;
 };
 
 } // namespace storage.

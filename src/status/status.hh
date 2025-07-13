@@ -186,5 +186,10 @@ status_code_definition(object_id_exceeds_size_limit, 0x8'0000024, drogon::HttpSt
 //
 status_code_definition(object_data_exceeds_size_limit, 0x8'0000025, drogon::HttpStatusCode::k400BadRequest);
 
+//
+// Container insertion collision.
+//
+status_code_definition(container_insertion_collision, 0x8'0000026, drogon::HttpStatusCode::k500InternalServerError);
+
 } // namespace status.
 } // namespace lazarus.

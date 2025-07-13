@@ -19,12 +19,21 @@ namespace lazarus
 namespace storage
 {
 
-using index_table_type = tbb::concurrent_hash_map<std::string, std::shared_ptr<object_container>>;
-
 object_container_index::object_container_index(
-    std::shared_ptr<storage_engine> storage_engine_handle)
-    : storage_engine_{std::move(storage_engine_handle)}
-{}
+    const std::uint16_t number_container_buckets,
+    std::shared_ptr<storage_engine> storage_engine)
+    : container_index_table_{number_container_buckets, container_bucket{std::move(storage_engine)}},
+      number_container_buckets_{number_container_buckets},
+      number_object_containers_{0u}
+{
+    for (std::uint16_t index = 0; index < number_container_buckets; ++index)
+    {
+        //
+        // Assign the associated index to each bucket.
+        //
+        container_index_table_.at(index).set_index(index);
+    }
+}
 
 bool
 object_container_index::is_internal_metadata(
@@ -34,42 +43,27 @@ object_container_index::is_internal_metadata(
         object_container_name == object_containers_internal_metadata_name;
 }
 
-void
+status::status_code
 object_container_index::insert_object_container(
     storage_engine_reference_handle* storage_engine_reference,
     const schemas::object_container_persistent_interface& object_container_persistent_metadata)
 {
-    //
-    // At this point, it is guaranteed that the object container
-    // reference has a valid hashable identifier to be used as index key.
-    // Also, it is guaranteed that no other thread will try to insert the same key.
-    //
-    if (object_container_index_table_.emplace(
-        object_container_persistent_metadata.name(),
-        std::make_unique<object_container>(
-            storage_engine_,
-            storage_engine_reference,
-            object_container_persistent_metadata)))
-    {
-        //
-        // Key did not exist and metadata register was successful.
-        // Exit execution.
-        //
-        return;
-    }
-
-    //
-    // Reaching this point is a critical error as no other thread
-    // should have reached this point before for inserting the same key.
-    // Log the issue and assert.
-    //
-    spdlog::critical("Object container collision has been detected. "
-        "ObjectContainerName={}.",
+    const std::uint16_t bucket_index = get_associated_bucket_index(
         object_container_persistent_metadata.name());
 
-    spdlog::shutdown();
-    assert(false);
-    std::abort();
+    status::status_code status = container_index_table_.at(bucket_index).insert_container(
+        storage_engine_reference,
+        object_container_persistent_metadata);
+
+    if (status::succeeded(status))
+    {
+        //
+        // Insertion succeeded, increment the count of object containers in the system.
+        //
+        number_object_containers_.fetch_add(1u, std::memory_order_acq_rel);
+    }
+
+    return status;
 }
 
 storage_engine_reference_handle*
@@ -78,99 +72,87 @@ object_container_index::get_object_containers_internal_metadata_storage_engine_r
     const std::shared_ptr<object_container> object_container =
         get_object_container(object_containers_internal_metadata_name);
 
-    //
-    // The object containers internal metadata should always be valid.
-    //
-    assert(object_container != nullptr);
-
     return object_container->get_storage_engine_reference();
 }
 
 status::status_code
 object_container_index::get_object_container_existence_status(
-    const char* object_container_name) const
+    const std::string& object_container_name) const
 {
-    index_table_type::const_accessor accessor;
+    const std::shared_ptr<object_container> object_container =
+        get_object_container(object_container_name);
 
-    if (object_container_index_table_.find(
-        accessor,
-        object_container_name))
+    if (object_container == nullptr)
     {
         //
-        // Object container present in the index table.
-        // If it is marked as deleted, consider it pending deletion.
+        // Not present in the index table; unknown object container.
         //
-        return accessor->second->is_deleted() ?
-            status::object_container_in_deletion_process : status::object_container_already_exists;
+        return status::object_container_not_exists;
     }
 
     //
-    // Not present in the index table; unknown object container.
+    // Object container present in the index table.
+    // If it is marked as deleted, consider it pending deletion.
     //
-    return status::object_container_not_exists;
+    return object_container->is_deleted() ?
+           status::object_container_in_deletion_process : status::object_container_already_exists;
 }
 
 std::shared_ptr<object_container>
 object_container_index::get_object_container(
-    const char* object_container_name) const
+    const std::string& object_container_name) const
 {
-    index_table_type::const_accessor accessor;
+    const std::uint16_t bucket_index = get_associated_bucket_index(
+        object_container_name);
 
-    if (object_container_index_table_.find(
-        accessor,
-        object_container_name))
-    {
-        //
-        // Object container present in the index table.
-        //
-        return accessor->second;
-    }
-
-    //
-    // Not present in the index table; unknown object container.
-    //
-    return nullptr;
+    return container_index_table_.at(bucket_index).get_object_container(object_container_name);
 }
 
 std::vector<std::shared_ptr<object_container>>
-object_container_index::get_all_object_containers() const
+object_container_index::get_all_object_containers_from_bucket(
+    const std::uint16_t bucket_index) const
 {
-    std::vector<std::shared_ptr<object_container>> object_containers;
-
-    for (const auto& entry : object_container_index_table_)
-    {
-        object_containers.push_back(entry.second);
-    }
-
-    return object_containers;
+    return container_index_table_.at(bucket_index).get_all_object_containers();
 }
 
 status::status_code
 object_container_index::remove_object_container(
-    const char* object_container_name)
+    const std::string& object_container_name)
 {
-    index_table_type::accessor accessor;
+    const std::uint16_t bucket_index = get_associated_bucket_index(
+        object_container_name);
 
-    if (object_container_index_table_.find(
-        accessor,
-        object_container_name))
+    status::status_code status = container_index_table_.at(bucket_index).remove_object_container(
+        object_container_name);
+
+    if (status::succeeded(status))
     {
-        spdlog::info("Deleting object container reference from the index table. "
-            "ObjectContainerMetadata={}.",
-            accessor->second->to_string());
-
-        object_container_index_table_.erase(accessor);
-
-        return status::success;
+        //
+        // Deletion succeeded, decrement the count of object containers in the system.
+        //
+        number_object_containers_.fetch_sub(1u, std::memory_order_acq_rel);
     }
 
-    return status::object_container_not_exists;
+    return status;
 }
 
 std::size_t
-object_container_index::get_total_number_object_containers()
+object_container_index::get_total_number_object_containers() const
 {
-    return object_container_index_table_.size();
+    return number_object_containers_;
+}
+
+std::uint16_t
+object_container_index::get_number_container_buckets() const
+{
+    return number_container_buckets_;
+}
+
+std::uint16_t
+object_container_index::get_associated_bucket_index(
+    const std::string& container_name) const
+{
+    return hasher_(container_name) % number_container_buckets_;
 }
 
 } // namespace storage.
