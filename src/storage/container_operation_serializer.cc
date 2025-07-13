@@ -95,7 +95,7 @@ container_operation_serializer::handle_object_container_creation(
 {
     status::status_code status =
         object_container_index_->get_object_container_existence_status(
-            object_container_request.get_name().c_str());
+            object_container_request.get_name());
 
     if (status != status::object_container_not_exists)
     {
@@ -200,7 +200,7 @@ container_operation_serializer::handle_object_container_removal(
 {
     status::status_code status =
         object_container_index_->get_object_container_existence_status(
-            object_container_request.get_name().c_str());
+            object_container_request.get_name());
 
     if (status != status::object_container_already_exists)
     {
@@ -251,7 +251,7 @@ container_operation_serializer::handle_object_container_removal(
     //
     std::shared_ptr<container> object_container =
         object_container_index_->get_object_container(
-            object_container_request.get_name().c_str());
+            object_container_request.get_name());
 
     if (object_container == nullptr)
     {

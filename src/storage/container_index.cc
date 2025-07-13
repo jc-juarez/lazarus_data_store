@@ -36,8 +36,8 @@ container_index::container_index(
 }
 
 bool
-container_index::is_internal_metadata(
-    const std::string object_container_name)
+container_index::is_internal_metadata_container(
+    const std::string& object_container_name)
 {
     return object_container_name == rocksdb::kDefaultColumnFamilyName ||
         object_container_name == object_containers_internal_metadata_name;

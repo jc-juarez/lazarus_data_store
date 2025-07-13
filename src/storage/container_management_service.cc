@@ -131,7 +131,7 @@ container_management_service::populate_object_container_index(
             }
 
             const std::shared_ptr<container> object_container =
-                object_container_index_->get_object_container(object_container_name.c_str());
+                object_container_index_->get_object_container(object_container_name);
 
             spdlog::info("Found object container on startup. Indexing into the object containers metadata table. "
                 "ObjectContainerMetadata={}.",
@@ -161,7 +161,7 @@ container_management_service::populate_object_container_index(
             }
 
             const bool is_orphaned_object_container =
-                !container_index::is_internal_metadata(object_container_name.c_str());
+                !container_index::is_internal_metadata_container(object_container_name);
 
             if (is_orphaned_object_container)
             {
@@ -174,7 +174,7 @@ container_management_service::populate_object_container_index(
                     object_container_name.c_str());
                 
                 std::shared_ptr<container> object_container =
-                    object_container_index_->get_object_container(object_container_name.c_str());
+                    object_container_index_->get_object_container(object_container_name);
 
                 if (object_container == nullptr)
                 {
@@ -300,7 +300,7 @@ container_management_service::validate_object_container_create_request(
 {
     const status::status_code status =
         object_container_index_->get_object_container_existence_status(
-            object_container_request.get_name().c_str());
+            object_container_request.get_name());
 
     if (status != status::object_container_not_exists)
     {
@@ -349,7 +349,7 @@ container_management_service::validate_object_container_remove_request(
 {
     const status::status_code status =
         object_container_index_->get_object_container_existence_status(
-            object_container_request.get_name().c_str());
+            object_container_request.get_name());
 
     if (status != status::object_container_already_exists)
     {

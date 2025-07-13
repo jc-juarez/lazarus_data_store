@@ -53,8 +53,8 @@ public:
     //
     static
     bool
-    is_internal_metadata(
-        const std::string object_container_name);
+    is_internal_metadata_container(
+        const std::string& object_container_name);
 
     //
     // Inserts a new object container entry into the index map.

@@ -150,7 +150,7 @@ std::shared_ptr<container>
 object_management_service::get_object_container_reference(
     const std::string& object_container_name)
 {
-    return object_container_index_->get_object_container(object_container_name.c_str());
+    return object_container_index_->get_object_container(object_container_name);
 }
 
 status::status_code
@@ -178,7 +178,7 @@ object_management_service::orchestrate_concurrent_write_request(
 
     write_request_dispatcher_->enqueue_concurrent_io_request(
         std::move(object_request),
-        object_container,
+        std::move(object_container),
         std::move(response_callback));
 
     return status::success;
@@ -209,7 +209,7 @@ object_management_service::orchestrate_concurrent_read_request(
 
     read_request_dispatcher_->enqueue_concurrent_io_request(
         std::move(object_request),
-        object_container,
+        std::move(object_container),
         std::move(response_callback));
 
     return status::success;
