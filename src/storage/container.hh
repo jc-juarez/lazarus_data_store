@@ -14,7 +14,7 @@
 #include <string>
 #include <shared_mutex>
 #include "../common/aliases.hh"
-#include "object_container_persistent_interface.pb.h"
+#include "container_persistent_interface.pb.h"
 
 namespace lazarus
 {

@@ -17,7 +17,7 @@
 #include "container_bucket.hh"
 #include "container.hh"
 #include "../status/status.hh"
-#include "object_container_persistent_interface.pb.h"
+#include "container_persistent_interface.pb.h"
 
 namespace lazarus
 {

@@ -15,11 +15,11 @@
 #include "lazarus_data_store.hh"
 #include "../network/server/server.hh"
 #include "../storage/storage_engine.hh"
+#include "../storage/container_index.hh"
 #include "../storage/garbage_collector.hh"
 #include "../storage/read_io_dispatcher.hh"
 #include "../storage/write_io_dispatcher.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
-#include "../storage/container_index.hh"
 #include "../storage/object_management_service.hh"
 #include "../network/server/server_configuration.hh"
 #include "../storage/orphaned_container_scavenger.hh"

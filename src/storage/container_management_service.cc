@@ -15,7 +15,7 @@
 #include "../common/request_validations.hh"
 #include "container_management_service.hh"
 #include "container_operation_serializer.hh"
-#include "object_container_persistent_interface.pb.h"
+#include "container_persistent_interface.pb.h"
 
 namespace lazarus
 {
