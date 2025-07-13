@@ -11,7 +11,7 @@
 #include <spdlog/spdlog.h>
 #include "../server/server.hh"
 #include "object_container_endpoint.hh"
-#include "../../storage/object_container_management_service.hh"
+#include "../../storage/container_management_service.hh"
 #include "../../schemas/request-interfaces/object_container_request_interface.hh"
 
 namespace lazarus
@@ -20,7 +20,7 @@ namespace network
 {
 
 object_container_endpoint::object_container_endpoint(
-    std::shared_ptr<storage::object_container_management_service> object_container_management_service_handle)
+    std::shared_ptr<storage::container_management_service> object_container_management_service_handle)
     : object_container_management_service_{std::move(object_container_management_service_handle)}
 {}
 

@@ -34,7 +34,7 @@ class container_index;
 class write_io_dispatcher;
 class read_io_dispatcher;
 class object_management_service;
-class object_container_management_service;
+class container_management_service;
 }
 
 //
@@ -125,7 +125,7 @@ private:
     //
     // Object container management service handle.
     //
-    std::shared_ptr<storage::object_container_management_service> object_container_management_service_;
+    std::shared_ptr<storage::container_management_service> object_container_management_service_;
 
     //
     // Object management service handle.

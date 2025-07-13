@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'object_container_management_service.hh'
+// 'container_management_service.hh'
 // Author: jcjuarez
 // Description:
 //      Management service for object container
@@ -33,14 +33,14 @@ class object_container_operation_serializer;
 //
 // Core storage access interface.
 //
-class object_container_management_service
+class container_management_service
 {
 public:
 
     //
     // Constructor data service.
     //
-    object_container_management_service(
+    container_management_service(
         const storage_configuration& storage_configuration,
         std::shared_ptr<storage_engine> storage_engine_handle,
         std::shared_ptr<container_index> object_container_index_handle,

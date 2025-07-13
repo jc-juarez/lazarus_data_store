@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'object_container_management_service.cc'
+// 'container_management_service.cc'
 // Author: jcjuarez
 // Description:
 //      Management service for object container
@@ -13,7 +13,7 @@
 #include "garbage_collector.hh"
 #include "container_index.hh"
 #include "../common/request_validations.hh"
-#include "object_container_management_service.hh"
+#include "container_management_service.hh"
 #include "object_container_operation_serializer.hh"
 #include "object_container_persistent_interface.pb.h"
 
@@ -22,7 +22,7 @@ namespace lazarus
 namespace storage
 {
 
-object_container_management_service::object_container_management_service(
+container_management_service::container_management_service(
     const storage_configuration& storage_configuration,
     std::shared_ptr<storage_engine> storage_engine_handle,
     std::shared_ptr<container_index> object_container_index_handle,
@@ -34,7 +34,7 @@ object_container_management_service::object_container_management_service(
 {}
 
 status::status_code
-object_container_management_service::populate_object_container_index(
+container_management_service::populate_object_container_index(
     std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping)
 {
     //
@@ -194,7 +194,7 @@ object_container_management_service::populate_object_container_index(
 }
 
 status::status_code
-object_container_management_service::create_internal_metadata_column_families(
+container_management_service::create_internal_metadata_column_families(
     std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping)
 {
     //
@@ -224,7 +224,7 @@ object_container_management_service::create_internal_metadata_column_families(
 }
 
 void
-object_container_management_service::orchestrate_serial_object_container_operation(
+container_management_service::orchestrate_serial_object_container_operation(
     schemas::object_container_request_interface&& object_container_request,
     network::server_response_callback&& response_callback)
 {
@@ -234,7 +234,7 @@ object_container_management_service::orchestrate_serial_object_container_operati
 }
 
 status::status_code
-object_container_management_service::validate_object_container_operation_request(
+container_management_service::validate_object_container_operation_request(
     const schemas::object_container_request_interface& object_container_request)
 {
     status::status_code status = common::request_validations::validate_object_container_name(
@@ -295,7 +295,7 @@ object_container_management_service::validate_object_container_operation_request
 }
 
 status::status_code
-object_container_management_service::validate_object_container_create_request(
+container_management_service::validate_object_container_create_request(
     const schemas::object_container_request_interface& object_container_request)
 {
     const status::status_code status =
@@ -344,7 +344,7 @@ object_container_management_service::validate_object_container_create_request(
 }
 
 status::status_code
-object_container_management_service::validate_object_container_remove_request(
+container_management_service::validate_object_container_remove_request(
     const schemas::object_container_request_interface& object_container_request)
 {
     const status::status_code status =

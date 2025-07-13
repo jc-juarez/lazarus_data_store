@@ -18,7 +18,7 @@ namespace lazarus
 
 namespace storage
 {
-class object_container_management_service;
+class container_management_service;
 }
 
 namespace network

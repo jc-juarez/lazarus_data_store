@@ -13,7 +13,7 @@
 #include "../server/server.hh"
 #include "../../storage/container.hh"
 #include "../../storage/object_management_service.hh"
-#include "../../storage/object_container_management_service.hh"
+#include "../../storage/container_management_service.hh"
 #include "../../schemas/request-interfaces/object_request_interface.hh"
 
 namespace lazarus

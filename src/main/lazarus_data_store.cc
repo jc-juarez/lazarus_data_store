@@ -23,7 +23,7 @@
 #include "../storage/object_management_service.hh"
 #include "../network/server/server_configuration.hh"
 #include "../storage/orphaned_container_scavenger.hh"
-#include "../storage/object_container_management_service.hh"
+#include "../storage/container_management_service.hh"
 #include "../storage/object_container_operation_serializer.hh"
 
 namespace lazarus
@@ -75,7 +75,7 @@ lazarus_data_store::lazarus_data_store(
     //
     // Object container management service component allocation.
     //
-    object_container_management_service_ = std::make_shared<storage::object_container_management_service>(
+    object_container_management_service_ = std::make_shared<storage::container_management_service>(
         storage_configuration,
         storage_engine_,
         object_container_index_,

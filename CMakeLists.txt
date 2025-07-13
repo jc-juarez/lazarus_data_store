@@ -33,7 +33,7 @@ set(SOURCE_FILES
     src/network/endpoints/object_container_endpoint.cc
     src/network/endpoints/object_endpoint.cc
     src/common/uuid_utilities.cc
-    src/storage/object_container_management_service.cc
+        src/storage/container_management_service.cc
     src/storage/storage_engine.cc
     src/storage/garbage_collector.cc
     src/storage/container.cc

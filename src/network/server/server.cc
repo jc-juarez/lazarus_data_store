@@ -14,7 +14,7 @@
 #include "../endpoints/object_endpoint.hh"
 #include "../../common/response_utilities.hh"
 #include "../endpoints/object_container_endpoint.hh"
-#include "../../storage/object_container_management_service.hh"
+#include "../../storage/container_management_service.hh"
 
 namespace lazarus
 {
@@ -23,7 +23,7 @@ namespace network
 
 server::server(
     const server_configuration& server_config,
-    std::shared_ptr<storage::object_container_management_service> object_container_management_service_handle,
+    std::shared_ptr<storage::container_management_service> object_container_management_service_handle,
     std::shared_ptr<storage::object_management_service> object_management_service)
     : http_server_{drogon::app()},
       server_config_{server_config}
@@ -66,7 +66,7 @@ server::stop()
 
 void
 server::register_endpoints(
-    std::shared_ptr<storage::object_container_management_service> object_container_management_service_handle,
+    std::shared_ptr<storage::container_management_service> object_container_management_service_handle,
     std::shared_ptr<storage::object_management_service> object_management_service)
 {
     //
