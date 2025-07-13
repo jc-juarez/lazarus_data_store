@@ -22,10 +22,10 @@ namespace storage
 container::container(
     std::shared_ptr<storage_engine> storage_engine_handle,
     storage_engine_reference_handle* storage_engine_reference,
-    const schemas::object_container_persistent_interface& object_container_persistent_metadata)
+    const schemas::container_persistent_interface& container_persistent_metadata)
     : storage_engine_{std::move(storage_engine_handle)},
       storage_engine_reference_{storage_engine_reference},
-      object_container_persistent_metadata_{object_container_persistent_metadata},
+      container_persistent_metadata_{container_persistent_metadata},
       is_deleted_{false}
 {}
 
@@ -35,22 +35,22 @@ container::~container()
         "ObjectContainerMetadata={}.",
         to_string());
 
-    storage_engine_->close_object_container_storage_engine_reference(
+    storage_engine_->close_container_storage_engine_reference(
         storage_engine_reference_);
 }
 
-schemas::object_container_persistent_interface
-container::create_object_container_persistent_metadata(
-    const char* object_container_name)
+schemas::container_persistent_interface
+container::create_container_persistent_metadata(
+    const char* container_name)
 {
-    schemas::object_container_persistent_interface object_container_persistent_metadata;
+    schemas::container_persistent_interface container_persistent_metadata;
 
     //
     // Default values upon creation.
     //
-    object_container_persistent_metadata.set_name(object_container_name);
+    container_persistent_metadata.set_name(container_name);
 
-    return object_container_persistent_metadata;
+    return container_persistent_metadata;
 }
 
 storage_engine_reference_handle*
@@ -64,7 +64,7 @@ std::string
 container::get_name() const
 {
     std::shared_lock<std::shared_mutex> lock {lock_};
-    return object_container_persistent_metadata_.name();
+    return container_persistent_metadata_.name();
 }
 
 void
@@ -89,7 +89,7 @@ container::to_string() const
         "{{Name={}, "
         "StorageEngineReference={}, "
         "IsDeleted={}}}",
-        object_container_persistent_metadata_.name(),
+        container_persistent_metadata_.name(),
         static_cast<void*>(storage_engine_reference_),
         is_deleted_);
 }

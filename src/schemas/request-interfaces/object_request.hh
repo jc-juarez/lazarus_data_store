@@ -46,7 +46,7 @@ public:
     // Returns an immutable reference to the container name.
     //
     const std::string&
-    get_object_container_name() const;
+    get_container_name() const;
 
     //
     // Gets the object ID.
@@ -71,7 +71,7 @@ public:
     //
     // Expected object container name key tag in the client request.
     //
-    static constexpr const char* object_container_name_key_tag = "object_container_name";
+    static constexpr const char* container_name_key_tag = "container_name";
 
     //
     // Expected object ID key tag in the client request.
@@ -88,7 +88,7 @@ private:
     //
     // Object container name.
     //
-    std::string object_container_name_;
+    std::string container_name_;
 
     //
     // Object ID.

@@ -33,10 +33,10 @@ struct storage_configuration
     storage_configuration()
         : core_database_path_{},
           garbage_collector_periodic_interval_ms_{10'000u},
-          max_object_container_name_size_bytes_{512u},
+          max_container_name_size_bytes_{512u},
           max_object_id_size_bytes_{1'024u},
           max_object_data_size_bytes_{1'024u * 1'024u},
-          max_number_object_containers_{10'000},
+          max_number_containers_{10'000},
           number_write_io_threads_{4u},
           number_read_io_threads_{std::thread::hardware_concurrency()},
           storage_engine_block_cache_size_mib_{512u},
@@ -76,7 +76,7 @@ struct storage_configuration
     //
     // Max size for an object container in bytes.
     //
-    std::uint32_t max_object_container_name_size_bytes_;
+    std::uint32_t max_container_name_size_bytes_;
 
     //
     // Max size for an object ID in bytes.
@@ -91,7 +91,7 @@ struct storage_configuration
     //
     // Max number of object containers to be present on the data store.
     //
-    std::uint32_t max_number_object_containers_;
+    std::uint32_t max_number_containers_;
 
     //
     // Number of threads for the write IO dispatcher thread pool.

@@ -61,12 +61,12 @@ private:
     // Deletion from both the filesystem and index metadata table occurs.
     //
     void
-    cleanup_orphaned_object_containers();
+    cleanup_orphaned_containers();
 
     //
     // Handle for the object container index.
     //
-    std::shared_ptr<container_index> object_container_index_;
+    std::shared_ptr<container_index> container_index_;
 
     //
     // Handle for the container scavenger component.

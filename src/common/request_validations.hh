@@ -21,8 +21,8 @@ namespace lazarus::common::request_validations
 // Validates whether an object container name is well-formed.
 //
 status::status_code
-validate_object_container_name(
-    const std::string& object_container_name,
+validate_container_name(
+    const std::string& container_name,
     const storage::storage_configuration& storage_configuration);
 
 //

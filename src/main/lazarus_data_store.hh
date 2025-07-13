@@ -125,7 +125,7 @@ private:
     //
     // Object container management service handle.
     //
-    std::shared_ptr<storage::container_management_service> object_container_management_service_;
+    std::shared_ptr<storage::container_management_service> container_management_service_;
 
     //
     // Object management service handle.
@@ -140,7 +140,7 @@ private:
     //
     // Object container index handle.
     //
-    std::shared_ptr<storage::container_index> object_container_index_;
+    std::shared_ptr<storage::container_index> container_index_;
 
     //
     // Write request dispatcher handle.

@@ -19,18 +19,18 @@ namespace lazarus::storage
 
 orphaned_container_scavenger::orphaned_container_scavenger(
     std::shared_ptr<storage_engine> storage_engine,
-    std::shared_ptr<container_index> object_container_index)
+    std::shared_ptr<container_index> container_index)
     : storage_engine_{std::move(storage_engine)},
-      object_container_index_{std::move(object_container_index)}
+      container_index_{std::move(container_index)}
 {}
 
 void
 orphaned_container_scavenger::cleanup_orphaned_containers(
     const std::uint16_t container_bucket_index,
     const std::uint64_t garbage_collector_iteration_count,
-    const std::vector<std::shared_ptr<container>>& object_containers)
+    const std::vector<std::shared_ptr<container>>& containers)
 {
-    if (object_containers.empty())
+    if (containers.empty())
     {
         //
         // No object containers present.
@@ -49,7 +49,7 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
         "NumberObjectContainers={}, "
         "ContainerBucketIndexBeingTraversed={}, "
         "GarbageCollectorCurrentIteration={}.",
-        object_containers.size(),
+        containers.size(),
         container_bucket_index,
         garbage_collector_iteration_count);
 
@@ -57,27 +57,27 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
     // Keep track of all deleted object containers
     // in the current garbage collection iteration.
     //
-    std::uint32_t number_cleaned_up_object_containers = 0;
+    std::uint32_t number_cleaned_up_containers = 0;
 
-    for (auto &object_container: object_containers)
+    for (auto &container: containers)
     {
         //
         // If the object container is marked as deleted,
         // it needs to be deleted from the filesystem and index table.
         //
-        if (object_container->is_deleted())
+        if (container->is_deleted())
         {
             spdlog::info("Found orphaned object container during garbage collection. "
                 "Attempting to delete it. "
                 "ObjectContainerMetadata={}, "
                 "ContainerBucketIndexBeingTraversed={}, "
                 "GarbageCollectorCurrentIteration={}.",
-                object_container->to_string(),
+                container->to_string(),
                 container_bucket_index,
                 garbage_collector_iteration_count);
 
-            status::status_code status = storage_engine_->remove_object_container(
-                object_container->get_storage_engine_reference());
+            status::status_code status = storage_engine_->remove_container(
+                container->get_storage_engine_reference());
 
             if (status::failed(status))
             {
@@ -89,7 +89,7 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
                     "ContainerBucketIndexBeingTraversed={}, "
                     "GarbageCollectorCurrentIteration={}, "
                     "Status={:#x}.",
-                    object_container->to_string(),
+                    container->to_string(),
                     container_bucket_index,
                     garbage_collector_iteration_count,
                     status);
@@ -101,8 +101,8 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
             // At this point, the object container has been deleted
             // from the filesystem. Safe to delete the in-memory reference now.
             //
-            status = object_container_index_->remove_object_container(
-                object_container->get_name().c_str());
+            status = container_index_->remove_container(
+                container->get_name().c_str());
 
             if (status::failed(status))
             {
@@ -111,28 +111,28 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
                     "ContainerBucketIndexBeingTraversed={}, "
                     "GarbageCollectorCurrentIteration={}, "
                     "Status={:#x}.",
-                    object_container->to_string(),
+                    container->to_string(),
                     container_bucket_index,
                     garbage_collector_iteration_count,
                     status);
             }
             else
             {
-                ++number_cleaned_up_object_containers;
+                ++number_cleaned_up_containers;
 
                 spdlog::info("Object container has been successfully deleted from the storage "
                     "engine and the index metadata table. Memory will be freed after all references are dropped. "
                     "ObjectContainerMetadata={}, "
                     "ContainerBucketIndexBeingTraversed={}, "
                     "GarbageCollectorCurrentIteration={}.",
-                    object_container->to_string(),
+                    container->to_string(),
                     container_bucket_index,
                     garbage_collector_iteration_count);
             }
         }
     }
 
-    if (number_cleaned_up_object_containers == 0)
+    if (number_cleaned_up_containers == 0)
     {
         spdlog::info("No orphaned object containers cleaned up during garbage collection. "
             "ContainerBucketIndexBeingTraversed={}, "
@@ -146,7 +146,7 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
             "NumberObjectContainersCleanedUp={}, "
             "ContainerBucketIndexBeingTraversed={}, "
             "GarbageCollectorCurrentIteration={}.",
-            number_cleaned_up_object_containers,
+            number_cleaned_up_containers,
             container_bucket_index,
             garbage_collector_iteration_count);
     }

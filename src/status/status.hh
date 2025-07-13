@@ -64,7 +64,7 @@ succeeded(
 //
 // Object container already exists.
 //
-status_code_definition(object_container_already_exists, 0x8'0000001, drogon::HttpStatusCode::k409Conflict);
+status_code_definition(container_already_exists, 0x8'0000001, drogon::HttpStatusCode::k409Conflict);
 
 //
 // Invalid state for a given operation.
@@ -89,22 +89,22 @@ status_code_definition(object_retrieval_failed, 0x8'0000005, drogon::HttpStatusC
 //
 // Failed to create an object container.
 //
-status_code_definition(object_container_creation_failed, 0x8'0000006, drogon::HttpStatusCode::k500InternalServerError);
+status_code_definition(container_creation_failed, 0x8'0000006, drogon::HttpStatusCode::k500InternalServerError);
 
 //
 // Failed to retrieve all the objects inside an object container.
 //
-status_code_definition(objects_retrieval_from_object_container_failed, 0x8'0000007, drogon::HttpStatusCode::k500InternalServerError);
+status_code_definition(objects_retrieval_from_container_failed, 0x8'0000007, drogon::HttpStatusCode::k500InternalServerError);
 
 //
 // Failed to retrieve initial object containers from disk during startup.
 //
-status_code_definition(fetch_object_containers_from_disk_failed, 0x8'0000008, drogon::HttpStatusCode::k500InternalServerError);
+status_code_definition(fetch_containers_from_disk_failed, 0x8'0000008, drogon::HttpStatusCode::k500InternalServerError);
 
 //
 // Failed to find the object containers internal metadata column family during startup.
 //
-status_code_definition(object_containers_internal_metadata_lookup_failed, 0x8'0000009, drogon::HttpStatusCode::k500InternalServerError);
+status_code_definition(containers_internal_metadata_lookup_failed, 0x8'0000009, drogon::HttpStatusCode::k500InternalServerError);
 
 //
 // Failed to parse a byte stream into an object.
@@ -124,7 +124,7 @@ status_code_definition(storage_engine_reference_close_failed, 0x8'0000012, drogo
 //
 // Object container does not exist.
 //
-status_code_definition(object_container_not_exists, 0x8'0000013, drogon::HttpStatusCode::k404NotFound);
+status_code_definition(container_not_exists, 0x8'0000013, drogon::HttpStatusCode::k404NotFound);
 
 //
 // Failed to serialize an object into a byte stream.
@@ -139,17 +139,17 @@ status_code_definition(object_deletion_failed, 0x8'0000015, drogon::HttpStatusCo
 //
 // Specified object container is currently in deletion process.
 //
-status_code_definition(object_container_in_deletion_process, 0x8'0000016, drogon::HttpStatusCode::k409Conflict);
+status_code_definition(container_in_deletion_process, 0x8'0000016, drogon::HttpStatusCode::k409Conflict);
 
 //
 // Object container storage engine deletion failed.
 //
-status_code_definition(object_container_storage_engine_deletion_failed, 0x8'0000017, drogon::HttpStatusCode::k500InternalServerError);
+status_code_definition(container_storage_engine_deletion_failed, 0x8'0000017, drogon::HttpStatusCode::k500InternalServerError);
 
 //
 // Object container name exceeds max size limit.
 //
-status_code_definition(object_container_name_exceeds_size_limit, 0x8'0000018, drogon::HttpStatusCode::k400BadRequest);
+status_code_definition(container_name_exceeds_size_limit, 0x8'0000018, drogon::HttpStatusCode::k400BadRequest);
 
 //
 // Error for unreachable code blocks.
@@ -159,12 +159,12 @@ status_code_definition(unreachable, 0x8'0000019, drogon::HttpStatusCode::k500Int
 //
 // Max number of object containers reached.
 //
-status_code_definition(max_number_object_containers_reached, 0x8'0000020, drogon::HttpStatusCode::k429TooManyRequests);
+status_code_definition(max_number_containers_reached, 0x8'0000020, drogon::HttpStatusCode::k429TooManyRequests);
 
 //
 // Given object container name is empty.
 //
-status_code_definition(object_container_name_empty, 0x8'0000021, drogon::HttpStatusCode::k400BadRequest);
+status_code_definition(container_name_empty, 0x8'0000021, drogon::HttpStatusCode::k400BadRequest);
 
 //
 // Given object ID is empty.

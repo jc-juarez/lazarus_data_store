@@ -13,25 +13,25 @@ namespace lazarus::common::request_validations
 {
 
 status::status_code
-validate_object_container_name(
-    const std::string& object_container_name,
+validate_container_name(
+    const std::string& container_name,
     const storage::storage_configuration& storage_configuration)
 {
-    if (object_container_name.empty())
+    if (container_name.empty())
     {
         //
         // Given object container name is empty.
         //
-        return status::object_container_name_empty;
+        return status::container_name_empty;
     }
 
-    if (object_container_name.size() >
-        storage_configuration.max_object_container_name_size_bytes_)
+    if (container_name.size() >
+        storage_configuration.max_container_name_size_bytes_)
     {
         //
         // Given object container name exceeds size limit.
         //
-        return status::object_container_name_exceeds_size_limit;
+        return status::container_name_exceeds_size_limit;
     }
 
     return status::success;

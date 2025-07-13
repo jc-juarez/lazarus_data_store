@@ -43,15 +43,15 @@ public:
     container_management_service(
         const storage_configuration& storage_configuration,
         std::shared_ptr<storage_engine> storage_engine_handle,
-        std::shared_ptr<container_index> object_container_index_handle,
-        std::unique_ptr<container_operation_serializer> object_container_operation_serializer_handle);
+        std::shared_ptr<container_index> container_index_handle,
+        std::unique_ptr<container_operation_serializer> container_operation_serializer_handle);
 
     //
     // Populates the in-memory contents of the object container
     // index based on the references received from the storage engine start.
     //
     status::status_code
-    populate_object_container_index(
+    populate_container_index(
         std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping);
 
     //
@@ -61,16 +61,16 @@ public:
     // Handles callback response.
     //
     void
-    orchestrate_serial_object_container_operation(
-        schemas::container_request&& object_container_request,
+    orchestrate_serial_container_operation(
+        schemas::container_request&& container_request,
         network::server_response_callback&& response_callback);
 
     //
     // Validates if an object container operation request.
     //
     status::status_code
-    validate_object_container_operation_request(
-        const schemas::container_request& object_container_request);
+    validate_container_operation_request(
+        const schemas::container_request& container_request);
 
 private:
 
@@ -87,15 +87,15 @@ private:
     // Validates if the given create request is valid.
     //
     status::status_code
-    validate_object_container_create_request(
-        const schemas::container_request& object_container_request);
+    validate_container_create_request(
+        const schemas::container_request& container_request);
 
     //
     // Validates if the given remove request is valid.
     //
     status::status_code
-    validate_object_container_remove_request(
-        const schemas::container_request& object_container_request);
+    validate_container_remove_request(
+        const schemas::container_request& container_request);
 
     //
     // Configurations for the storage subsystem.
@@ -110,12 +110,12 @@ private:
     //
     // Handle for the object container index component.
     //
-    std::shared_ptr<container_index> object_container_index_;
+    std::shared_ptr<container_index> container_index_;
 
     //
     // Handle for the object container operation serializer component.
     //
-    std::unique_ptr<container_operation_serializer> object_container_operation_serializer_;
+    std::unique_ptr<container_operation_serializer> container_operation_serializer_;
 };
 
 } // namespace storage.

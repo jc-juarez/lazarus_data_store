@@ -43,29 +43,29 @@ public:
     status::status_code
     insert_container(
         storage_engine_reference_handle* storage_engine_reference,
-        const schemas::object_container_persistent_interface& object_container_persistent_metadata);
+        const schemas::container_persistent_interface& container_persistent_metadata);
 
     //
     // Gets a reference of an object container.
     // Returns nullptr in case it does not exist.
     //
     std::shared_ptr<container>
-    get_object_container(
-        const std::string& object_container_name) const;
+    get_container(
+        const std::string& container_name) const;
 
     //
     // Gets a list of all the object containers in the bucket.
     //
     std::vector<std::shared_ptr<container>>
-    get_all_object_containers() const;
+    get_all_containers() const;
 
     //
     // Removes an object container from the index table. After this, all subsequent
     // API calls to the object container index will not contain the object container.
     //
     status::status_code
-    remove_object_container(
-        const std::string& object_container_name);
+    remove_container(
+        const std::string& container_name);
 
     //
     // Gets the total current number of
@@ -73,7 +73,7 @@ public:
     // This API returns the total number of active and soft-deleted containers.
     //
     std::size_t
-    get_number_object_containers() const;
+    get_number_containers() const;
 
 private:
 

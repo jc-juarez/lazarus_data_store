@@ -31,7 +31,7 @@ container_bucket::set_index(
 status::status_code
 container_bucket::insert_container(
     storage_engine_reference_handle* storage_engine_reference,
-    const schemas::object_container_persistent_interface& object_container_persistent_metadata)
+    const schemas::container_persistent_interface& container_persistent_metadata)
 {
     //
     // At this point, it is guaranteed that the object container
@@ -39,11 +39,11 @@ container_bucket::insert_container(
     // Also, it is guaranteed that no other thread will try to insert the same key.
     //
     if (container_bucket_map_.emplace(
-        object_container_persistent_metadata.name(),
+        container_persistent_metadata.name(),
         std::make_unique<container>(
             storage_engine_,
             storage_engine_reference,
-            object_container_persistent_metadata)))
+            container_persistent_metadata)))
     {
         //
         // Key did not exist and metadata register was successful.
@@ -52,7 +52,7 @@ container_bucket::insert_container(
         spdlog::info("Inserted container to the bucket map. "
             "ContainerName={}, "
             "ContainerBucketIndex={}.",
-            object_container_persistent_metadata.name().c_str(),
+            container_persistent_metadata.name().c_str(),
             index_);
 
         return status::success;
@@ -66,14 +66,14 @@ container_bucket::insert_container(
 }
 
 std::shared_ptr<container>
-container_bucket::get_object_container(
-    const std::string& object_container_name) const
+container_bucket::get_container(
+    const std::string& container_name) const
 {
     index_table_type::const_accessor accessor;
 
     if (container_bucket_map_.find(
         accessor,
-        object_container_name))
+        container_name))
     {
         //
         // Object container present in the bucket map.
@@ -88,44 +88,44 @@ container_bucket::get_object_container(
 }
 
 std::vector<std::shared_ptr<container>>
-container_bucket::get_all_object_containers() const
+container_bucket::get_all_containers() const
 {
-    std::vector<std::shared_ptr<container>> object_containers;
+    std::vector<std::shared_ptr<container>> containers;
 
     for (const auto& entry : container_bucket_map_)
     {
-        object_containers.push_back(entry.second);
+        containers.push_back(entry.second);
     }
 
-    return object_containers;
+    return containers;
 }
 
 status::status_code
-container_bucket::remove_object_container(
-    const std::string& object_container_name)
+container_bucket::remove_container(
+    const std::string& container_name)
 {
     index_table_type::accessor accessor;
 
     if (container_bucket_map_.find(
         accessor,
-        object_container_name))
+        container_name))
     {
         container_bucket_map_.erase(accessor);
 
         spdlog::info("Deleted object container reference from the bucket map. "
             "ContainerName={}, "
             "ContainerBucketIndex={}.",
-            object_container_name.c_str(),
+            container_name.c_str(),
             index_);
 
         return status::success;
     }
 
-    return status::object_container_not_exists;
+    return status::container_not_exists;
 }
 
 std::size_t
-container_bucket::get_number_object_containers() const
+container_bucket::get_number_containers() const
 {
     return container_bucket_map_.size();
 }

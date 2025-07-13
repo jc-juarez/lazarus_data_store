@@ -21,11 +21,11 @@ namespace storage
 
 object_management_service::object_management_service(
     const storage_configuration& storage_configuration,
-    std::shared_ptr<container_index> object_container_index,
+    std::shared_ptr<container_index> container_index,
     std::shared_ptr<write_io_dispatcher> write_request_dispatcher,
     std::shared_ptr<read_io_dispatcher> read_request_dispatcher)
     : storage_configuration_{storage_configuration},
-      object_container_index_{std::move(object_container_index)},
+      container_index_{std::move(container_index)},
       write_request_dispatcher_{std::move(write_request_dispatcher)},
       read_request_dispatcher_{std::move(read_request_dispatcher)}
 {}
@@ -56,7 +56,7 @@ object_management_service::validate_object_operation_request(
             "ObjectContainerName={}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
             object_request.get_object_id(),
-            object_request.get_object_container_name());
+            object_request.get_container_name());
 
         return status::invalid_operation;
     }
@@ -68,8 +68,8 @@ status::status_code
 object_management_service::validate_request_parameters(
     const schemas::object_request& object_request)
 {
-    status::status_code status = common::request_validations::validate_object_container_name(
-        object_request.get_object_container_name(),
+    status::status_code status = common::request_validations::validate_container_name(
+        object_request.get_container_name(),
         storage_configuration_);
 
     if (status::failed(status))
@@ -86,8 +86,8 @@ object_management_service::validate_request_parameters(
             "ObjectContainerNameMaxSizeInBytes={}, "
             "Status={:#x}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
-            object_request.get_object_container_name().size(),
-            storage_configuration_.max_object_container_name_size_bytes_,
+            object_request.get_container_name().size(),
+            storage_configuration_.max_container_name_size_bytes_,
             status);
 
         return status;
@@ -147,16 +147,16 @@ object_management_service::validate_request_parameters(
 }
 
 std::shared_ptr<container>
-object_management_service::get_object_container_reference(
-    const std::string& object_container_name)
+object_management_service::get_container_reference(
+    const std::string& container_name)
 {
-    return object_container_index_->get_object_container(object_container_name);
+    return container_index_->get_container(container_name);
 }
 
 status::status_code
 object_management_service::orchestrate_concurrent_write_request(
     schemas::object_request&& object_request,
-    std::shared_ptr<container> object_container,
+    std::shared_ptr<container> container,
     network::server_response_callback&& response_callback)
 {
     //
@@ -171,14 +171,14 @@ object_management_service::orchestrate_concurrent_write_request(
             "ObjectContainerName={}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
             object_request.get_object_id(),
-            object_request.get_object_container_name());
+            object_request.get_container_name());
 
         return status::invalid_operation;
     }
 
     write_request_dispatcher_->enqueue_concurrent_io_request(
         std::move(object_request),
-        std::move(object_container),
+        std::move(container),
         std::move(response_callback));
 
     return status::success;
@@ -187,7 +187,7 @@ object_management_service::orchestrate_concurrent_write_request(
 status::status_code
 object_management_service::orchestrate_concurrent_read_request(
     schemas::object_request&& object_request,
-    std::shared_ptr<container> object_container,
+    std::shared_ptr<container> container,
     network::server_response_callback&& response_callback)
 {
     //
@@ -202,14 +202,14 @@ object_management_service::orchestrate_concurrent_read_request(
                       "ObjectContainerName={}.",
                       static_cast<std::uint8_t>(object_request.get_optype()),
                       object_request.get_object_id(),
-                      object_request.get_object_container_name());
+                      object_request.get_container_name());
 
         return status::invalid_operation;
     }
 
     read_request_dispatcher_->enqueue_concurrent_io_request(
         std::move(object_request),
-        std::move(object_container),
+        std::move(container),
         std::move(response_callback));
 
     return status::success;

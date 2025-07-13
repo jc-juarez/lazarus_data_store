@@ -26,7 +26,7 @@ storage_engine::storage_engine(
 
 status::status_code
 storage_engine::start(
-    const std::vector<std::string>& object_containers_names,
+    const std::vector<std::string>& containers_names,
     std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping)
 {
     std::vector<rocksdb::ColumnFamilyDescriptor> column_family_descriptors;
@@ -34,10 +34,10 @@ storage_engine::start(
     //
     // Append all mappings for the core database initialization.
     //
-    for (const auto& object_container_name : object_containers_names)
+    for (const auto& container_name : containers_names)
     {
         column_family_descriptors.emplace_back(
-            object_container_name,
+            container_name,
             rocksdb::ColumnFamilyOptions());
     }
 
@@ -62,7 +62,7 @@ storage_engine::start(
             "NumberObjectContainersOnDisk={}, "
             "StorageEngineCode={}, "
             "StorageEngineSubCode={}.",
-            object_containers_names.size(),
+            containers_names.size(),
             static_cast<std::uint32_t>(status.code()),
             static_cast<std::uint32_t>(status.subcode()));
         
@@ -79,9 +79,9 @@ storage_engine::start(
     // Map the object container names to their respective column family references.
     //
     auto& mapping = *storage_engine_references_mapping;
-    for (size_t index = 0; index < object_containers_names.size(); ++index)
+    for (size_t index = 0; index < containers_names.size(); ++index)
     {
-        mapping[object_containers_names[index]] = storage_engine_references[index];
+        mapping[containers_names[index]] = storage_engine_references[index];
     }
 
     return status::success;
@@ -89,13 +89,13 @@ storage_engine::start(
 
 status::status_code
 storage_engine::insert_object(
-    storage_engine_reference_handle* object_container_storage_engine_reference,
+    storage_engine_reference_handle* container_storage_engine_reference,
     const char* object_id,
     const byte_stream& object_data)
 {
     const rocksdb::Status status = core_database_->Put(
         rocksdb::WriteOptions(),
-        object_container_storage_engine_reference,
+        container_storage_engine_reference,
         object_id,
         object_data);
 
@@ -107,7 +107,7 @@ storage_engine::insert_object(
             "StorageEngineCode={}, "
             "StorageEngineSubCode={}.",
             object_id,
-            static_cast<void*>(object_container_storage_engine_reference),
+            static_cast<void*>(container_storage_engine_reference),
             static_cast<std::uint32_t>(status.code()),
             static_cast<std::uint32_t>(status.subcode()));
         
@@ -119,13 +119,13 @@ storage_engine::insert_object(
 
 status::status_code
 storage_engine::get_object(
-    storage_engine_reference_handle* object_container_storage_engine_reference,
+    storage_engine_reference_handle* container_storage_engine_reference,
     const char* object_id,
     byte_stream* object_data)
 {
     const rocksdb::Status status = core_database_->Get(
         rocksdb::ReadOptions(),
-        object_container_storage_engine_reference,
+        container_storage_engine_reference,
         object_id,
         object_data);
 
@@ -137,7 +137,7 @@ storage_engine::get_object(
             "StorageEngineCode={}, "
             "StorageEngineSubCode={}.",
             object_id,
-            static_cast<void*>(object_container_storage_engine_reference),
+            static_cast<void*>(container_storage_engine_reference),
             static_cast<std::uint32_t>(status.code()),
             static_cast<std::uint32_t>(status.subcode()));
         
@@ -148,45 +148,45 @@ storage_engine::get_object(
 }
 
 status::status_code
-storage_engine::create_object_container(
-    const char* object_container_name,
-    storage_engine_reference_handle** object_container_storage_engine_reference)
+storage_engine::create_container(
+    const char* container_name,
+    storage_engine_reference_handle** container_storage_engine_reference)
 {
     const rocksdb::Status status = core_database_->CreateColumnFamily(
         rocksdb::ColumnFamilyOptions(),
-        object_container_name,
-        object_container_storage_engine_reference);
+        container_name,
+        container_storage_engine_reference);
 
     if (!status.ok())
     {
         //
         // On failure, nullify the reference.
         //
-        object_container_storage_engine_reference = nullptr;
+        container_storage_engine_reference = nullptr;
 
         spdlog::error("Failed to create the specified object container. "
             "ObjectContainerName={}, "
             "StorageEngineCode={}, "
             "StorageEngineSubCode={}.",
-            object_container_name,
+            container_name,
             static_cast<std::uint32_t>(status.code()),
             static_cast<std::uint32_t>(status.subcode()));
 
-        return status::object_container_creation_failed;
+        return status::container_creation_failed;
     }
 
     return status::success;
 }
 
 status::status_code
-storage_engine::get_all_objects_from_object_container(
-    storage_engine_reference_handle* object_container_storage_engine_reference,
+storage_engine::get_all_objects_from_container(
+    storage_engine_reference_handle* container_storage_engine_reference,
     std::unordered_map<std::string, byte_stream>* objects)
 {
     rocksdb::ReadOptions read_options;
     std::unique_ptr<rocksdb::Iterator> it(core_database_->NewIterator(
         read_options,
-        object_container_storage_engine_reference));
+        container_storage_engine_reference));
 
     //
     // Iterate over all objects in the object container
@@ -211,24 +211,24 @@ storage_engine::get_all_objects_from_object_container(
             "ObjectContainerStorageEngineReference={}, "
             "StorageEngineCode={}, "
             "StorageEngineSubCode={}.",
-            static_cast<void*>(object_container_storage_engine_reference),
+            static_cast<void*>(container_storage_engine_reference),
             static_cast<std::uint32_t>(status.code()),
             static_cast<std::uint32_t>(status.subcode()));
 
-        return status::objects_retrieval_from_object_container_failed;
+        return status::objects_retrieval_from_container_failed;
     }
 
     return status::success;
 }
 
 status::status_code
-storage_engine::fetch_object_containers_from_disk(
-    std::vector<std::string>* object_containers_names)
+storage_engine::fetch_containers_from_disk(
+    std::vector<std::string>* containers_names)
 {
     const rocksdb::Status status = rocksdb::DB::ListColumnFamilies(
         rocksdb::DBOptions(),
         storage_configuration_.core_database_path_,
-        object_containers_names);
+        containers_names);
 
     //
     // rocksdb::Status::kPathNotFound is a valid error code
@@ -243,28 +243,28 @@ storage_engine::fetch_object_containers_from_disk(
             static_cast<std::uint32_t>(status.code()),
             static_cast<std::uint32_t>(status.subcode()));
 
-        return status::fetch_object_containers_from_disk_failed;
+        return status::fetch_containers_from_disk_failed;
     }
 
-    if (object_containers_names->empty())
+    if (containers_names->empty())
     {
         //
         // In case there are no initial object containers, this is
         // a first-time or fresh startup for the data store, so the
         // default column family needs to be added to the core database initialization.
         //
-        object_containers_names->push_back(rocksdb::kDefaultColumnFamilyName);
+        containers_names->push_back(rocksdb::kDefaultColumnFamilyName);
     }
 
     return status::success;
 }
 
 status::status_code
-storage_engine::close_object_container_storage_engine_reference(
-    storage_engine_reference_handle* object_container_storage_engine_reference)
+storage_engine::close_container_storage_engine_reference(
+    storage_engine_reference_handle* container_storage_engine_reference)
 {
     const rocksdb::Status status = core_database_->DestroyColumnFamilyHandle(
-        object_container_storage_engine_reference);
+        container_storage_engine_reference);
 
     if (!status.ok())
     {
@@ -272,7 +272,7 @@ storage_engine::close_object_container_storage_engine_reference(
             "ObjectContainerStorageEngineReference={}, "
             "StorageEngineCode={}, "
             "StorageEngineSubCode={}.",
-            static_cast<void*>(object_container_storage_engine_reference),
+            static_cast<void*>(container_storage_engine_reference),
             static_cast<std::uint32_t>(status.code()),
             static_cast<std::uint32_t>(status.subcode()));
 
@@ -284,12 +284,12 @@ storage_engine::close_object_container_storage_engine_reference(
 
 status::status_code
 storage_engine::remove_object(
-    storage_engine_reference_handle* object_container_storage_engine_reference,
+    storage_engine_reference_handle* container_storage_engine_reference,
     const char* object_id)
 {
     const rocksdb::Status status = core_database_->Delete(
         rocksdb::WriteOptions(),
-        object_container_storage_engine_reference,
+        container_storage_engine_reference,
         object_id);
 
     if (!status.ok())
@@ -299,7 +299,7 @@ storage_engine::remove_object(
             "ObjectId={}, "
             "StorageEngineCode={}, "
             "StorageEngineSubCode={}.",
-            static_cast<void*>(object_container_storage_engine_reference),
+            static_cast<void*>(container_storage_engine_reference),
             object_id,
             static_cast<std::uint32_t>(status.code()),
             static_cast<std::uint32_t>(status.subcode()));
@@ -311,11 +311,11 @@ storage_engine::remove_object(
 }
 
 status::status_code
-storage_engine::remove_object_container(
-    storage_engine_reference_handle* object_container_storage_engine_reference)
+storage_engine::remove_container(
+    storage_engine_reference_handle* container_storage_engine_reference)
 {
     const rocksdb::Status status = core_database_->DropColumnFamily(
-        object_container_storage_engine_reference);
+        container_storage_engine_reference);
 
     if (!status.ok())
     {
@@ -323,11 +323,11 @@ storage_engine::remove_object_container(
             "ObjectContainerStorageEngineReference={}, "
             "StorageEngineCode={}, "
             "StorageEngineSubCode={}.",
-            static_cast<void*>(object_container_storage_engine_reference),
+            static_cast<void*>(container_storage_engine_reference),
             static_cast<std::uint32_t>(status.code()),
             static_cast<std::uint32_t>(status.subcode()));
 
-        return status::object_container_storage_engine_deletion_failed;
+        return status::container_storage_engine_deletion_failed;
     }
 
     return status::success;

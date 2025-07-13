@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Schemas
-// 'object_container_persistent_interface.proto'
+// 'container_persistent_interface.proto'
 // Author: jcjuarez
 // Description:
 //      Defines the object container structure.
@@ -11,7 +11,7 @@ syntax = "proto3";
 
 package lazarus.schemas;
 
-message object_container_persistent_interface
+message container_persistent_interface
 {
     string name = 1;
 }

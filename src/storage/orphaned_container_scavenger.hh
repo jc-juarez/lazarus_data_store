@@ -29,7 +29,7 @@ public:
     //
     orphaned_container_scavenger(
         std::shared_ptr<storage_engine> storage_engine,
-        std::shared_ptr<container_index> object_container_index);
+        std::shared_ptr<container_index> container_index);
 
     //
     // Scans the given object containers and cleans them up if necessary.
@@ -38,7 +38,7 @@ public:
     cleanup_orphaned_containers(
         const std::uint16_t container_bucket_index,
         const std::uint64_t garbage_collector_iteration_count,
-        const std::vector<std::shared_ptr<container>>& object_containers);
+        const std::vector<std::shared_ptr<container>>& containers);
 
 private:
 
@@ -50,7 +50,7 @@ private:
     //
     // Handle for the object container index.
     //
-    std::shared_ptr<container_index> object_container_index_;
+    std::shared_ptr<container_index> container_index_;
 };
 
 } // namespace lazarus::storage.

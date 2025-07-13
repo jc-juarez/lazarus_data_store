@@ -23,7 +23,7 @@ namespace network
 
 server::server(
     const server_configuration& server_config,
-    std::shared_ptr<storage::container_management_service> object_container_management_service_handle,
+    std::shared_ptr<storage::container_management_service> container_management_service_handle,
     std::shared_ptr<storage::object_management_service> object_management_service)
     : http_server_{drogon::app()},
       server_config_{server_config}
@@ -43,7 +43,7 @@ server::server(
     // Register all needed endpoints for the server.
     //
     register_endpoints(
-        object_container_management_service_handle,
+        container_management_service_handle,
         object_management_service);
 }
 
@@ -66,14 +66,14 @@ server::stop()
 
 void
 server::register_endpoints(
-    std::shared_ptr<storage::container_management_service> object_container_management_service_handle,
+    std::shared_ptr<storage::container_management_service> container_management_service_handle,
     std::shared_ptr<storage::object_management_service> object_management_service)
 {
     //
     // Object container endpoint.
     //
     http_server_.registerController(std::make_shared<container_endpoint>(
-        object_container_management_service_handle));
+        container_management_service_handle));
 
     //
     // Object endpoint.

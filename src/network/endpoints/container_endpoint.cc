@@ -20,19 +20,19 @@ namespace network
 {
 
 container_endpoint::container_endpoint(
-    std::shared_ptr<storage::container_management_service> object_container_management_service_handle)
-    : object_container_management_service_{std::move(object_container_management_service_handle)}
+    std::shared_ptr<storage::container_management_service> container_management_service_handle)
+    : container_management_service_{std::move(container_management_service_handle)}
 {}
 
 void
-container_endpoint::create_object_container(
+container_endpoint::create_container(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback)
 {
-    schemas::container_request object_container_request{request};
+    schemas::container_request container_request{request};
 
-    const status::status_code status = object_container_management_service_->validate_object_container_operation_request(
-        object_container_request);
+    const status::status_code status = container_management_service_->validate_container_operation_request(
+        container_request);
 
     if (status::failed(status))
     {
@@ -51,34 +51,34 @@ container_endpoint::create_object_container(
     spdlog::info("Create object container request received. "
         "Optype={}, "
         "ObjectContainerName={}.",
-        static_cast<std::uint8_t>(object_container_request.get_optype()),
-        object_container_request.get_name());
+        static_cast<std::uint8_t>(container_request.get_optype()),
+        container_request.get_name());
 
     //
     // Orchestrate the creation of the object
     // container in async serialized fashion.
     // Response will be provided by a separate thread.
     //
-    object_container_management_service_->orchestrate_serial_object_container_operation(
-        std::move(object_container_request),
+    container_management_service_->orchestrate_serial_container_operation(
+        std::move(container_request),
         std::move(response_callback));
 }
 
 void
-container_endpoint::get_object_container(
+container_endpoint::get_container(
     const drogon::HttpRequestPtr& request,
     std::function<void(const drogon::HttpResponsePtr &)>&& response_callback)
 {}
 
 void
-container_endpoint::remove_object_container(
+container_endpoint::remove_container(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback)
 {
-    schemas::container_request object_container_request{request};
+    schemas::container_request container_request{request};
 
-    const status::status_code status = object_container_management_service_->validate_object_container_operation_request(
-        object_container_request);
+    const status::status_code status = container_management_service_->validate_container_operation_request(
+        container_request);
 
     if (status::failed(status))
     {
@@ -97,16 +97,16 @@ container_endpoint::remove_object_container(
     spdlog::info("Remove object container request received. "
         "Optype={}, "
         "ObjectContainerName={}.",
-        static_cast<std::uint8_t>(object_container_request.get_optype()),
-        object_container_request.get_name());
+        static_cast<std::uint8_t>(container_request.get_optype()),
+        container_request.get_name());
 
     //
     // Orchestrate the removal of the object
     // container in async serialized fashion.
     // Response will be provided by a separate thread.
     //
-    object_container_management_service_->orchestrate_serial_object_container_operation(
-        std::move(object_container_request),
+    container_management_service_->orchestrate_serial_container_operation(
+        std::move(container_request),
         std::move(response_callback));
 }
 

@@ -45,8 +45,8 @@ public:
     // user-created object containers and their metadata.
     // This name is reserved for the data store use.
     //
-    static constexpr const char* object_containers_internal_metadata_name =
-        "_internal_metadata_:object_containers";
+    static constexpr const char* containers_internal_metadata_name =
+        "_internal_metadata_:containers";
 
     //
     // Checks if an object container is part of the internal metadata.
@@ -54,7 +54,7 @@ public:
     static
     bool
     is_internal_metadata_container(
-        const std::string& object_container_name);
+        const std::string& container_name);
 
     //
     // Inserts a new object container entry into the index map.
@@ -63,37 +63,37 @@ public:
     // This is only executed after a well-known commited disk write.
     //
     status::status_code
-    insert_object_container(
+    insert_container(
         storage_engine_reference_handle* storage_engine_reference,
-        const schemas::object_container_persistent_interface& object_container_persistent_metadata);
+        const schemas::container_persistent_interface& container_persistent_metadata);
 
     //
     // Gets the storage engine reference of the object containers internal metadata column family.
     //
     storage_engine_reference_handle*
-    get_object_containers_internal_metadata_storage_engine_reference() const;
+    get_containers_internal_metadata_storage_engine_reference() const;
 
     //
     // Checks if the object container exists in the index internal metadata.
     // Returns the appropriate status code depending on the state of the object container.
     //
     status::status_code
-    get_object_container_existence_status(
-        const std::string& object_container_name) const;
+    get_container_existence_status(
+        const std::string& container_name) const;
 
     //
     // Gets a reference an object container.
     // Returns nullptr in case it does not exist.
     //
     std::shared_ptr<container>
-    get_object_container(
-        const std::string& object_container_name) const;
+    get_container(
+        const std::string& container_name) const;
 
     //
     // Gets a list of all the object containers in a given bucket.
     //
     std::vector<std::shared_ptr<container>>
-    get_all_object_containers_from_bucket(
+    get_all_containers_from_bucket(
         const std::uint16_t bucket_index) const;
 
     //
@@ -101,8 +101,8 @@ public:
     // API calls to the object container index will not contain the object container.
     //
     status::status_code
-    remove_object_container(
-        const std::string& object_container_name);
+    remove_container(
+        const std::string& container_name);
 
     //
     // Gets the total current number of
@@ -110,7 +110,7 @@ public:
     // This API returns the total number of active and soft-deleted containers.
     //
     std::size_t
-    get_total_number_object_containers() const;
+    get_total_number_containers() const;
 
     //
     // Gets the number of buckets in the index table.
@@ -149,7 +149,7 @@ private:
     // Keeps track of the total number of object containers in the system.
     // This is running-value as to avoid iterating over all buckets and asking for their sizes.
     //
-    std::atomic<std::uint32_t> number_object_containers_;
+    std::atomic<std::uint32_t> number_containers_;
 };
 
 } // namespace storage.

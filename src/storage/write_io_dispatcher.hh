@@ -44,7 +44,7 @@ private:
     //
     status::status_code
     execute_insert_operation(
-        storage_engine_reference_handle* object_container_storage_engine_reference,
+        storage_engine_reference_handle* container_storage_engine_reference,
         const schemas::object_request& object_request);
 
     //
@@ -52,7 +52,7 @@ private:
     //
     status::status_code
     execute_remove_operation(
-        storage_engine_reference_handle* object_container_storage_engine_reference,
+        storage_engine_reference_handle* container_storage_engine_reference,
         const schemas::object_request& object_request);
 };
 

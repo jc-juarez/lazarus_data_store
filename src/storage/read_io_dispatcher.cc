@@ -27,7 +27,7 @@ read_io_dispatcher::read_io_dispatcher(
 void
 read_io_dispatcher::concurrent_io_request_proxy(
     schemas::object_request&& object_request,
-    std::shared_ptr<container> object_container,
+    std::shared_ptr<container> container,
     network::server_response_callback&& response_callback)
 {
     //
@@ -49,7 +49,7 @@ read_io_dispatcher::concurrent_io_request_proxy(
         case schemas::object_request_optype::get:
         {
             status = execute_get_operation(
-                object_container->get_storage_engine_reference(),
+                container->get_storage_engine_reference(),
                 object_request,
                 object_data);
             break;
@@ -67,7 +67,7 @@ read_io_dispatcher::concurrent_io_request_proxy(
                 "ObjectContainerName={}.",
                 static_cast<std::uint8_t>(object_request.get_optype()),
                 object_request.get_object_id(),
-                object_request.get_object_container_name());
+                object_request.get_container_name());
 
             status = status::invalid_operation;
             break;
@@ -100,12 +100,12 @@ read_io_dispatcher::concurrent_io_request_proxy(
 
 status::status_code
 read_io_dispatcher::execute_get_operation(
-    storage_engine_reference_handle* object_container_storage_engine_reference,
+    storage_engine_reference_handle* container_storage_engine_reference,
     const schemas::object_request& object_request,
     byte_stream& object_data)
 {
     status::status_code status = storage_engine_->get_object(
-        object_container_storage_engine_reference,
+        container_storage_engine_reference,
         object_request.get_object_id().c_str(),
         &object_data);
 
@@ -117,7 +117,7 @@ read_io_dispatcher::execute_get_operation(
             "ObjectContainerName={}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
             object_request.get_object_id(),
-            object_request.get_object_container_name());
+            object_request.get_container_name());
     }
     else
     {
@@ -128,7 +128,7 @@ read_io_dispatcher::execute_get_operation(
             "Status={:#x}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
             object_request.get_object_id(),
-            object_request.get_object_container_name(),
+            object_request.get_container_name(),
             status);
     }
 

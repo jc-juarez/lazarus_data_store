@@ -44,7 +44,7 @@ private:
     //
     status::status_code
     execute_get_operation(
-        storage_engine_reference_handle* object_container_storage_engine_reference,
+        storage_engine_reference_handle* container_storage_engine_reference,
         const schemas::object_request& object_request,
         byte_stream& object_data);
 };

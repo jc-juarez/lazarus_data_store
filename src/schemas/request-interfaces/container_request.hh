@@ -64,7 +64,7 @@ private:
     //
     // Expected object container name key tag in the client request.
     //
-    static constexpr const char* name_key_tag = "object_container_name";
+    static constexpr const char* name_key_tag = "container_name";
 
     //
     // Optype for the object container operation.

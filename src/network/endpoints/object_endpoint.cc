@@ -56,19 +56,19 @@ object_endpoint::insert_object(
         "ObjectContainerName={}.",
         static_cast<std::uint8_t>(object_request.get_optype()),
         object_request.get_object_id(),
-        object_request.get_object_container_name());
+        object_request.get_container_name());
 
-    std::shared_ptr<storage::container> object_container =
-        object_management_service_->get_object_container_reference(object_request.get_object_container_name());
+    std::shared_ptr<storage::container> container =
+        object_management_service_->get_container_reference(object_request.get_container_name());
 
     //
     // If the object container is in deleted state, fail the operation.
     //
-    const bool is_object_container_deleted =
-        object_container != nullptr ? object_container->is_deleted() : false;
+    const bool is_container_deleted =
+        container != nullptr ? container->is_deleted() : false;
 
-    if (object_container == nullptr ||
-        is_object_container_deleted)
+    if (container == nullptr ||
+        is_container_deleted)
     {
         spdlog::error("Object container provided for insert object operation "
             "does not exist or is in deletion process. "
@@ -78,12 +78,12 @@ object_endpoint::insert_object(
             "IsDeleted={}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
             object_request.get_object_id(),
-            object_request.get_object_container_name(),
-            is_object_container_deleted);
+            object_request.get_container_name(),
+            is_container_deleted);
 
         network::server::send_response(
             response_callback,
-            status::object_container_not_exists);
+            status::container_not_exists);
 
         return;
     }
@@ -96,7 +96,7 @@ object_endpoint::insert_object(
     //
     status = object_management_service_->orchestrate_concurrent_write_request(
         std::move(object_request),
-        object_container,
+        container,
         std::move(response_callback));
 
     if (status::failed(status))
@@ -108,7 +108,7 @@ object_endpoint::insert_object(
             "Status={:#x}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
             object_request.get_object_id(),
-            object_request.get_object_container_name(),
+            object_request.get_container_name(),
             status);
 
         network::server::send_response(
@@ -147,19 +147,19 @@ object_endpoint::get_object(
                  "ObjectContainerName={}.",
                  static_cast<std::uint8_t>(object_request.get_optype()),
                  object_request.get_object_id(),
-                 object_request.get_object_container_name());
+                 object_request.get_container_name());
 
-    std::shared_ptr<storage::container> object_container =
-        object_management_service_->get_object_container_reference(object_request.get_object_container_name());
+    std::shared_ptr<storage::container> container =
+        object_management_service_->get_container_reference(object_request.get_container_name());
 
     //
     // If the object container is in deleted state, fail the operation.
     //
-    const bool is_object_container_deleted =
-        object_container != nullptr ? object_container->is_deleted() : false;
+    const bool is_container_deleted =
+        container != nullptr ? container->is_deleted() : false;
 
-    if (object_container == nullptr ||
-        is_object_container_deleted)
+    if (container == nullptr ||
+        is_container_deleted)
     {
         spdlog::error("Object container provided for get object operation "
             "does not exist or is in deletion process. "
@@ -169,12 +169,12 @@ object_endpoint::get_object(
             "IsDeleted={}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
             object_request.get_object_id(),
-            object_request.get_object_container_name(),
-            is_object_container_deleted);
+            object_request.get_container_name(),
+            is_container_deleted);
 
         network::server::send_response(
             response_callback,
-            status::object_container_not_exists);
+            status::container_not_exists);
 
         return;
     }
@@ -187,7 +187,7 @@ object_endpoint::get_object(
     //
     status = object_management_service_->orchestrate_concurrent_read_request(
         std::move(object_request),
-        object_container,
+        container,
         std::move(response_callback));
 
     if (status::failed(status))
@@ -199,7 +199,7 @@ object_endpoint::get_object(
             "Status={:#x}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
             object_request.get_object_id(),
-            object_request.get_object_container_name(),
+            object_request.get_container_name(),
             status);
 
         network::server::send_response(
@@ -238,19 +238,19 @@ object_endpoint::remove_object(
         "ObjectContainerName={}.",
         static_cast<std::uint8_t>(object_request.get_optype()),
         object_request.get_object_id(),
-        object_request.get_object_container_name());
+        object_request.get_container_name());
 
-    std::shared_ptr<storage::container> object_container =
-        object_management_service_->get_object_container_reference(object_request.get_object_container_name());
+    std::shared_ptr<storage::container> container =
+        object_management_service_->get_container_reference(object_request.get_container_name());
 
     //
     // If the object container is in deleted state, fail the operation.
     //
-    const bool is_object_container_deleted =
-        object_container != nullptr ? object_container->is_deleted() : false;
+    const bool is_container_deleted =
+        container != nullptr ? container->is_deleted() : false;
 
-    if (object_container == nullptr ||
-        is_object_container_deleted)
+    if (container == nullptr ||
+        is_container_deleted)
     {
         spdlog::error("Object container provided for remove object operation "
             "does not exist or is in deletion process. "
@@ -260,12 +260,12 @@ object_endpoint::remove_object(
             "IsDeleted={}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
             object_request.get_object_id(),
-            object_request.get_object_container_name(),
-            is_object_container_deleted);
+            object_request.get_container_name(),
+            is_container_deleted);
 
         network::server::send_response(
             response_callback,
-            status::object_container_not_exists);
+            status::container_not_exists);
 
         return;
     }
@@ -278,7 +278,7 @@ object_endpoint::remove_object(
     //
     status = object_management_service_->orchestrate_concurrent_write_request(
         std::move(object_request),
-        object_container,
+        container,
         std::move(response_callback));
 
     if (status::failed(status))
@@ -290,7 +290,7 @@ object_endpoint::remove_object(
             "Status={:#x}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
             object_request.get_object_id(),
-            object_request.get_object_container_name(),
+            object_request.get_container_name(),
             status);
 
         network::server::send_response(

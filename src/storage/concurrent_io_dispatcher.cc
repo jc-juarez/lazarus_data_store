@@ -26,7 +26,7 @@ concurrent_io_dispatcher::concurrent_io_dispatcher(
 void
 concurrent_io_dispatcher::enqueue_concurrent_io_request(
     schemas::object_request&& object_request,
-    std::shared_ptr<container> object_container,
+    std::shared_ptr<container> container,
     network::server_response_callback&& response_callback)
 {
     //
@@ -36,12 +36,12 @@ concurrent_io_dispatcher::enqueue_concurrent_io_request(
     boost::asio::post(io_thread_pool_,
         [this,
           object_request = std::move(object_request),
-          object_container = std::move(object_container),
+          container = std::move(container),
           response_callback = std::move(response_callback)]() mutable
         {
           this->concurrent_io_request_proxy(
               std::move(object_request),
-              object_container,
+              container,
               std::move(response_callback));
         });
 }

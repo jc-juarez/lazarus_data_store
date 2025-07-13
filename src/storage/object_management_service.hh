@@ -36,7 +36,7 @@ public:
     //
     object_management_service(
         const storage_configuration& storage_configuration,
-        std::shared_ptr<container_index> object_container_index,
+        std::shared_ptr<container_index> container_index,
         std::shared_ptr<write_io_dispatcher> write_request_dispatcher,
         std::shared_ptr<read_io_dispatcher> read_request_dispatcher);
 
@@ -51,8 +51,8 @@ public:
     // Fetches the object container reference from the index.
     //
     std::shared_ptr<container>
-    get_object_container_reference(
-        const std::string& object_container_name);
+    get_container_reference(
+        const std::string& container_name);
 
     //
     // Enqueues the concurrent write request to the thread pool if successful.
@@ -113,7 +113,7 @@ private:
     //
     // Handle for the object container index component.
     //
-    std::shared_ptr<container_index> object_container_index_;
+    std::shared_ptr<container_index> container_index_;
 
     //
     // Handle for the write request dispatcher component.

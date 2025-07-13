@@ -22,56 +22,56 @@ namespace storage
 
 container_operation_serializer::container_operation_serializer(
     std::shared_ptr<storage_engine> storage_engine_handle,
-    std::shared_ptr<container_index> object_container_index)
+    std::shared_ptr<container_index> container_index)
     : storage_engine_{std::move(storage_engine_handle)},
-      object_container_index_{std::move(object_container_index)}
+      container_index_{std::move(container_index)}
 {}
 
 void
-container_operation_serializer::enqueue_object_container_operation(
-    schemas::container_request&& object_container_request,
+container_operation_serializer::enqueue_container_operation(
+    schemas::container_request&& container_request,
     network::server_response_callback&& response_callback)
 {
     //
     // Enqueue the async object container operation action.
     // This is a single-threaded execution for serialization purposes.
     //
-    object_container_operations_serializer_.enqueue_serialized_task(
+    container_operations_serializer_.enqueue_serialized_task(
         [this,
-        object_container_request = std::move(object_container_request),
+        container_request = std::move(container_request),
         response_callback = std::move(response_callback)]()
         {
-            this->object_container_operation_serial_proxy(
-                object_container_request,
+            this->container_operation_serial_proxy(
+                container_request,
                 response_callback);
         });
 }
 
 void
-container_operation_serializer::object_container_operation_serial_proxy(
-    const schemas::container_request& object_container_request,
+container_operation_serializer::container_operation_serial_proxy(
+    const schemas::container_request& container_request,
     const network::server_response_callback& response_callback)
 {
     spdlog::info("Executing serialized object container operation action. "
         "OpType={}, "
         "ObjectContainerName={}.",
-        static_cast<std::uint8_t>(object_container_request.get_optype()),
-        object_container_request.get_name());
+        static_cast<std::uint8_t>(container_request.get_optype()),
+        container_request.get_name());
 
     status::status_code status = status::success;
 
-    switch (object_container_request.get_optype())
+    switch (container_request.get_optype())
     {
         case schemas::container_request_optype::create:
         {
-            status = handle_object_container_creation(
-                object_container_request);
+            status = handle_container_creation(
+                container_request);
             break;
         }
         case schemas::container_request_optype::remove:
         {
-            status = handle_object_container_removal(
-                object_container_request);
+            status = handle_container_removal(
+                container_request);
             break;
         }
         default:
@@ -90,14 +90,14 @@ container_operation_serializer::object_container_operation_serial_proxy(
 }
 
 status::status_code
-container_operation_serializer::handle_object_container_creation(
-    const schemas::container_request& object_container_request)
+container_operation_serializer::handle_container_creation(
+    const schemas::container_request& container_request)
 {
     status::status_code status =
-        object_container_index_->get_object_container_existence_status(
-            object_container_request.get_name());
+        container_index_->get_container_existence_status(
+            container_request.get_name());
 
-    if (status != status::object_container_not_exists)
+    if (status != status::container_not_exists)
     {
         //
         // At this point, it is guaranteed that this operation is serialized
@@ -108,8 +108,8 @@ container_operation_serializer::handle_object_container_creation(
             "Optype={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
-            static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name(),
+            static_cast<std::uint8_t>(container_request.get_optype()),
+            container_request.get_name(),
             status);
 
         return status;
@@ -122,10 +122,10 @@ container_operation_serializer::handle_object_container_creation(
     // In case the data store crashes in between, the object container will be orphaned
     // and the garbage collector will be in charge to clean it up.
     //
-    storage_engine_reference_handle* object_container_storage_engine_reference;
-    status = storage_engine_->create_object_container(
-        object_container_request.get_name().c_str(),
-        &object_container_storage_engine_reference);
+    storage_engine_reference_handle* container_storage_engine_reference;
+    status = storage_engine_->create_container(
+        container_request.get_name().c_str(),
+        &container_storage_engine_reference);
 
     if (status::failed(status))
     {
@@ -133,8 +133,8 @@ container_operation_serializer::handle_object_container_creation(
             "Optype={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
-            static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name(),
+            static_cast<std::uint8_t>(container_request.get_optype()),
+            container_request.get_name(),
             status);
 
         return status;
@@ -143,14 +143,14 @@ container_operation_serializer::handle_object_container_creation(
     //
     // Insert the metadata for the newly created object container to the storage engine.
     //
-    const schemas::object_container_persistent_interface object_container_persistent_metadata =
-        container::create_object_container_persistent_metadata(object_container_request.get_name().c_str());
-    byte_stream serialized_object_container_persistent_metadata;
-    object_container_persistent_metadata.SerializeToString(&serialized_object_container_persistent_metadata);
+    const schemas::container_persistent_interface container_persistent_metadata =
+        container::create_container_persistent_metadata(container_request.get_name().c_str());
+    byte_stream serialized_container_persistent_metadata;
+    container_persistent_metadata.SerializeToString(&serialized_container_persistent_metadata);
     status = storage_engine_->insert_object(
-        object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
-        object_container_request.get_name().c_str(),
-        serialized_object_container_persistent_metadata);
+        container_index_->get_containers_internal_metadata_storage_engine_reference(),
+        container_request.get_name().c_str(),
+        serialized_container_persistent_metadata);
 
     if (status::failed(status))
     {
@@ -158,8 +158,8 @@ container_operation_serializer::handle_object_container_creation(
             "Optype={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
-            static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name(),
+            static_cast<std::uint8_t>(container_request.get_optype()),
+            container_request.get_name(),
             status);
 
         return status;
@@ -168,9 +168,9 @@ container_operation_serializer::handle_object_container_creation(
     //
     // Index the new object container to the internal metadata table.
     //
-    status = object_container_index_->insert_object_container(
-        object_container_storage_engine_reference,
-        object_container_persistent_metadata);
+    status = container_index_->insert_container(
+        container_storage_engine_reference,
+        container_persistent_metadata);
 
     if (status::failed(status))
     {
@@ -178,8 +178,8 @@ container_operation_serializer::handle_object_container_creation(
             "Optype={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
-            static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name(),
+            static_cast<std::uint8_t>(container_request.get_optype()),
+            container_request.get_name(),
             status);
 
         return status;
@@ -188,21 +188,21 @@ container_operation_serializer::handle_object_container_creation(
     spdlog::info("Object container creation succeeded. "
         "Optype={}, "
         "ObjectContainerName={}.",
-        static_cast<std::uint8_t>(object_container_request.get_optype()),
-        object_container_request.get_name());
+        static_cast<std::uint8_t>(container_request.get_optype()),
+        container_request.get_name());
 
     return status::success;
 }
 
 status::status_code
-container_operation_serializer::handle_object_container_removal(
-    const schemas::container_request& object_container_request)
+container_operation_serializer::handle_container_removal(
+    const schemas::container_request& container_request)
 {
     status::status_code status =
-        object_container_index_->get_object_container_existence_status(
-            object_container_request.get_name());
+        container_index_->get_container_existence_status(
+            container_request.get_name());
 
-    if (status != status::object_container_already_exists)
+    if (status != status::container_already_exists)
     {
         //
         // At this point, it is guaranteed that this operation is serialized
@@ -213,11 +213,11 @@ container_operation_serializer::handle_object_container_removal(
             "Optype={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
-            static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name(),
+            static_cast<std::uint8_t>(container_request.get_optype()),
+            container_request.get_name(),
             status);
 
-        return status::object_container_not_exists;
+        return status::container_not_exists;
     }
 
     //
@@ -227,8 +227,8 @@ container_operation_serializer::handle_object_container_removal(
     // will remain active for the rest of this session and be cleaned up by the garbage collector.
     //
     status = storage_engine_->remove_object(
-        object_container_index_->get_object_containers_internal_metadata_storage_engine_reference(),
-        object_container_request.get_name().c_str());
+        container_index_->get_containers_internal_metadata_storage_engine_reference(),
+        container_request.get_name().c_str());
 
     if (status::failed(status))
     {
@@ -236,8 +236,8 @@ container_operation_serializer::handle_object_container_removal(
             "Optype={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
-            static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name(),
+            static_cast<std::uint8_t>(container_request.get_optype()),
+            container_request.get_name(),
             status);
 
         return status;
@@ -249,11 +249,11 @@ container_operation_serializer::handle_object_container_removal(
     // metadata as deleted for later garbage collector cleanup. In case a crash occurs in between, the
     // filesystem object container will be detected as orphaned during startup and will also be cleaned up.
     //
-    std::shared_ptr<container> object_container =
-        object_container_index_->get_object_container(
-            object_container_request.get_name());
+    std::shared_ptr<container> container =
+        container_index_->get_container(
+            container_request.get_name());
 
-    if (object_container == nullptr)
+    if (container == nullptr)
     {
         //
         // This should never happen.
@@ -264,23 +264,23 @@ container_operation_serializer::handle_object_container_removal(
             "Optype={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
-            static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name(),
+            static_cast<std::uint8_t>(container_request.get_optype()),
+            container_request.get_name(),
             status);
 
-        return status::object_container_not_exists;
+        return status::container_not_exists;
     }
 
     //
     // Marking it as deleted.
     //
-    object_container->mark_as_deleted();
+    container->mark_as_deleted();
 
     spdlog::info("Object container internal metadata deletion marking succeeded. "
         "Optype={}, "
         "ObjectContainerName={}.",
-        static_cast<std::uint8_t>(object_container_request.get_optype()),
-        object_container_request.get_name());
+        static_cast<std::uint8_t>(container_request.get_optype()),
+        container_request.get_name());
 
     return status::success;
 }

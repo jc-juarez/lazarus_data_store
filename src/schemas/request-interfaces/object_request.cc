@@ -17,7 +17,7 @@ namespace schemas
 
 object_request::object_request(
     const drogon::HttpRequestPtr& request)
-    : object_container_name_{},
+    : container_name_{},
       object_id_{},
       object_data_{},
       optype_{object_request_optype::invalid}
@@ -29,7 +29,7 @@ object_request::object_request(
         //
         // Parse the JSON into the system interface.
         //
-        object_container_name_ = (*json)[object_container_name_key_tag].asString();
+        container_name_ = (*json)[container_name_key_tag].asString();
         object_id_ = (*json)[object_id_key_tag].asString();
         object_data_ = (*json)[object_data_key_tag].asString();
     }
@@ -61,16 +61,16 @@ object_request::object_request(
 
 object_request::object_request(
     object_request&& other)
-    : object_container_name_{std::move(other.object_container_name_)},
+    : container_name_{std::move(other.container_name_)},
       object_id_{std::move(other.object_id_)},
       object_data_{std::move(other.object_data_)},
       optype_{std::move(other.optype_)}
 {}
 
 const std::string&
-object_request::get_object_container_name() const
+object_request::get_container_name() const
 {
-    return object_container_name_;
+    return container_name_;
 }
 
 const std::string&

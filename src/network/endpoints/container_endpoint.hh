@@ -32,19 +32,19 @@ public:
   // Endpoint constructor.
   //
   container_endpoint(
-    std::shared_ptr<storage::container_management_service> object_container_management_service_handle);
+    std::shared_ptr<storage::container_management_service> container_management_service_handle);
 
   METHOD_LIST_BEGIN
-  METHOD_ADD(container_endpoint::create_object_container, "/", drogon::Put);
-  METHOD_ADD(container_endpoint::get_object_container, "/", drogon::Get);
-  METHOD_ADD(container_endpoint::remove_object_container, "/", drogon::Delete);
+  METHOD_ADD(container_endpoint::create_container, "/", drogon::Put);
+  METHOD_ADD(container_endpoint::get_container, "/", drogon::Get);
+  METHOD_ADD(container_endpoint::remove_container, "/", drogon::Delete);
   METHOD_LIST_END
 
   //
   // Creates a new object container.
   //
   void
-  create_object_container(
+  create_container(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback);
 
@@ -52,7 +52,7 @@ public:
   // Gets the metadata of a given object container.
   //
   void
-  get_object_container(
+  get_container(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback);
 
@@ -60,7 +60,7 @@ public:
   // Removes an object container from the data store and all of its contents.
   //
   void
-  remove_object_container(
+  remove_container(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback);
 
@@ -69,7 +69,7 @@ private:
   //
   // Object container management service handle.
   //
-  std::shared_ptr<storage::container_management_service> object_container_management_service_;
+  std::shared_ptr<storage::container_management_service> container_management_service_;
 };
 
 } // namespace network.

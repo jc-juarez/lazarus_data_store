@@ -43,8 +43,8 @@ public:
     // Handles server response callback replies in an asynchronous manner.
     //
     void
-    enqueue_object_container_operation(
-        schemas::container_request&& object_container_request,
+    enqueue_container_operation(
+        schemas::container_request&& container_request,
         network::server_response_callback&& response_callback);
 
 private:
@@ -54,28 +54,28 @@ private:
     // All calls to this proxy are serialized.
     //
     void
-    object_container_operation_serial_proxy(
-        const schemas::container_request& object_container_request,
+    container_operation_serial_proxy(
+        const schemas::container_request& container_request,
         const network::server_response_callback& response_callback);
 
     //
     // Orchestrates the object container creation process.
     //
     status::status_code
-    handle_object_container_creation(
-        const schemas::container_request& object_container_request);
+    handle_container_creation(
+        const schemas::container_request& container_request);
 
     //
     // Orchestrates the object container removal process.
     //
     status::status_code
-    handle_object_container_removal(
-        const schemas::container_request& object_container_request);
+    handle_container_removal(
+        const schemas::container_request& container_request);
 
     //
     // Serializer task queue for executing object container operations serially.
     //
-    common::task_serializer object_container_operations_serializer_;
+    common::task_serializer container_operations_serializer_;
 
     //
     // Reference for the storage engine component.
@@ -85,7 +85,7 @@ private:
     //
     // Reference for the object container index component.
     //
-    std::shared_ptr<container_index> object_container_index_;
+    std::shared_ptr<container_index> container_index_;
 };
 
 } // namespace storage.

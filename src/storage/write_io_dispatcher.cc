@@ -27,7 +27,7 @@ write_io_dispatcher::write_io_dispatcher(
 void
 write_io_dispatcher::concurrent_io_request_proxy(
     schemas::object_request&& object_request,
-    std::shared_ptr<container> object_container,
+    std::shared_ptr<container> container,
     network::server_response_callback&& response_callback)
 {
     //
@@ -48,14 +48,14 @@ write_io_dispatcher::concurrent_io_request_proxy(
         case schemas::object_request_optype::insert:
         {
             status = execute_insert_operation(
-                object_container->get_storage_engine_reference(),
+                container->get_storage_engine_reference(),
                 object_request);
             break;
         }
         case schemas::object_request_optype::remove:
         {
             status = execute_remove_operation(
-                object_container->get_storage_engine_reference(),
+                container->get_storage_engine_reference(),
                 object_request);
             break;
         }
@@ -72,7 +72,7 @@ write_io_dispatcher::concurrent_io_request_proxy(
                 "ObjectContainerName={}.",
                 static_cast<std::uint8_t>(object_request.get_optype()),
                 object_request.get_object_id(),
-                object_request.get_object_container_name());
+                object_request.get_container_name());
 
             status = status::invalid_operation;
             break;
@@ -89,11 +89,11 @@ write_io_dispatcher::concurrent_io_request_proxy(
 
 status::status_code
 write_io_dispatcher::execute_insert_operation(
-    storage_engine_reference_handle* object_container_storage_engine_reference,
+    storage_engine_reference_handle* container_storage_engine_reference,
     const schemas::object_request& object_request)
 {
     status::status_code status = storage_engine_->insert_object(
-        object_container_storage_engine_reference,
+        container_storage_engine_reference,
         object_request.get_object_id().c_str(),
         object_request.get_object_data());
 
@@ -105,7 +105,7 @@ write_io_dispatcher::execute_insert_operation(
             "ObjectContainerName={}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
             object_request.get_object_id(),
-            object_request.get_object_container_name());
+            object_request.get_container_name());
     }
     else
     {
@@ -116,7 +116,7 @@ write_io_dispatcher::execute_insert_operation(
             "Status={:#x}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
             object_request.get_object_id(),
-            object_request.get_object_container_name(),
+            object_request.get_container_name(),
             status);
     }
 
@@ -125,11 +125,11 @@ write_io_dispatcher::execute_insert_operation(
 
 status::status_code
 write_io_dispatcher::execute_remove_operation(
-    storage_engine_reference_handle* object_container_storage_engine_reference,
+    storage_engine_reference_handle* container_storage_engine_reference,
     const schemas::object_request& object_request)
 {
     status::status_code status = storage_engine_->remove_object(
-        object_container_storage_engine_reference,
+        container_storage_engine_reference,
         object_request.get_object_id().c_str());
 
     if (status::succeeded(status))
@@ -140,7 +140,7 @@ write_io_dispatcher::execute_remove_operation(
             "ObjectContainerName={}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
             object_request.get_object_id(),
-            object_request.get_object_container_name());
+            object_request.get_container_name());
     }
     else
     {
@@ -151,7 +151,7 @@ write_io_dispatcher::execute_remove_operation(
             "Status={:#x}.",
             static_cast<std::uint8_t>(object_request.get_optype()),
             object_request.get_object_id(),
-            object_request.get_object_container_name(),
+            object_request.get_container_name(),
             status);
     }
 

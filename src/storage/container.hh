@@ -38,7 +38,7 @@ public:
     container(
         std::shared_ptr<storage_engine> storage_engine_handle,
         storage_engine_reference_handle* storage_engine_reference,
-        const schemas::object_container_persistent_interface& object_container_persistent_metadata);
+        const schemas::container_persistent_interface& container_persistent_metadata);
 
     //
     // Destructor for the object container.
@@ -52,9 +52,9 @@ public:
     // Should be used for all new object container creations.
     //
     static
-    schemas::object_container_persistent_interface
-    create_object_container_persistent_metadata(
-        const char* object_container_name);
+    schemas::container_persistent_interface
+    create_container_persistent_metadata(
+        const char* container_name);
 
     //
     // Gets the associated storage engine reference for the object container.
@@ -96,7 +96,7 @@ private:
     //
     // Object container persistent metadata.
     //
-    schemas::object_container_persistent_interface object_container_persistent_metadata_;
+    schemas::container_persistent_interface container_persistent_metadata_;
 
     //
     // Pointer to the associated column family for the object container.

@@ -42,7 +42,7 @@ public:
     //
     status::status_code
     start(
-        const std::vector<std::string>& object_containers_names,
+        const std::vector<std::string>& containers_names,
         std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping);
 
     //
@@ -50,7 +50,7 @@ public:
     //
     status::status_code
     insert_object(
-        storage_engine_reference_handle* object_container_storage_engine_reference,
+        storage_engine_reference_handle* container_storage_engine_reference,
         const char* object_id,
         const byte_stream& object_data);
 
@@ -60,7 +60,7 @@ public:
     //
     status::status_code
     get_object(
-        storage_engine_reference_handle* object_container_storage_engine_reference,
+        storage_engine_reference_handle* container_storage_engine_reference,
         const char* object_id,
         byte_stream* object_data);
 
@@ -69,17 +69,17 @@ public:
     // Returns the associated column family reference on success.
     //
     status::status_code
-    create_object_container(
-        const char* object_container_name,
-        storage_engine_reference_handle** object_container_storage_engine_reference);
+    create_container(
+        const char* container_name,
+        storage_engine_reference_handle** container_storage_engine_reference);
 
     //
     // Gets all the objects from a specified object container.
     // Returns them in an unordered fashion.
     //
     status::status_code
-    get_all_objects_from_object_container(
-        storage_engine_reference_handle* object_container_storage_engine_reference,
+    get_all_objects_from_container(
+        storage_engine_reference_handle* container_storage_engine_reference,
         std::unordered_map<std::string, byte_stream>* objects);
 
     //
@@ -91,30 +91,30 @@ public:
     // This should be invoked before starting the storage engine.
     //
     status::status_code
-    fetch_object_containers_from_disk(
-        std::vector<std::string>* object_containers_names);
+    fetch_containers_from_disk(
+        std::vector<std::string>* containers_names);
 
     //
     // Closes the in-memory object container storage engine reference.
     //
     status::status_code
-    close_object_container_storage_engine_reference(
-        storage_engine_reference_handle* object_container_storage_engine_reference);
+    close_container_storage_engine_reference(
+        storage_engine_reference_handle* container_storage_engine_reference);
 
     //
     // Removes an object from a given object container.
     //
     status::status_code
     remove_object(
-        storage_engine_reference_handle* object_container_storage_engine_reference,
+        storage_engine_reference_handle* container_storage_engine_reference,
         const char* object_id);
 
     //
     // Removes an object container permanently from the filesystem.
     //
     status::status_code
-    remove_object_container(
-        storage_engine_reference_handle* object_container_storage_engine_reference);
+    remove_container(
+        storage_engine_reference_handle* container_storage_engine_reference);
 
 private:
 

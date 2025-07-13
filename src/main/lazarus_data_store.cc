@@ -46,7 +46,7 @@ lazarus_data_store::lazarus_data_store(
     //
     // Object container index component allocation.
     //
-    object_container_index_ = std::make_shared<storage::container_index>(
+    container_index_ = std::make_shared<storage::container_index>(
         storage_configuration.container_index_number_buckets_,
         storage_engine_);
 
@@ -55,31 +55,31 @@ lazarus_data_store::lazarus_data_store(
     //
     auto orphaned_container_scavenger = std::make_unique<storage::orphaned_container_scavenger>(
         storage_engine_,
-        object_container_index_);
+        container_index_);
 
     //
     // Garbage collector component allocation.
     //
     garbage_collector_ = std::make_unique<storage::garbage_collector>(
         storage_configuration,
-        object_container_index_,
+        container_index_,
         std::move(orphaned_container_scavenger));
 
     //
     // Object container operation serializer component allocation.
     //
-    auto object_container_operation_serializer = std::make_unique<storage::container_operation_serializer>(
+    auto container_operation_serializer = std::make_unique<storage::container_operation_serializer>(
         storage_engine_,
-        object_container_index_);
+        container_index_);
 
     //
     // Object container management service component allocation.
     //
-    object_container_management_service_ = std::make_shared<storage::container_management_service>(
+    container_management_service_ = std::make_shared<storage::container_management_service>(
         storage_configuration,
         storage_engine_,
-        object_container_index_,
-        std::move(object_container_operation_serializer));
+        container_index_,
+        std::move(container_operation_serializer));
 
     //
     // Write request dispatcher component allocation.
@@ -100,7 +100,7 @@ lazarus_data_store::lazarus_data_store(
     //
     object_management_service_ = std::make_shared<storage::object_management_service>(
         storage_configuration,
-        object_container_index_,
+        container_index_,
         write_request_dispatcher_,
         read_request_dispatcher_);
 
@@ -109,7 +109,7 @@ lazarus_data_store::lazarus_data_store(
     //
     server_ = std::make_shared<network::server>(
         server_config,
-        object_container_management_service_,
+        container_management_service_,
         object_management_service_);
 }
 
@@ -178,11 +178,11 @@ lazarus_data_store::start_data_store() const {
     // Before starting the server, fetch all persistent object containers from the 
     // filesystem. These are needed for starting the storage engine so that it can
     // later associate an object container name to its respective column family reference.
-    // This is an static invocation being executed before the storage engine is started.
+    // This is a static invocation being executed before the storage engine is started.
     //
-    std::vector<std::string> object_containers_names;
-    status::status_code status = storage_engine_->fetch_object_containers_from_disk(
-        &object_containers_names);
+    std::vector<std::string> containers_names;
+    status::status_code status = storage_engine_->fetch_containers_from_disk(
+        &containers_names);
 
     if (status::failed(status))
     {
@@ -199,7 +199,7 @@ lazarus_data_store::start_data_store() const {
     //
     std::unordered_map<std::string, storage::storage_engine_reference_handle*> storage_engine_references_mapping;
     status = storage_engine_->start(
-        object_containers_names,
+        containers_names,
         &storage_engine_references_mapping);
 
     if (status::failed(status))
@@ -215,7 +215,7 @@ lazarus_data_store::start_data_store() const {
     // Populate the in-memory object container index with the
     // references obtained when the storage engine was started.
     //
-    object_container_management_service_->populate_object_container_index(
+    container_management_service_->populate_container_index(
         &storage_engine_references_mapping);
 
     if (status::failed(status))
