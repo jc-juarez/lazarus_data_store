@@ -17,22 +17,33 @@ namespace schemas
 
 object_request::object_request(
     const drogon::HttpRequestPtr& request)
-    : container_name_{},
-      object_id_{},
-      object_data_{},
+    : object_{nullptr},
       optype_{object_request_optype::invalid}
 {
     const auto json = request->getJsonObject();
 
+    std::string object_id{};
+    storage::byte_stream object_data{};
+    std::string container_name{};
+
     if (json)
     {
         //
-        // Parse the JSON into the system interface.
+        // Parse the JSON object and transfer
+        // the object data into the system interface.
         //
-        container_name_ = (*json)[container_name_key_tag].asString();
-        object_id_ = (*json)[object_id_key_tag].asString();
-        object_data_ = (*json)[object_data_key_tag].asString();
+        object_id = std::move((*json)[object_id_key_tag].asString());
+        object_data = std::move((*json)[object_data_key_tag].asString());
+        container_name = std::move((*json)[container_name_key_tag].asString());
     }
+
+    //
+    // Allocate the object with the fields from the request, if any.
+    //
+    object_ = std::make_unique<storage::object>(
+        std::move(object_id),
+        std::move(object_data),
+        std::move(container_name));
 
     switch (request->getMethod())
     {
@@ -61,28 +72,26 @@ object_request::object_request(
 
 object_request::object_request(
     object_request&& other)
-    : container_name_{std::move(other.container_name_)},
-      object_id_{std::move(other.object_id_)},
-      object_data_{std::move(other.object_data_)},
-      optype_{std::move(other.optype_)}
+    : object_{std::move(other.object_)},
+      optype_{other.optype_}
 {}
 
 const std::string&
 object_request::get_container_name() const
 {
-    return container_name_;
+    return object_->get_container_name();
 }
 
 const std::string&
 object_request::get_object_id() const
 {
-    return object_id_;
+    return object_->get_object_id();
 }
 
 const storage::byte_stream&
 object_request::get_object_data() const
 {
-    return object_data_;
+    return object_->get_object_data();
 }
 
 object_request_optype

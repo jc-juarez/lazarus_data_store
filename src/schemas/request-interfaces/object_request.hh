@@ -12,8 +12,9 @@
 
 #include <string>
 #include <cstdint>
-#include "../../common/aliases.hh"
 #include <drogon/HttpController.h>
+#include "../../common/aliases.hh"
+#include "../../storage/object.hh"
 #include "../request-optypes/object_request_optype.hh"
 
 namespace lazarus
@@ -86,20 +87,9 @@ public:
 private:
 
     //
-    // Object container name.
+    // Owning object data contents.
     //
-    std::string container_name_;
-
-    //
-    // Object ID.
-    //
-    std::string object_id_;
-
-    //
-    // Object data.
-    // Owning byte stream.
-    //
-    storage::byte_stream object_data_;
+    std::unique_ptr<storage::object> object_;
 
     //
     // Optype for the object operation.
