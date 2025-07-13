@@ -58,7 +58,7 @@ object_container_operation_serializer::object_container_operation_serial_proxy(
         static_cast<std::uint8_t>(object_container_request.get_optype()),
         object_container_request.get_name());
 
-    status::status_code status;
+    status::status_code status = status::success;
 
     switch (object_container_request.get_optype())
     {

@@ -74,6 +74,17 @@ read_io_dispatcher::concurrent_io_request_proxy(
         }
     }
 
+    // Delete. Only for debugging.
+    spdlog::info("Object get information. "
+         "Optype={}, "
+         "ObjectId={}, "
+         "ObjectData={}, "
+         "ObjectContainerName={}.",
+         static_cast<std::uint8_t>(object_request.get_optype()),
+         object_request.get_object_id(),
+         object_data.c_str(),
+         object_request.get_object_container_name());
+
     //
     // Provide the response back to the client over the async callback.
     //

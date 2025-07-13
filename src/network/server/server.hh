@@ -98,7 +98,7 @@ public:
     void
     send_response(
         const server_response_callback& response_callback,
-        const status::status_code status);
+        const status::status_code& status);
 
 private:
 
