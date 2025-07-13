@@ -20,7 +20,7 @@ namespace storage
 {
 
 class container;
-class object_container_index;
+class container_index;
 class write_io_dispatcher;
 class read_io_dispatcher;
 
@@ -36,7 +36,7 @@ public:
     //
     object_management_service(
         const storage_configuration& storage_configuration,
-        std::shared_ptr<object_container_index> object_container_index,
+        std::shared_ptr<container_index> object_container_index,
         std::shared_ptr<write_io_dispatcher> write_request_dispatcher,
         std::shared_ptr<read_io_dispatcher> read_request_dispatcher);
 
@@ -113,7 +113,7 @@ private:
     //
     // Handle for the object container index component.
     //
-    std::shared_ptr<object_container_index> object_container_index_;
+    std::shared_ptr<container_index> object_container_index_;
 
     //
     // Handle for the write request dispatcher component.

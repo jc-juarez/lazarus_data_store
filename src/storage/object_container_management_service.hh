@@ -27,7 +27,7 @@ namespace storage
 {
 
 class storage_engine;
-class object_container_index;
+class container_index;
 class object_container_operation_serializer;
 
 //
@@ -43,7 +43,7 @@ public:
     object_container_management_service(
         const storage_configuration& storage_configuration,
         std::shared_ptr<storage_engine> storage_engine_handle,
-        std::shared_ptr<object_container_index> object_container_index_handle,
+        std::shared_ptr<container_index> object_container_index_handle,
         std::unique_ptr<object_container_operation_serializer> object_container_operation_serializer_handle);
 
     //
@@ -110,7 +110,7 @@ private:
     //
     // Handle for the object container index component.
     //
-    std::shared_ptr<object_container_index> object_container_index_;
+    std::shared_ptr<container_index> object_container_index_;
 
     //
     // Handle for the object container operation serializer component.

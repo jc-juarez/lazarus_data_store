@@ -10,7 +10,7 @@
 
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
-#include "object_container_index.hh"
+#include "container_index.hh"
 #include "../network/server/server.hh"
 #include "../common/uuid_utilities.hh"
 #include "object_container_operation_serializer.hh"
@@ -22,7 +22,7 @@ namespace storage
 
 object_container_operation_serializer::object_container_operation_serializer(
     std::shared_ptr<storage_engine> storage_engine_handle,
-    std::shared_ptr<object_container_index> object_container_index)
+    std::shared_ptr<container_index> object_container_index)
     : storage_engine_{std::move(storage_engine_handle)},
       object_container_index_{std::move(object_container_index)}
 {}

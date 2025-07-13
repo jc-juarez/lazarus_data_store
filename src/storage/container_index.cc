@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'object_container_index.hh'
+// 'container_index.hh'
 // Author: jcjuarez
 // Description:
 //      Indexes and routes object containers for all
@@ -11,7 +11,7 @@
 #include <cassert>
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
-#include "object_container_index.hh"
+#include "container_index.hh"
 #include "../common/uuid_utilities.hh"
 
 namespace lazarus
@@ -19,7 +19,7 @@ namespace lazarus
 namespace storage
 {
 
-object_container_index::object_container_index(
+container_index::container_index(
     const std::uint16_t number_container_buckets,
     std::shared_ptr<storage_engine> storage_engine)
     : container_index_table_{number_container_buckets, container_bucket{std::move(storage_engine)}},
@@ -36,7 +36,7 @@ object_container_index::object_container_index(
 }
 
 bool
-object_container_index::is_internal_metadata(
+container_index::is_internal_metadata(
     const std::string object_container_name)
 {
     return object_container_name == rocksdb::kDefaultColumnFamilyName ||
@@ -44,7 +44,7 @@ object_container_index::is_internal_metadata(
 }
 
 status::status_code
-object_container_index::insert_object_container(
+container_index::insert_object_container(
     storage_engine_reference_handle* storage_engine_reference,
     const schemas::object_container_persistent_interface& object_container_persistent_metadata)
 {
@@ -67,7 +67,7 @@ object_container_index::insert_object_container(
 }
 
 storage_engine_reference_handle*
-object_container_index::get_object_containers_internal_metadata_storage_engine_reference() const
+container_index::get_object_containers_internal_metadata_storage_engine_reference() const
 {
     const std::shared_ptr<container> object_container =
         get_object_container(object_containers_internal_metadata_name);
@@ -76,7 +76,7 @@ object_container_index::get_object_containers_internal_metadata_storage_engine_r
 }
 
 status::status_code
-object_container_index::get_object_container_existence_status(
+container_index::get_object_container_existence_status(
     const std::string& object_container_name) const
 {
     const std::shared_ptr<container> object_container =
@@ -99,7 +99,7 @@ object_container_index::get_object_container_existence_status(
 }
 
 std::shared_ptr<container>
-object_container_index::get_object_container(
+container_index::get_object_container(
     const std::string& object_container_name) const
 {
     const std::uint16_t bucket_index = get_associated_bucket_index(
@@ -109,14 +109,14 @@ object_container_index::get_object_container(
 }
 
 std::vector<std::shared_ptr<container>>
-object_container_index::get_all_object_containers_from_bucket(
+container_index::get_all_object_containers_from_bucket(
     const std::uint16_t bucket_index) const
 {
     return container_index_table_.at(bucket_index).get_all_object_containers();
 }
 
 status::status_code
-object_container_index::remove_object_container(
+container_index::remove_object_container(
     const std::string& object_container_name)
 {
     const std::uint16_t bucket_index = get_associated_bucket_index(
@@ -137,19 +137,19 @@ object_container_index::remove_object_container(
 }
 
 std::size_t
-object_container_index::get_total_number_object_containers() const
+container_index::get_total_number_object_containers() const
 {
     return number_object_containers_;
 }
 
 std::uint16_t
-object_container_index::get_number_container_buckets() const
+container_index::get_number_container_buckets() const
 {
     return number_container_buckets_;
 }
 
 std::uint16_t
-object_container_index::get_associated_bucket_index(
+container_index::get_associated_bucket_index(
     const std::string& container_name) const
 {
     return hasher_(container_name) % number_container_buckets_;

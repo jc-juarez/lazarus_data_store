@@ -12,7 +12,7 @@
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 #include "garbage_collector.hh"
-#include "object_container_index.hh"
+#include "container_index.hh"
 #include "../main/lazarus_data_store.hh"
 #include "orphaned_container_scavenger.hh"
 
@@ -23,7 +23,7 @@ namespace storage
 
 garbage_collector::garbage_collector(
     const storage_configuration& storage_configuration,
-    std::shared_ptr<object_container_index> object_container_index,
+    std::shared_ptr<container_index> object_container_index,
     std::unique_ptr<orphaned_container_scavenger> orphaned_container_scavenger)
     : storage_configuration_{storage_configuration},
       object_container_index_{std::move(object_container_index)},

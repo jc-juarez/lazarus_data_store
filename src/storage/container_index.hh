@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'object_container_index.hh'
+// 'container_index.hh'
 // Author: jcjuarez
 // Description:
 //      Indexes and routes object containers for all
@@ -29,14 +29,14 @@ class storage_engine;
 //
 // Core object container indexing system.
 //
-class object_container_index
+class container_index
 {
 public:
 
     //
     // Constructor for the object container index.
     //
-    object_container_index(
+    container_index(
         const std::uint16_t number_container_buckets,
         std::shared_ptr<storage_engine> storage_engine);
 

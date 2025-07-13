@@ -11,7 +11,7 @@
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 #include "container.hh"
-#include "object_container_index.hh"
+#include "container_index.hh"
 #include "orphaned_container_scavenger.hh"
 
 namespace lazarus::storage
@@ -19,7 +19,7 @@ namespace lazarus::storage
 
 orphaned_container_scavenger::orphaned_container_scavenger(
     std::shared_ptr<storage_engine> storage_engine,
-    std::shared_ptr<object_container_index> object_container_index)
+    std::shared_ptr<container_index> object_container_index)
     : storage_engine_{std::move(storage_engine)},
       object_container_index_{std::move(object_container_index)}
 {}

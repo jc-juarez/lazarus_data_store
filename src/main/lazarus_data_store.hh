@@ -30,7 +30,7 @@ namespace storage
 {
 class storage_engine;
 class garbage_collector;
-class object_container_index;
+class container_index;
 class write_io_dispatcher;
 class read_io_dispatcher;
 class object_management_service;
@@ -140,7 +140,7 @@ private:
     //
     // Object container index handle.
     //
-    std::shared_ptr<storage::object_container_index> object_container_index_;
+    std::shared_ptr<storage::container_index> object_container_index_;
 
     //
     // Write request dispatcher handle.

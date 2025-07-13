@@ -19,7 +19,7 @@
 #include "../storage/read_io_dispatcher.hh"
 #include "../storage/write_io_dispatcher.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
-#include "../storage/object_container_index.hh"
+#include "../storage/container_index.hh"
 #include "../storage/object_management_service.hh"
 #include "../network/server/server_configuration.hh"
 #include "../storage/orphaned_container_scavenger.hh"
@@ -46,7 +46,7 @@ lazarus_data_store::lazarus_data_store(
     //
     // Object container index component allocation.
     //
-    object_container_index_ = std::make_shared<storage::object_container_index>(
+    object_container_index_ = std::make_shared<storage::container_index>(
         storage_configuration.container_index_number_buckets_,
         storage_engine_);
 

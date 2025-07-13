@@ -11,7 +11,7 @@
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 #include "garbage_collector.hh"
-#include "object_container_index.hh"
+#include "container_index.hh"
 #include "../common/request_validations.hh"
 #include "object_container_management_service.hh"
 #include "object_container_operation_serializer.hh"
@@ -25,7 +25,7 @@ namespace storage
 object_container_management_service::object_container_management_service(
     const storage_configuration& storage_configuration,
     std::shared_ptr<storage_engine> storage_engine_handle,
-    std::shared_ptr<object_container_index> object_container_index_handle,
+    std::shared_ptr<container_index> object_container_index_handle,
     std::unique_ptr<object_container_operation_serializer> object_container_operation_serializer_handle)
     : storage_configuration_{storage_configuration},
       storage_engine_(std::move(storage_engine_handle)),
@@ -58,7 +58,7 @@ object_container_management_service::populate_object_container_index(
     // startup. Ensure that all internal metadata object containers are present; if not,
     // this is a critical error as the data store cannot function without them.
     //
-    if (storage_engine_references_mapping->find(object_container_index::object_containers_internal_metadata_name) ==
+    if (storage_engine_references_mapping->find(container_index::object_containers_internal_metadata_name) ==
         storage_engine_references_mapping->end())
     {
         //
@@ -66,13 +66,13 @@ object_container_management_service::populate_object_container_index(
         // metadata column families were not found. Fail the system startup.
         //
         spdlog::critical("Failed to find find the storage engine reference for the '{}' internal metadata.",
-            object_container_index::object_containers_internal_metadata_name);
+                         container_index::object_containers_internal_metadata_name);
 
         return status::object_containers_internal_metadata_lookup_failed;
     }
 
     storage_engine_reference_handle* object_containers_internal_metadata_storage_engine_reference =
-        storage_engine_references_mapping->at(object_container_index::object_containers_internal_metadata_name);
+        storage_engine_references_mapping->at(container_index::object_containers_internal_metadata_name);
 
     //
     // Finally, get all known object containers to the system
@@ -161,7 +161,7 @@ object_container_management_service::populate_object_container_index(
             }
 
             const bool is_orphaned_object_container =
-                !object_container_index::is_internal_metadata(object_container_name.c_str());
+                !container_index::is_internal_metadata(object_container_name.c_str());
 
             if (is_orphaned_object_container)
             {
@@ -202,13 +202,13 @@ object_container_management_service::create_internal_metadata_column_families(
     //
     storage_engine_reference_handle* object_containers_internal_metadata_storage_engine_reference;
     status::status_code status = storage_engine_->create_object_container(
-        object_container_index::object_containers_internal_metadata_name,
+        container_index::object_containers_internal_metadata_name,
         &object_containers_internal_metadata_storage_engine_reference);
 
     if (status::failed(status))
     {
         spdlog::critical("Failed to create internal metadata column family '{}'.",
-            object_container_index::object_containers_internal_metadata_name);
+                         container_index::object_containers_internal_metadata_name);
 
         return status;
     }
@@ -217,7 +217,7 @@ object_container_management_service::create_internal_metadata_column_families(
     // Append to the storage references mapping.
     //
     storage_engine_references_mapping->emplace(
-        object_container_index::object_containers_internal_metadata_name,
+        container_index::object_containers_internal_metadata_name,
         object_containers_internal_metadata_storage_engine_reference);
 
     return status::success;

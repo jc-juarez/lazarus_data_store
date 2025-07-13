@@ -22,7 +22,7 @@ namespace storage
 {
 
 class storage_engine;
-class object_container_index;
+class container_index;
 class orphaned_container_scavenger;
 
 //
@@ -38,7 +38,7 @@ public:
     //
     garbage_collector(
         const storage_configuration& storage_configuration,
-        std::shared_ptr<object_container_index> object_container_index,
+        std::shared_ptr<container_index> container_index,
         std::unique_ptr<orphaned_container_scavenger> orphaned_container_scavenger);
 
     //
@@ -66,7 +66,7 @@ private:
     //
     // Handle for the object container index.
     //
-    std::shared_ptr<object_container_index> object_container_index_;
+    std::shared_ptr<container_index> object_container_index_;
 
     //
     // Handle for the container scavenger component.

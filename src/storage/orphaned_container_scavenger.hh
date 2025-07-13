@@ -18,7 +18,7 @@ namespace lazarus::storage
 
 class storage_engine;
 class container;
-class object_container_index;
+class container_index;
 
 class orphaned_container_scavenger
 {
@@ -29,7 +29,7 @@ public:
     //
     orphaned_container_scavenger(
         std::shared_ptr<storage_engine> storage_engine,
-        std::shared_ptr<object_container_index> object_container_index);
+        std::shared_ptr<container_index> object_container_index);
 
     //
     // Scans the given object containers and cleans them up if necessary.
@@ -50,7 +50,7 @@ private:
     //
     // Handle for the object container index.
     //
-    std::shared_ptr<object_container_index> object_container_index_;
+    std::shared_ptr<container_index> object_container_index_;
 };
 
 } // namespace lazarus::storage.
