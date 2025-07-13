@@ -12,6 +12,7 @@
 #include "server.hh"
 #include <spdlog/spdlog.h>
 #include "../endpoints/object_endpoint.hh"
+#include "../../common/response_utilities.hh"
 #include "../endpoints/object_container_endpoint.hh"
 #include "../../storage/object_container_management_service.hh"
 
@@ -108,17 +109,12 @@ server::get_server_listener_ip_address() const
 void
 server::send_response(
     const server_response_callback& response_callback,
-    const status::status_code& status)
+    const status::status_code& status,
+    std::unordered_map<std::string, std::string>* additional_parameters)
 {
-    const std::string response_body = std::format(
-        "{{\n"
-        "    \"InternalStatusCode\": {:#x}\n"
-        "}}\n", 
-        status.get_internal_status_code());
-
     auto response = drogon::HttpResponse::newHttpResponse();
     response->setStatusCode(static_cast<drogon::HttpStatusCode>(status.get_http_status_code()));
-    response->setBody(response_body);
+    response->setBody(common::response_utilities::generate_server_json_response(status.get_internal_status_code(), additional_parameters));
     response_callback(response);
 }
 

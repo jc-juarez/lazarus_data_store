@@ -48,9 +48,9 @@ set(SOURCE_FILES
     src/common/request_validations.cc
     src/common/task_serializer.cc
     src/storage/orphaned_container_scavenger.cc
-    src/storage/orphaned_container_scavenger.hh
     src/storage/concurrent_io_dispatcher.cc
-        src/status/status_code.hh
+    src/status/status_code.hh
+    src/common/response_utilities.cc
 )
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})

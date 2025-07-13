@@ -17,8 +17,11 @@ namespace lazarus
 namespace status
 {
 
+//
+// Macro for defining a constant expression status code instance.
+//
 #define status_code_definition(name, internal_status_code, http_status_code) \
-    inline constexpr status_code name{internal_status_code, http_status_code, #name}
+    static inline constexpr status_code name{internal_status_code, http_status_code, #name}
 
 //
 // Operation succeeded.

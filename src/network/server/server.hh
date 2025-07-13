@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <unordered_map>
 #include <drogon/drogon.h>
 #include "../../status/status.hh"
 #include "../../common/aliases.hh"
@@ -98,7 +99,8 @@ public:
     void
     send_response(
         const server_response_callback& response_callback,
-        const status::status_code& status);
+        const status::status_code& status,
+        std::unordered_map<std::string, std::string>* additional_parameters = nullptr);
 
 private:
 
