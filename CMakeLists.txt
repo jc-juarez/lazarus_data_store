@@ -38,7 +38,7 @@ set(SOURCE_FILES
     src/storage/garbage_collector.cc
     src/storage/container.cc
         src/storage/container_index.cc
-    src/storage/object_container_operation_serializer.cc
+        src/storage/container_operation_serializer.cc
     src/schemas/request-interfaces/object_container_request_interface.cc
     src/schemas/request-interfaces/object_request_interface.cc
     src/storage/object_management_service.cc

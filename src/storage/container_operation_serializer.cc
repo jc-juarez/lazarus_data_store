@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'object_container_operation_serializer.cc'
+// 'container_operation_serializer.cc'
 // Author: jcjuarez
 // Description:
 //      Manages object container operations
@@ -13,14 +13,14 @@
 #include "container_index.hh"
 #include "../network/server/server.hh"
 #include "../common/uuid_utilities.hh"
-#include "object_container_operation_serializer.hh"
+#include "container_operation_serializer.hh"
 
 namespace lazarus
 {
 namespace storage
 {
 
-object_container_operation_serializer::object_container_operation_serializer(
+container_operation_serializer::container_operation_serializer(
     std::shared_ptr<storage_engine> storage_engine_handle,
     std::shared_ptr<container_index> object_container_index)
     : storage_engine_{std::move(storage_engine_handle)},
@@ -28,7 +28,7 @@ object_container_operation_serializer::object_container_operation_serializer(
 {}
 
 void
-object_container_operation_serializer::enqueue_object_container_operation(
+container_operation_serializer::enqueue_object_container_operation(
     schemas::object_container_request_interface&& object_container_request,
     network::server_response_callback&& response_callback)
 {
@@ -48,7 +48,7 @@ object_container_operation_serializer::enqueue_object_container_operation(
 }
 
 void
-object_container_operation_serializer::object_container_operation_serial_proxy(
+container_operation_serializer::object_container_operation_serial_proxy(
     const schemas::object_container_request_interface& object_container_request,
     const network::server_response_callback& response_callback)
 {
@@ -90,7 +90,7 @@ object_container_operation_serializer::object_container_operation_serial_proxy(
 }
 
 status::status_code
-object_container_operation_serializer::handle_object_container_creation(
+container_operation_serializer::handle_object_container_creation(
     const schemas::object_container_request_interface& object_container_request)
 {
     status::status_code status =
@@ -195,7 +195,7 @@ object_container_operation_serializer::handle_object_container_creation(
 }
 
 status::status_code
-object_container_operation_serializer::handle_object_container_removal(
+container_operation_serializer::handle_object_container_removal(
     const schemas::object_container_request_interface& object_container_request)
 {
     status::status_code status =

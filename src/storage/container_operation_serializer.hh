@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'object_container_operation_serializer.hh'
+// 'container_operation_serializer.hh'
 // Author: jcjuarez
 // Description:
 //      Manages object container operations
@@ -27,14 +27,14 @@ class container_index;
 //
 // Serialized object container operation orchestrator.
 //
-class object_container_operation_serializer
+class container_operation_serializer
 {
 public:
 
     //
     // Constructor for the object operation serializer.
     //
-    object_container_operation_serializer(
+    container_operation_serializer(
         std::shared_ptr<storage_engine> storage_engine_handle,
         std::shared_ptr<container_index> container_index);
 

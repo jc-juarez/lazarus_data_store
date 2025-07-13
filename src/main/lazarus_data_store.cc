@@ -24,7 +24,7 @@
 #include "../network/server/server_configuration.hh"
 #include "../storage/orphaned_container_scavenger.hh"
 #include "../storage/container_management_service.hh"
-#include "../storage/object_container_operation_serializer.hh"
+#include "../storage/container_operation_serializer.hh"
 
 namespace lazarus
 {
@@ -68,7 +68,7 @@ lazarus_data_store::lazarus_data_store(
     //
     // Object container operation serializer component allocation.
     //
-    auto object_container_operation_serializer = std::make_unique<storage::object_container_operation_serializer>(
+    auto object_container_operation_serializer = std::make_unique<storage::container_operation_serializer>(
         storage_engine_,
         object_container_index_);
 

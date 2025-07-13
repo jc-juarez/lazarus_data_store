@@ -14,7 +14,7 @@
 #include "container_index.hh"
 #include "../common/request_validations.hh"
 #include "container_management_service.hh"
-#include "object_container_operation_serializer.hh"
+#include "container_operation_serializer.hh"
 #include "object_container_persistent_interface.pb.h"
 
 namespace lazarus
@@ -26,7 +26,7 @@ container_management_service::container_management_service(
     const storage_configuration& storage_configuration,
     std::shared_ptr<storage_engine> storage_engine_handle,
     std::shared_ptr<container_index> object_container_index_handle,
-    std::unique_ptr<object_container_operation_serializer> object_container_operation_serializer_handle)
+    std::unique_ptr<container_operation_serializer> object_container_operation_serializer_handle)
     : storage_configuration_{storage_configuration},
       storage_engine_(std::move(storage_engine_handle)),
       object_container_index_{std::move(object_container_index_handle)},

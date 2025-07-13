@@ -28,7 +28,7 @@ namespace storage
 
 class storage_engine;
 class container_index;
-class object_container_operation_serializer;
+class container_operation_serializer;
 
 //
 // Core storage access interface.
@@ -44,7 +44,7 @@ public:
         const storage_configuration& storage_configuration,
         std::shared_ptr<storage_engine> storage_engine_handle,
         std::shared_ptr<container_index> object_container_index_handle,
-        std::unique_ptr<object_container_operation_serializer> object_container_operation_serializer_handle);
+        std::unique_ptr<container_operation_serializer> object_container_operation_serializer_handle);
 
     //
     // Populates the in-memory contents of the object container
@@ -115,7 +115,7 @@ private:
     //
     // Handle for the object container operation serializer component.
     //
-    std::unique_ptr<object_container_operation_serializer> object_container_operation_serializer_;
+    std::unique_ptr<container_operation_serializer> object_container_operation_serializer_;
 };
 
 } // namespace storage.
