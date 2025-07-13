@@ -22,6 +22,7 @@
 #include "../storage/object_container_index.hh"
 #include "../storage/object_management_service.hh"
 #include "../network/server/server_configuration.hh"
+#include "../storage/orphaned_container_scavenger.hh"
 #include "../storage/object_container_management_service.hh"
 #include "../storage/object_container_operation_serializer.hh"
 
@@ -50,12 +51,19 @@ lazarus_data_store::lazarus_data_store(
         storage_engine_);
 
     //
+    // Orphaned container scavenger component allocation.
+    //
+    auto orphaned_container_scavenger = std::make_unique<storage::orphaned_container_scavenger>(
+        storage_engine_,
+        object_container_index_);
+
+    //
     // Garbage collector component allocation.
     //
     garbage_collector_ = std::make_unique<storage::garbage_collector>(
         storage_configuration,
-        storage_engine_,
-        object_container_index_);
+        object_container_index_,
+        std::move(orphaned_container_scavenger));
 
     //
     // Object container operation serializer component allocation.

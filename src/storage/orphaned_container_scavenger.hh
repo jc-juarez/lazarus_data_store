@@ -4,88 +4,53 @@
 // 'orphaned_container_scavenger.hh'
 // Author: jcjuarez
 // Description:
-//      Service to cleanup rogue containers.
+//      Scavenger to clean up rogue containers from
+//      both the storage engine and metadata table.
 // ****************************************************
-/*
+
 #pragma once
 
 #include <vector>
+#include <memory>
 
 namespace lazarus::storage
 {
 
 class storage_engine;
+class object_container;
 class object_container_index;
 
-//
-// Garbage collector in charge of cleaning up
-// stale resources in the system.
-//
-    class garbage_collector
-    {
-    public:
+class orphaned_container_scavenger
+{
+public:
 
-        //
-        // Constructor for the garbage collector.
-        //
-        garbage_collector(
-            const storage_configuration& storage_configuration,
-            std::shared_ptr<storage_engine> storage_engine_handle,
-            std::shared_ptr<object_container_index> object_container_index_handle);
+    //
+    // Constructor.
+    //
+    orphaned_container_scavenger(
+        std::shared_ptr<storage_engine> storage_engine,
+        std::shared_ptr<object_container_index> object_container_index);
 
-        //
-        // Starts the long-running garbage collector thread.
-        //
-        void
-        start();
+    //
+    // Scans the given object containers and cleans them up if necessary.
+    //
+    void
+    cleanup_orphaned_containers(
+        const std::uint16_t container_bucket_index,
+        const std::uint64_t garbage_collector_iteration_count,
+        const std::vector<std::shared_ptr<object_container>>& object_containers);
 
-    private:
+private:
 
-        //
-        // Long-running thread entry point.
-        //
-        void
-        execute_garbage_collection(
-            std::stop_token stop_token);
+    //
+    // Handle for the storage engine.
+    //
+    std::shared_ptr<storage_engine> storage_engine_;
 
-        //
-        // Cleans up any orphaned object containers.
-        // Deletion from both the filesystem and index metadata table occurs.
-        //
-        void
-        cleanup_orphaned_object_containers();
+    //
+    // Handle for the object container index.
+    //
+    std::shared_ptr<object_container_index> object_container_index_;
+};
 
-        //
-        // Handle for the storage enine.
-        //
-        std::shared_ptr<storage_engine> storage_engine_;
-
-        //
-        // Handle for the object container index.
-        //
-        std::shared_ptr<object_container_index> object_container_index_;
-
-        //
-        // Long-running garbage collector thread handle.
-        //
-        std::jthread garbage_collector_thread_;
-
-        //
-        // Configuration for the storage subsystem.
-        //
-        const storage_configuration storage_configuration_;
-
-        //
-        // In-memory only iteration counter for the garbage collector thread.
-        // Resets on every startup.
-        //
-        std::uint64_t iteration_count_;
-
-        //
-        // Alertable sleeper for stopping midway sleep cycles.
-        //
-        common::alertable_sleeper alertable_sleeper_;
-    };
-
-
-} // namespace lazarus::storage.*/
+} // namespace lazarus::storage.

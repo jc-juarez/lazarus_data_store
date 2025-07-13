@@ -51,8 +51,7 @@ set(SOURCE_FILES
     src/storage/concurrent_io_dispatcher.cc
     src/status/status_code.hh
     src/common/response_utilities.cc
-        src/storage/container_bucket.cc
-        src/storage/container_bucket.hh
+    src/storage/container_bucket.cc
 )
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})

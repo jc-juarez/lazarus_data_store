@@ -23,6 +23,7 @@ namespace storage
 
 class storage_engine;
 class object_container_index;
+class orphaned_container_scavenger;
 
 //
 // Garbage collector in charge of cleaning up
@@ -37,8 +38,8 @@ public:
     //
     garbage_collector(
         const storage_configuration& storage_configuration,
-        std::shared_ptr<storage_engine> storage_engine_handle,
-        std::shared_ptr<object_container_index> object_container_index_handle);
+        std::shared_ptr<object_container_index> object_container_index,
+        std::unique_ptr<orphaned_container_scavenger> orphaned_container_scavenger);
 
     //
     // Starts the long-running garbage collector thread.
@@ -63,14 +64,14 @@ private:
     cleanup_orphaned_object_containers();
 
     //
-    // Handle for the storage enine.
-    //
-    std::shared_ptr<storage_engine> storage_engine_;
-
-    //
     // Handle for the object container index.
     //
     std::shared_ptr<object_container_index> object_container_index_;
+
+    //
+    // Handle for the container scavenger component.
+    //
+    std::unique_ptr<orphaned_container_scavenger> orphaned_container_scavenger_;
 
     //
     // Long-running garbage collector thread handle.
