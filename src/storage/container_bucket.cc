@@ -14,7 +14,7 @@
 namespace lazarus::storage
 {
 
-using index_table_type = tbb::concurrent_hash_map<std::string, std::shared_ptr<object_container>>;
+using index_table_type = tbb::concurrent_hash_map<std::string, std::shared_ptr<container>>;
 
 container_bucket::container_bucket(
     std::shared_ptr<storage_engine> storage_engine)
@@ -40,7 +40,7 @@ container_bucket::insert_container(
     //
     if (container_bucket_map_.emplace(
         object_container_persistent_metadata.name(),
-        std::make_unique<object_container>(
+        std::make_unique<container>(
             storage_engine_,
             storage_engine_reference,
             object_container_persistent_metadata)))
@@ -65,7 +65,7 @@ container_bucket::insert_container(
     return status::container_insertion_collision;
 }
 
-std::shared_ptr<object_container>
+std::shared_ptr<container>
 container_bucket::get_object_container(
     const std::string& object_container_name) const
 {
@@ -87,10 +87,10 @@ container_bucket::get_object_container(
     return nullptr;
 }
 
-std::vector<std::shared_ptr<object_container>>
+std::vector<std::shared_ptr<container>>
 container_bucket::get_all_object_containers() const
 {
-    std::vector<std::shared_ptr<object_container>> object_containers;
+    std::vector<std::shared_ptr<container>> object_containers;
 
     for (const auto& entry : container_bucket_map_)
     {

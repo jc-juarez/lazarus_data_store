@@ -17,7 +17,7 @@ namespace lazarus::storage
 {
 
 class storage_engine;
-class object_container;
+class container;
 class object_container_index;
 
 class orphaned_container_scavenger
@@ -38,7 +38,7 @@ public:
     cleanup_orphaned_containers(
         const std::uint16_t container_bucket_index,
         const std::uint64_t garbage_collector_iteration_count,
-        const std::vector<std::shared_ptr<object_container>>& object_containers);
+        const std::vector<std::shared_ptr<container>>& object_containers);
 
 private:
 

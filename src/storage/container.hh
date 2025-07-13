@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'object_container.hh'
+// 'container.hh'
 // Author: jcjuarez
 // Description:
 //      Object container metadata structure. Object
@@ -28,14 +28,14 @@ class storage_engine;
 // An in-memory creation of an object container reference can
 // only be created after a well-known committed disk write its creation.
 //
-class object_container
+class container
 {
 public:
 
     //
     // Constructor for the object container.
     //
-    object_container(
+    container(
         std::shared_ptr<storage_engine> storage_engine_handle,
         storage_engine_reference_handle* storage_engine_reference,
         const schemas::object_container_persistent_interface& object_container_persistent_metadata);
@@ -44,7 +44,7 @@ public:
     // Destructor for the object container.
     // Ensures that the storage engine reference is invalidated.
     //
-    ~object_container();
+    ~container();
 
     //
     // Initializes an object container persistent metadata instance

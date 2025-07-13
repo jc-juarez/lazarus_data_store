@@ -19,7 +19,7 @@ namespace lazarus
 namespace storage
 {
 
-class object_container;
+class container;
 class object_container_index;
 class write_io_dispatcher;
 class read_io_dispatcher;
@@ -50,7 +50,7 @@ public:
     //
     // Fetches the object container reference from the index.
     //
-    std::shared_ptr<object_container>
+    std::shared_ptr<container>
     get_object_container_reference(
         const std::string& object_container_name);
 
@@ -60,7 +60,7 @@ public:
     status::status_code
     orchestrate_concurrent_write_request(
         schemas::object_request_interface&& object_request,
-        std::shared_ptr<object_container> object_container,
+        std::shared_ptr<container> container,
         network::server_response_callback&& response_callback);
 
     //
@@ -69,7 +69,7 @@ public:
     status::status_code
     orchestrate_concurrent_read_request(
         schemas::object_request_interface&& object_request,
-        std::shared_ptr<object_container> object_container,
+        std::shared_ptr<container> container,
         network::server_response_callback&& response_callback);
 
 private:

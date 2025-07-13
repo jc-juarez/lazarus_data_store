@@ -36,7 +36,7 @@ set(SOURCE_FILES
     src/storage/object_container_management_service.cc
     src/storage/storage_engine.cc
     src/storage/garbage_collector.cc
-    src/storage/object_container.cc
+    src/storage/container.cc
     src/storage/object_container_index.cc
     src/storage/object_container_operation_serializer.cc
     src/schemas/request-interfaces/object_container_request_interface.cc
@@ -52,6 +52,7 @@ set(SOURCE_FILES
     src/status/status_code.hh
     src/common/response_utilities.cc
     src/storage/container_bucket.cc
+    src/storage/cache_shard.cc
 )
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})

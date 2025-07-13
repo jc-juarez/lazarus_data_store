@@ -10,7 +10,7 @@
 #pragma once
 
 #include <tbb/tbb.h>
-#include "object_container.hh"
+#include "container.hh"
 #include "../status/status.hh"
 
 namespace lazarus::storage
@@ -49,14 +49,14 @@ public:
     // Gets a reference of an object container.
     // Returns nullptr in case it does not exist.
     //
-    std::shared_ptr<object_container>
+    std::shared_ptr<container>
     get_object_container(
         const std::string& object_container_name) const;
 
     //
     // Gets a list of all the object containers in the bucket.
     //
-    std::vector<std::shared_ptr<object_container>>
+    std::vector<std::shared_ptr<container>>
     get_all_object_containers() const;
 
     //
@@ -87,7 +87,7 @@ private:
     // Maps an object container identifier to the
     // respective object container memory reference.
     //
-    tbb::concurrent_hash_map<std::string, std::shared_ptr<object_container>> container_bucket_map_;
+    tbb::concurrent_hash_map<std::string, std::shared_ptr<container>> container_bucket_map_;
 
     //
     // Handle for the storage engine.

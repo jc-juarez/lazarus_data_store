@@ -10,7 +10,7 @@
 
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
-#include "object_container.hh"
+#include "container.hh"
 #include "object_container_index.hh"
 #include "orphaned_container_scavenger.hh"
 
@@ -28,7 +28,7 @@ void
 orphaned_container_scavenger::cleanup_orphaned_containers(
     const std::uint16_t container_bucket_index,
     const std::uint64_t garbage_collector_iteration_count,
-    const std::vector<std::shared_ptr<object_container>>& object_containers)
+    const std::vector<std::shared_ptr<container>>& object_containers)
 {
     if (object_containers.empty())
     {

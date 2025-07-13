@@ -11,7 +11,7 @@
 #include <spdlog/spdlog.h>
 #include "object_endpoint.hh"
 #include "../server/server.hh"
-#include "../../storage/object_container.hh"
+#include "../../storage/container.hh"
 #include "../../storage/object_management_service.hh"
 #include "../../storage/object_container_management_service.hh"
 #include "../../schemas/request-interfaces/object_request_interface.hh"
@@ -58,7 +58,7 @@ object_endpoint::insert_object(
         object_request.get_object_id(),
         object_request.get_object_container_name());
 
-    std::shared_ptr<storage::object_container> object_container =
+    std::shared_ptr<storage::container> object_container =
         object_management_service_->get_object_container_reference(object_request.get_object_container_name());
 
     //
@@ -149,7 +149,7 @@ object_endpoint::get_object(
                  object_request.get_object_id(),
                  object_request.get_object_container_name());
 
-    std::shared_ptr<storage::object_container> object_container =
+    std::shared_ptr<storage::container> object_container =
         object_management_service_->get_object_container_reference(object_request.get_object_container_name());
 
     //
@@ -240,7 +240,7 @@ object_endpoint::remove_object(
         object_request.get_object_id(),
         object_request.get_object_container_name());
 
-    std::shared_ptr<storage::object_container> object_container =
+    std::shared_ptr<storage::container> object_container =
         object_management_service_->get_object_container_reference(object_request.get_object_container_name());
 
     //

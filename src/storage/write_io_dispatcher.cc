@@ -10,7 +10,7 @@
 
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
-#include "object_container.hh"
+#include "container.hh"
 #include "write_io_dispatcher.hh"
 
 namespace lazarus::storage
@@ -27,7 +27,7 @@ write_io_dispatcher::write_io_dispatcher(
 void
 write_io_dispatcher::concurrent_io_request_proxy(
     schemas::object_request_interface&& object_request,
-    std::shared_ptr<object_container> object_container,
+    std::shared_ptr<container> object_container,
     network::server_response_callback&& response_callback)
 {
     //

@@ -15,7 +15,7 @@
 #include <tbb/tbb.h>
 #include <functional>
 #include "container_bucket.hh"
-#include "object_container.hh"
+#include "container.hh"
 #include "../status/status.hh"
 #include "object_container_persistent_interface.pb.h"
 
@@ -85,14 +85,14 @@ public:
     // Gets a reference an object container.
     // Returns nullptr in case it does not exist.
     //
-    std::shared_ptr<object_container>
+    std::shared_ptr<container>
     get_object_container(
         const std::string& object_container_name) const;
 
     //
     // Gets a list of all the object containers in a given bucket.
     //
-    std::vector<std::shared_ptr<object_container>>
+    std::vector<std::shared_ptr<container>>
     get_all_object_containers_from_bucket(
         const std::uint16_t bucket_index) const;
 

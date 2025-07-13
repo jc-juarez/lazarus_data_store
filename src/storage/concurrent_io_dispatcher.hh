@@ -19,7 +19,7 @@ namespace lazarus::storage
 {
 
 class storage_engine;
-class object_container;
+class container;
 
 class concurrent_io_dispatcher
 {
@@ -39,7 +39,7 @@ public:
     void
     enqueue_concurrent_io_request(
         schemas::object_request_interface&& object_request,
-        std::shared_ptr<object_container> object_container,
+        std::shared_ptr<container> container,
         network::server_response_callback&& response_callback);
 
 protected:
@@ -52,7 +52,7 @@ protected:
     void
     concurrent_io_request_proxy(
         schemas::object_request_interface&& object_request,
-        std::shared_ptr<object_container> object_container,
+        std::shared_ptr<container> container,
         network::server_response_callback&& response_callback) = 0;
 
     //

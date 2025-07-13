@@ -130,7 +130,7 @@ object_container_management_service::populate_object_container_index(
                 return status;
             }
 
-            const std::shared_ptr<object_container> object_container =
+            const std::shared_ptr<container> object_container =
                 object_container_index_->get_object_container(object_container_name.c_str());
 
             spdlog::info("Found object container on startup. Indexing into the object containers metadata table. "
@@ -144,7 +144,7 @@ object_container_management_service::populate_object_container_index(
             // These could be internal metadata or orphaned object containers.
             //
             const schemas::object_container_persistent_interface object_container_persistent_metadata =
-                object_container::create_object_container_persistent_metadata(object_container_name.c_str());
+                container::create_object_container_persistent_metadata(object_container_name.c_str());
             status = object_container_index_->insert_object_container(
                 object_container_storage_engine_reference,
                 object_container_persistent_metadata);
@@ -173,7 +173,7 @@ object_container_management_service::populate_object_container_index(
                     "ObjectContainerName={}.",
                     object_container_name.c_str());
                 
-                std::shared_ptr<object_container> object_container = 
+                std::shared_ptr<container> object_container =
                     object_container_index_->get_object_container(object_container_name.c_str());
 
                 if (object_container == nullptr)

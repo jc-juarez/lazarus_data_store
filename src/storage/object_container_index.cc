@@ -69,7 +69,7 @@ object_container_index::insert_object_container(
 storage_engine_reference_handle*
 object_container_index::get_object_containers_internal_metadata_storage_engine_reference() const
 {
-    const std::shared_ptr<object_container> object_container =
+    const std::shared_ptr<container> object_container =
         get_object_container(object_containers_internal_metadata_name);
 
     return object_container->get_storage_engine_reference();
@@ -79,7 +79,7 @@ status::status_code
 object_container_index::get_object_container_existence_status(
     const std::string& object_container_name) const
 {
-    const std::shared_ptr<object_container> object_container =
+    const std::shared_ptr<container> object_container =
         get_object_container(object_container_name);
 
     if (object_container == nullptr)
@@ -98,7 +98,7 @@ object_container_index::get_object_container_existence_status(
            status::object_container_in_deletion_process : status::object_container_already_exists;
 }
 
-std::shared_ptr<object_container>
+std::shared_ptr<container>
 object_container_index::get_object_container(
     const std::string& object_container_name) const
 {
@@ -108,7 +108,7 @@ object_container_index::get_object_container(
     return container_index_table_.at(bucket_index).get_object_container(object_container_name);
 }
 
-std::vector<std::shared_ptr<object_container>>
+std::vector<std::shared_ptr<container>>
 object_container_index::get_all_object_containers_from_bucket(
     const std::uint16_t bucket_index) const
 {

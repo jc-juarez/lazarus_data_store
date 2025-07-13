@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'object_container.hh'
+// 'container.hh'
 // Author: jcjuarez
 // Description:
 //      Object container metadata structure. Object
@@ -12,14 +12,14 @@
 #include <format>
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
-#include "object_container.hh"
+#include "container.hh"
 
 namespace lazarus
 {
 namespace storage
 {
 
-object_container::object_container(
+container::container(
     std::shared_ptr<storage_engine> storage_engine_handle,
     storage_engine_reference_handle* storage_engine_reference,
     const schemas::object_container_persistent_interface& object_container_persistent_metadata)
@@ -29,7 +29,7 @@ object_container::object_container(
       is_deleted_{false}
 {}
 
-object_container::~object_container()
+container::~container()
 {
     spdlog::info("Removing last object container reference from memory. "
         "ObjectContainerMetadata={}.",
@@ -40,7 +40,7 @@ object_container::~object_container()
 }
 
 schemas::object_container_persistent_interface
-object_container::create_object_container_persistent_metadata(
+container::create_object_container_persistent_metadata(
     const char* object_container_name)
 {
     schemas::object_container_persistent_interface object_container_persistent_metadata;
@@ -54,35 +54,35 @@ object_container::create_object_container_persistent_metadata(
 }
 
 storage_engine_reference_handle*
-object_container::get_storage_engine_reference() const
+container::get_storage_engine_reference() const
 {
     std::shared_lock<std::shared_mutex> lock {lock_};
     return storage_engine_reference_;
 }
 
 std::string
-object_container::get_name() const
+container::get_name() const
 {
     std::shared_lock<std::shared_mutex> lock {lock_};
     return object_container_persistent_metadata_.name();
 }
 
 void
-object_container::mark_as_deleted()
+container::mark_as_deleted()
 {
     std::unique_lock<std::shared_mutex> lock {lock_};
     is_deleted_ = true;
 }
 
 bool
-object_container::is_deleted() const
+container::is_deleted() const
 {
     std::shared_lock<std::shared_mutex> lock {lock_};
     return is_deleted_;
 }
 
 std::string
-object_container::to_string() const
+container::to_string() const
 {
     std::shared_lock<std::shared_mutex> lock {lock_};
     return std::format(

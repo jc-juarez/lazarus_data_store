@@ -98,7 +98,7 @@ garbage_collector::cleanup_orphaned_object_containers()
     //
     for (std::uint16_t bucket_index = 0; bucket_index < object_container_index_->get_number_container_buckets(); ++bucket_index)
     {
-        std::vector<std::shared_ptr<object_container>> object_containers =
+        std::vector<std::shared_ptr<container>> object_containers =
             object_container_index_->get_all_object_containers_from_bucket(bucket_index);
 
         spdlog::info("Scanning container bucket to look for orphaned containers. "

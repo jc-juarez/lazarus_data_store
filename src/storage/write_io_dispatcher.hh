@@ -36,7 +36,7 @@ private:
     void
     concurrent_io_request_proxy(
         schemas::object_request_interface&& object_request,
-        std::shared_ptr<object_container> object_container,
+        std::shared_ptr<container> container,
         network::server_response_callback&& response_callback) override;
 
     //

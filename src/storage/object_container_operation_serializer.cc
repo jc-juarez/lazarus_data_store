@@ -144,7 +144,7 @@ object_container_operation_serializer::handle_object_container_creation(
     // Insert the metadata for the newly created object container to the storage engine.
     //
     const schemas::object_container_persistent_interface object_container_persistent_metadata =
-        object_container::create_object_container_persistent_metadata(object_container_request.get_name().c_str());
+        container::create_object_container_persistent_metadata(object_container_request.get_name().c_str());
     byte_stream serialized_object_container_persistent_metadata;
     object_container_persistent_metadata.SerializeToString(&serialized_object_container_persistent_metadata);
     status = storage_engine_->insert_object(
@@ -249,7 +249,7 @@ object_container_operation_serializer::handle_object_container_removal(
     // metadata as deleted for later garbage collector cleanup. In case a crash occurs in between, the
     // filesystem object container will be detected as orphaned during startup and will also be cleaned up.
     //
-    std::shared_ptr<object_container> object_container =
+    std::shared_ptr<container> object_container =
         object_container_index_->get_object_container(
             object_container_request.get_name().c_str());
 
