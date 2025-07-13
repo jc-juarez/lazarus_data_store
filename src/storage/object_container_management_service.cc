@@ -86,7 +86,7 @@ object_container_management_service::populate_object_container_index(
     if (status::failed(status))
     {
         spdlog::critical("Failed to get all object containers from the object containers internal metadata. "
-            "Status={}.",
+            "Status={:#x}.",
             status);
 
         return status;
@@ -115,9 +115,20 @@ object_container_management_service::populate_object_container_index(
                 return status::parsing_failed;
             }
 
-            object_container_index_->insert_object_container(
+            status = object_container_index_->insert_object_container(
                 object_container_storage_engine_reference,
                 object_container_persistent_metadata);
+
+            if (status::failed(status))
+            {
+                spdlog::critical("Failed to insert container into the container index. "
+                    "ContainerName={}, "
+                    "Status={:#x}.",
+                    object_container_persistent_metadata.name().c_str(),
+                    status);
+
+                return status;
+            }
 
             const std::shared_ptr<object_container> object_container =
                 object_container_index_->get_object_container(object_container_name.c_str());
@@ -134,9 +145,20 @@ object_container_management_service::populate_object_container_index(
             //
             const schemas::object_container_persistent_interface object_container_persistent_metadata =
                 object_container::create_object_container_persistent_metadata(object_container_name.c_str());
-            object_container_index_->insert_object_container(
+            status = object_container_index_->insert_object_container(
                 object_container_storage_engine_reference,
                 object_container_persistent_metadata);
+
+            if (status::failed(status))
+            {
+                spdlog::critical("Failed to insert container into the container index. "
+                    "ContainerName={}, "
+                    "Status={:#x}.",
+                    object_container_persistent_metadata.name().c_str(),
+                    status);
+
+                return status;
+            }
 
             const bool is_orphaned_object_container =
                 !object_container_index::is_internal_metadata(object_container_name.c_str());

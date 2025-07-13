@@ -131,9 +131,11 @@ object_container_operation_serializer::handle_object_container_creation(
     {
         spdlog::error("Storage engine failed to create the new object container. "
             "Optype={}, "
-            "ObjectContainerName={}.",
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
             static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name());
+            object_container_request.get_name(),
+            status);
 
         return status;
     }
@@ -154,9 +156,11 @@ object_container_operation_serializer::handle_object_container_creation(
     {
         spdlog::error("Storage engine failed insert the metadata entry for the new object container. "
             "Optype={}, "
-            "ObjectContainerName={}.",
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
             static_cast<std::uint8_t>(object_container_request.get_optype()),
-            object_container_request.get_name());
+            object_container_request.get_name(),
+            status);
 
         return status;
     }
@@ -164,9 +168,22 @@ object_container_operation_serializer::handle_object_container_creation(
     //
     // Index the new object container to the internal metadata table.
     //
-    object_container_index_->insert_object_container(
+    status = object_container_index_->insert_object_container(
         object_container_storage_engine_reference,
         object_container_persistent_metadata);
+
+    if (status::failed(status))
+    {
+        spdlog::error("Container index insertion failed for the new object container. "
+            "Optype={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            static_cast<std::uint8_t>(object_container_request.get_optype()),
+            object_container_request.get_name(),
+            status);
+
+        return status;
+    }
 
     spdlog::info("Object container creation succeeded. "
         "Optype={}, "
