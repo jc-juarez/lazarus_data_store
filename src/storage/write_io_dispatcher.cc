@@ -97,6 +97,9 @@ write_io_dispatcher::concurrent_io_request_proxy(
     if (status::succeeded(status) &&
         object_request.get_optype() == schemas::object_request_optype::insert)
     {
+        const std::string object_id = object_request.get_object_id();
+        const std::string container_name = object_request.get_container_name();
+
         status = frontline_cache_->put(
             std::move(object_request.get_object_id_mutable()),
             std::move(object_request.get_object_data_mutable()),
@@ -109,8 +112,8 @@ write_io_dispatcher::concurrent_io_request_proxy(
                 "ObjectId={}, "
                 "ObjectContainerName={}.",
                 static_cast<std::uint8_t>(object_request.get_optype()),
-                object_request.get_object_id(),
-                object_request.get_container_name());
+                object_id,
+                container_name);
         }
         else
         {
@@ -120,8 +123,8 @@ write_io_dispatcher::concurrent_io_request_proxy(
                 "ObjectContainerName={}, "
                 "Status={:#x}.",
                 static_cast<std::uint8_t>(object_request.get_optype()),
-                object_request.get_object_id(),
-                object_request.get_container_name(),
+                object_id,
+                container_name,
                 status);
         }
     }

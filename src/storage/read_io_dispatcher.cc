@@ -94,6 +94,9 @@ read_io_dispatcher::concurrent_io_request_proxy(
         // but only after replying back to the server. The cache is not intended to be
         // strongly consistent, so clients might not see the new object entry until later.
         //
+        const std::string object_id = object_request.get_object_id();
+        const std::string container_name = object_request.get_container_name();
+
         status = frontline_cache_->put(
             std::move(object_request.get_object_id_mutable()),
             std::move(object_request.get_object_data_mutable()),
@@ -106,8 +109,8 @@ read_io_dispatcher::concurrent_io_request_proxy(
                 "ObjectId={}, "
                 "ObjectContainerName={}.",
                 static_cast<std::uint8_t>(object_request.get_optype()),
-                object_request.get_object_id(),
-                object_request.get_container_name());
+                object_id,
+                container_name);
         }
         else
         {
@@ -117,8 +120,8 @@ read_io_dispatcher::concurrent_io_request_proxy(
                 "ObjectContainerName={}, "
                 "Status={:#x}.",
                 static_cast<std::uint8_t>(object_request.get_optype()),
-                object_request.get_object_id(),
-                object_request.get_container_name(),
+                object_id,
+                container_name,
                 status);
         }
     }
