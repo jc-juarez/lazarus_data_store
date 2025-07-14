@@ -10,11 +10,12 @@
 
 #pragma once
 
+#include <map>
 #include <list>
 #include <mutex>
 #include <string>
+#include <utility>
 #include <optional>
-#include <unordered_map>
 #include "../status/status.hh"
 #include "../common/aliases.hh"
 
@@ -41,14 +42,16 @@ public:
     status::status_code
     put(
         std::string&& object_id,
-        byte_stream&& object_data);
+        byte_stream&& object_data,
+        std::string&& container_name);
 
     //
     // Gets an object data if present in the cache.
     //
     std::optional<byte_stream>
     get(
-        const std::string& object_id);
+        const std::string& object_id,
+        const std::string& container_name);
 
 private:
 
@@ -69,13 +72,16 @@ private:
 
     //
     // Doubly linked list chain for storing the node objects in a flat structure for direct dereferencing.
+    // Maps a pair of {ContainerName, ObjectId} to a respective object data stream.
     //
-    std::list<std::pair<std::string, byte_stream>> lru_doubly_linked_list_;
+    std::list<std::pair<std::pair<std::string, std::string>, byte_stream>> lru_doubly_linked_list_;
 
     //
     // Quick-access cache map for directly dereferencing the node object.
+    // Maps a pair of {ContainerName, ObjectId} to its respective object node iterator.
     //
-    std::unordered_map<std::string, std::list<std::pair<std::string, byte_stream>>::iterator> lru_cache_map_;
+    std::map<std::pair<std::string, std::string>,
+        std::list<std::pair<std::pair<std::string, std::string>, byte_stream>>::iterator> lru_cache_map_;
 
     //
     // Lock for synchronizing access to the cache shard.

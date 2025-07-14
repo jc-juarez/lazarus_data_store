@@ -18,6 +18,8 @@
 namespace lazarus::storage
 {
 
+class container_index;
+
 class frontline_cache
 {
 public:
@@ -28,7 +30,8 @@ public:
     frontline_cache(
         const std::uint16_t number_cache_shards,
         const std::size_t max_cache_shard_size_bytes,
-        const std::size_t max_object_size_bytes);
+        const std::size_t max_object_size_bytes,
+        std::shared_ptr<container_index> container_index_handle);
 
     //
     // Inserts an object into the cache shard.
@@ -39,14 +42,20 @@ public:
     status::status_code
     put(
         std::string&& object_id,
-        byte_stream&& object_data);
+        byte_stream&& object_data,
+        std::string&& container_name);
 
     //
     // Gets an object data if present in the cache.
+    // Note that if the object is not present in the cache, it will not be inserted.
+    // This is a design choice as this is called from the server threads and there is no
+    // need to consume computation resources to insert it at the step of checking if an entry exists.
+    // Eventually, if the object needs to be inserted, it will be inserted by the IO thread pools.
     //
     std::optional<byte_stream>
     get(
-        const std::string& object_id);
+        const std::string& object_id,
+        const std::string& container_name);
 
 private:
 
@@ -71,6 +80,11 @@ private:
     // Number of shards in the cache.
     //
     const std::uint16_t number_cache_shards_;
+
+    //
+    // Container index component handle.
+    //
+    std::shared_ptr<container_index> container_index_handle_;
 };
 
 } // namespace lazarus::storage.

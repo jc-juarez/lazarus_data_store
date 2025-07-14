@@ -13,6 +13,8 @@
 namespace lazarus::storage
 {
 
+using container_object_id_pair = std::pair<std::string, std::string>;
+
 cache_shard::cache_shard(
     const std::size_t max_cache_shard_size_bytes,
     const std::size_t max_object_size_bytes)
@@ -24,7 +26,8 @@ cache_shard::cache_shard(
 status::status_code
 cache_shard::put(
     std::string&& object_id,
-    byte_stream&& object_data)
+    byte_stream&& object_data,
+    std::string&& container_name)
 {
     //
     // Before taking the lock, execute the sanity check
@@ -36,13 +39,29 @@ cache_shard::put(
         return status::object_data_size_exceeds_cache_limit;
     }
 
+    //
+    // Construct the key object before taking the lock.
+    // The parameters will be moved under the assumption of no further usage.
+    //
+    container_object_id_pair object_id_pair = std::make_pair(
+        std::move(container_name),
+        std::move(object_id));
+
     std::lock_guard<std::mutex> lock {lock_};
 
-    auto map_object_iterator = lru_cache_map_.find(object_id);
+    auto map_object_iterator = lru_cache_map_.find(object_id_pair);
     if (map_object_iterator != lru_cache_map_.end())
     {
+        if (lru_doubly_linked_list_.begin() == lru_cache_map_.at(object_id_pair))
+        {
+            //
+            // This means the object is already at the front of the list, no action needed.
+            //
+            return status::success;
+        }
+
         //
-        // If the object exists, remove it from the cache instead of splicing it.
+        // If the object exists and is not at the front, remove it from the cache instead of splicing it.
         // This is more efficient given the cache does not know in advance how many
         // bytes need to be removed in object terms in order to insert this new object.
         //
@@ -66,8 +85,11 @@ cache_shard::put(
         lru_doubly_linked_list_.pop_back();
     }
 
-    lru_doubly_linked_list_.emplace_front(object_id, object_data);
-    lru_cache_map_.emplace(object_id, lru_doubly_linked_list_.begin());
+    //
+    // The data can be moved in the first call.
+    //
+    lru_doubly_linked_list_.emplace_front(object_id_pair, std::move(object_data));
+    lru_cache_map_.emplace(object_id_pair, lru_doubly_linked_list_.begin());
     current_cache_shard_size_bytes_ += object_data_size_bytes;
 
     return status::success;
@@ -75,11 +97,19 @@ cache_shard::put(
 
 std::optional<byte_stream>
 cache_shard::get(
-    const std::string& object_id)
+    const std::string& object_id,
+    const std::string& container_name)
 {
+    //
+    // Construct the key object before taking the lock.
+    //
+    container_object_id_pair object_id_pair = std::make_pair(
+        container_name,
+        object_id);
+
     std::lock_guard<std::mutex> lock {lock_};
 
-    auto map_object_iterator = lru_cache_map_.find(object_id);
+    auto map_object_iterator = lru_cache_map_.find(object_id_pair);
     if (map_object_iterator == lru_cache_map_.end())
     {
         return std::nullopt;

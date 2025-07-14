@@ -88,7 +88,8 @@ lazarus_data_store::lazarus_data_store(
     frontline_cache_ = std::make_shared<storage::frontline_cache>(
         storage_configuration.number_frontline_cache_shards_,
         storage_configuration.max_frontline_cache_shard_size_mib_ * 1'024 * 1'024,
-        storage_configuration.max_frontline_cache_shard_object_size_bytes);
+        storage_configuration.max_frontline_cache_shard_object_size_bytes,
+        container_index_);
 
     //
     // Write request dispatcher component allocation.

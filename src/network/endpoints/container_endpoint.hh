@@ -36,7 +36,6 @@ public:
 
   METHOD_LIST_BEGIN
   METHOD_ADD(container_endpoint::create_container, "/", drogon::Put);
-  METHOD_ADD(container_endpoint::get_container, "/", drogon::Get);
   METHOD_ADD(container_endpoint::remove_container, "/", drogon::Delete);
   METHOD_LIST_END
 
@@ -45,14 +44,6 @@ public:
   //
   void
   create_container(
-    const drogon::HttpRequestPtr& request,
-    server_response_callback&& response_callback);
-
-  //
-  // Gets the metadata of a given object container.
-  //
-  void
-  get_container(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback);
 

@@ -35,20 +35,20 @@ public:
     //
     // Returns an immutable reference to the ID.
     //
-    const std::string&
-    get_object_id() const;
+    std::string&
+    get_object_id();
 
     //
     // Returns an immutable reference to the data stream.
     //
-    const byte_stream&
-    get_object_data() const;
+    byte_stream&
+    get_object_data();
 
     //
     // Returns an immutable reference to the associated container name.
     //
-    const std::string&
-    get_container_name() const;
+    std::string&
+    get_container_name();
 
 private:
 

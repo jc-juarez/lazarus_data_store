@@ -218,6 +218,16 @@ object_management_service::orchestrate_concurrent_read_request(
     return status::success;
 }
 
+std::optional<byte_stream>
+object_management_service::get_object_from_frontline_cache(
+    const std::string& object_id,
+    const std::string& container_name)
+{
+    return frontline_cache_->get(
+        object_id,
+        container_name);
+}
+
 bool
 object_management_service::is_object_operation_optype_valid(
     const schemas::object_request_optype optype)

@@ -94,6 +94,24 @@ object_request::get_object_data() const
     return object_->get_object_data();
 }
 
+std::string&
+object_request::get_container_name_mutable()
+{
+    return object_->get_container_name();
+}
+
+std::string&
+object_request::get_object_id_mutable()
+{
+    return object_->get_object_id();
+}
+
+storage::byte_stream&
+object_request::get_object_data_mutable()
+{
+    return object_->get_object_data();
+}
+
 object_request_optype
 object_request::get_optype() const
 {

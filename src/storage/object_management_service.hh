@@ -74,6 +74,15 @@ public:
         std::shared_ptr<container> container,
         network::server_response_callback&& response_callback);
 
+    //
+    // Checks if an object is present in the frontline cache for rapid responses
+    // without enqueuing a concurrent read operation delegation to the read IO thread pool.
+    //
+    std::optional<byte_stream>
+    get_object_from_frontline_cache(
+        const std::string& object_id,
+        const std::string& container_name);
+
 private:
 
     //

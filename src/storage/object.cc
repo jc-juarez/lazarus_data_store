@@ -28,20 +28,20 @@ object::object(
       container_name_{std::move(other.container_name_)}
 {}
 
-const std::string&
-object::get_object_id() const
+std::string&
+object::get_object_id()
 {
     return object_id_;
 }
 
-const byte_stream&
-object::get_object_data() const
+byte_stream&
+object::get_object_data()
 {
     return object_data_;
 }
 
-const std::string&
-object::get_container_name() const
+std::string&
+object::get_container_name()
 {
     return container_name_;
 }

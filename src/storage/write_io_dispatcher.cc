@@ -90,10 +90,41 @@ write_io_dispatcher::concurrent_io_request_proxy(
         status);
 
     //
-    // If the operation was successful, insert the object into the cache,
+    // If the operation was successful and inserted an object, insert the object into the cache,
     // but only after replying back to the server. The cache is not intended to be
     // strongly consistent, so clients might not see the new object entry until later.
     //
+    if (status::succeeded(status) &&
+        object_request.get_optype() == schemas::object_request_optype::insert)
+    {
+        status = frontline_cache_->put(
+            std::move(object_request.get_object_id_mutable()),
+            std::move(object_request.get_object_data_mutable()),
+            std::move(object_request.get_container_name_mutable()));
+
+        if (status::succeeded(status))
+        {
+            spdlog::info("Frontline cache object insertion succeeded on insert object operation. "
+                "Optype={}, "
+                "ObjectId={}, "
+                "ObjectContainerName={}.",
+                static_cast<std::uint8_t>(object_request.get_optype()),
+                object_request.get_object_id(),
+                object_request.get_container_name());
+        }
+        else
+        {
+            spdlog::error("Frontline cache object insertion failed on insert object operation. "
+                "Optype={}, "
+                "ObjectId={}, "
+                "ObjectContainerName={}, "
+                "Status={:#x}.",
+                static_cast<std::uint8_t>(object_request.get_optype()),
+                object_request.get_object_id(),
+                object_request.get_container_name(),
+                status);
+        }
+    }
 }
 
 status::status_code

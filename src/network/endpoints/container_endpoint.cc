@@ -65,12 +65,6 @@ container_endpoint::create_container(
 }
 
 void
-container_endpoint::get_container(
-    const drogon::HttpRequestPtr& request,
-    std::function<void(const drogon::HttpResponsePtr &)>&& response_callback)
-{}
-
-void
 container_endpoint::remove_container(
     const drogon::HttpRequestPtr& request,
     server_response_callback&& response_callback)

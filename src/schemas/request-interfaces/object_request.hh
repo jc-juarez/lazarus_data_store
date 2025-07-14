@@ -64,6 +64,27 @@ public:
     get_object_data() const;
 
     //
+    // Gets the object container name.
+    // Returns a mutable reference to the container name.
+    //
+    std::string&
+    get_container_name_mutable();
+
+    //
+    // Gets the object ID.
+    // Returns a mutable reference to the ID.
+    //
+    std::string&
+    get_object_id_mutable();
+
+    //
+    // Gets the object data.
+    // Returns a mutable reference to the byte stream.
+    //
+    storage::byte_stream&
+    get_object_data_mutable();
+
+    //
     // Gets the object request optype.
     //
     object_request_optype
