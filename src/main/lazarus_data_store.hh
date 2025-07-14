@@ -31,6 +31,7 @@ namespace storage
 class storage_engine;
 class garbage_collector;
 class container_index;
+class frontline_cache;
 class write_io_dispatcher;
 class read_io_dispatcher;
 class object_management_service;
@@ -151,6 +152,11 @@ private:
     // Read request dispatcher handle.
     //
     std::shared_ptr<storage::read_io_dispatcher> read_request_dispatcher_;
+
+    //
+    // Frontline cache handle.
+    //
+    std::shared_ptr<storage::frontline_cache> frontline_cache_;
 };
 
 } // namespace lazarus.

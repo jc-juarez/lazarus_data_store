@@ -20,6 +20,7 @@ namespace lazarus::storage
 
 class storage_engine;
 class container;
+class frontline_cache;
 
 class concurrent_io_dispatcher
 {
@@ -30,7 +31,8 @@ public:
     //
     concurrent_io_dispatcher(
         const std::uint32_t number_threads,
-        std::shared_ptr<storage_engine> storage_engine);
+        std::shared_ptr<storage_engine> storage_engine,
+        std::shared_ptr<storage::frontline_cache> frontline_cache);
 
     //
     // Enqueues a concurrent IO operation for the storage engine.
@@ -64,6 +66,11 @@ protected:
     // IO thread pool for dispatching storage engine operations.
     //
     boost::asio::thread_pool io_thread_pool_;
+
+    //
+    // Frontline cache handle.
+    //
+    std::shared_ptr<storage::frontline_cache> frontline_cache_;
 };
 
 } // namespace lazarus::common.

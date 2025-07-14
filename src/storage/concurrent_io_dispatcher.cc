@@ -18,8 +18,10 @@ namespace lazarus::storage
 
 concurrent_io_dispatcher::concurrent_io_dispatcher(
     const std::uint32_t number_threads,
-    std::shared_ptr<storage_engine> storage_engine)
+    std::shared_ptr<storage_engine> storage_engine,
+    std::shared_ptr<storage::frontline_cache> frontline_cache)
     : storage_engine_{std::move(storage_engine)},
+      frontline_cache_{std::move(frontline_cache)},
       io_thread_pool_{number_threads}
 {}
 

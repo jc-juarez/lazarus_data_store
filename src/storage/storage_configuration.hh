@@ -40,7 +40,10 @@ struct storage_configuration
           number_write_io_threads_{4u},
           number_read_io_threads_{std::thread::hardware_concurrency()},
           storage_engine_block_cache_size_mib_{512u},
-          container_index_number_buckets_{8u}
+          container_index_number_buckets_{8u},
+          number_frontline_cache_shards_{8u},
+          max_frontline_cache_shard_size_mib_{64u},
+          max_frontline_cache_shard_object_size_bytes{10 * 1'024u}
     {
         //
         // Set the core database path with the default home directory path if no path
@@ -115,6 +118,21 @@ struct storage_configuration
     // Number of buckets for the container index.
     //
     std::uint16_t container_index_number_buckets_;
+
+    //
+    // Number of cache shards for the frontline cache.
+    //
+    std::uint16_t number_frontline_cache_shards_;
+
+    //
+    // Maximum size for a frontline cache shard instance in MiB.
+    //
+    std::uint32_t max_frontline_cache_shard_size_mib_;
+
+    //
+    // Maximum size for object entries inside each frontline cache shard instance.
+    //
+    std::uint32_t max_frontline_cache_shard_object_size_bytes;
 };
 
 } // namespace storage.

@@ -26,7 +26,8 @@ public:
     //
     write_io_dispatcher(
         const std::uint32_t number_write_io_threads,
-        std::shared_ptr<storage_engine> storage_engine);
+        std::shared_ptr<storage_engine> storage_engine,
+        std::shared_ptr<storage::frontline_cache> frontline_cache);
 
 private:
 

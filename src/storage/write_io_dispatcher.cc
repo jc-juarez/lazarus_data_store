@@ -8,9 +8,10 @@
 //      Implemented as a thread pool dispatcher.
 // ****************************************************
 
+#include "container.hh"
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
-#include "container.hh"
+#include "frontline_cache.hh"
 #include "write_io_dispatcher.hh"
 
 namespace lazarus::storage
@@ -18,10 +19,12 @@ namespace lazarus::storage
 
 write_io_dispatcher::write_io_dispatcher(
     const std::uint32_t number_write_io_threads,
-    std::shared_ptr<storage_engine> storage_engine)
+    std::shared_ptr<storage_engine> storage_engine,
+    std::shared_ptr<storage::frontline_cache> frontline_cache)
     : concurrent_io_dispatcher{
         number_write_io_threads,
-        std::move(storage_engine)}
+        std::move(storage_engine),
+        std::move(frontline_cache)}
 {}
 
 void
@@ -85,6 +88,12 @@ write_io_dispatcher::concurrent_io_request_proxy(
     network::server::send_response(
         response_callback,
         status);
+
+    //
+    // If the operation was successful, insert the object into the cache,
+    // but only after replying back to the server. The cache is not intended to be
+    // strongly consistent, so clients might not see the new object entry until later.
+    //
 }
 
 status::status_code

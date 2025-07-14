@@ -8,9 +8,10 @@
 //      Implemented as a thread pool dispatcher.
 // ****************************************************
 
+#include "container.hh"
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
-#include "container.hh"
+#include "frontline_cache.hh"
 #include "read_io_dispatcher.hh"
 
 namespace lazarus::storage
@@ -18,10 +19,12 @@ namespace lazarus::storage
 
 read_io_dispatcher::read_io_dispatcher(
     const std::uint32_t number_read_io_threads,
-    std::shared_ptr<storage_engine> storage_engine)
+    std::shared_ptr<storage_engine> storage_engine,
+    std::shared_ptr<storage::frontline_cache> frontline_cache)
     : concurrent_io_dispatcher{
     number_read_io_threads,
-    std::move(storage_engine)}
+    std::move(storage_engine),
+    std::move(frontline_cache)}
 {}
 
 void

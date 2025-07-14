@@ -16,6 +16,7 @@
 #include "../network/server/server.hh"
 #include "../storage/storage_engine.hh"
 #include "../storage/container_index.hh"
+#include "../storage/frontline_cache.hh"
 #include "../storage/garbage_collector.hh"
 #include "../storage/read_io_dispatcher.hh"
 #include "../storage/write_io_dispatcher.hh"
@@ -82,18 +83,28 @@ lazarus_data_store::lazarus_data_store(
         std::move(container_operation_serializer));
 
     //
+    // Frontline cache component allocation.
+    //
+    frontline_cache_ = std::make_shared<storage::frontline_cache>(
+        storage_configuration.number_frontline_cache_shards_,
+        storage_configuration.max_frontline_cache_shard_size_mib_ * 1'024 * 1'024,
+        storage_configuration.max_frontline_cache_shard_object_size_bytes);
+
+    //
     // Write request dispatcher component allocation.
     //
     write_request_dispatcher_ = std::make_shared<storage::write_io_dispatcher>(
         storage_configuration.number_write_io_threads_,
-        storage_engine_);
+        storage_engine_,
+        frontline_cache_);
 
     //
     // Read request dispatcher component allocation.
     //
     read_request_dispatcher_ = std::make_shared<storage::read_io_dispatcher>(
         storage_configuration.number_read_io_threads_,
-        storage_engine_);
+        storage_engine_,
+        frontline_cache_);
 
     //
     // Object management service component allocation.
@@ -109,6 +120,7 @@ lazarus_data_store::lazarus_data_store(
     //
     server_ = std::make_shared<network::server>(
         server_config,
+        frontline_cache_,
         container_management_service_,
         object_management_service_);
 }
@@ -236,6 +248,7 @@ lazarus_data_store::start_data_store() const {
 
     //
     // Start the server for handling incoming data requests.
+    // This will block the main thread.
     //
     server_->start();
 
