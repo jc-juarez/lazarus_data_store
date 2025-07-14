@@ -8,9 +8,10 @@
 // ****************************************************
 
 #include <spdlog/spdlog.h>
+#include "container_index.hh"
+#include "frontline_cache.hh"
 #include "read_io_dispatcher.hh"
 #include "write_io_dispatcher.hh"
-#include "container_index.hh"
 #include "object_management_service.hh"
 #include "../common/request_validations.hh"
 
@@ -23,11 +24,13 @@ object_management_service::object_management_service(
     const storage_configuration& storage_configuration,
     std::shared_ptr<container_index> container_index,
     std::shared_ptr<write_io_dispatcher> write_request_dispatcher,
-    std::shared_ptr<read_io_dispatcher> read_request_dispatcher)
+    std::shared_ptr<read_io_dispatcher> read_request_dispatcher,
+    std::shared_ptr<storage::frontline_cache> frontline_cache)
     : storage_configuration_{storage_configuration},
       container_index_{std::move(container_index)},
       write_request_dispatcher_{std::move(write_request_dispatcher)},
-      read_request_dispatcher_{std::move(read_request_dispatcher)}
+      read_request_dispatcher_{std::move(read_request_dispatcher)},
+      frontline_cache_{std::move(frontline_cache)}
 {}
 
 status::status_code
@@ -197,12 +200,12 @@ object_management_service::orchestrate_concurrent_read_request(
     if (!is_object_request_read_io_operation(object_request.get_optype()))
     {
         spdlog::error("Invalid read request optype for object operation. "
-                      "Optype={}, "
-                      "ObjectId={}, "
-                      "ObjectContainerName={}.",
-                      static_cast<std::uint8_t>(object_request.get_optype()),
-                      object_request.get_object_id(),
-                      object_request.get_container_name());
+            "Optype={}, "
+            "ObjectId={}, "
+            "ObjectContainerName={}.",
+            static_cast<std::uint8_t>(object_request.get_optype()),
+            object_request.get_object_id(),
+            object_request.get_container_name());
 
         return status::invalid_operation;
     }

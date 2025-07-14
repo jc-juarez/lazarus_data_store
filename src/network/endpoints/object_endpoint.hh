@@ -18,7 +18,6 @@ namespace lazarus
 
 namespace storage
 {
-class frontline_cache;
 class container_management_service;
 }
 
@@ -33,7 +32,6 @@ public:
     // Endpoint constructor.
     //
     object_endpoint(
-        std::shared_ptr<storage::frontline_cache> frontline_cache,
         std::shared_ptr<storage::object_management_service> object_management_service);
 
     METHOD_LIST_BEGIN
@@ -72,11 +70,6 @@ private:
     // Object management service handle.
     //
     std::shared_ptr<storage::object_management_service> object_management_service_;
-
-    //
-    // Frontline cache handle.
-    //
-    std::shared_ptr<storage::frontline_cache> frontline_cache_;
 };
 
 } // namespace network.

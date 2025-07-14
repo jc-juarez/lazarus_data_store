@@ -113,14 +113,14 @@ lazarus_data_store::lazarus_data_store(
         storage_configuration,
         container_index_,
         write_request_dispatcher_,
-        read_request_dispatcher_);
+        read_request_dispatcher_,
+        frontline_cache_);
 
     //
     // Server component allocation.
     //
     server_ = std::make_shared<network::server>(
         server_config,
-        frontline_cache_,
         container_management_service_,
         object_management_service_);
 }

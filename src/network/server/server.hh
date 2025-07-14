@@ -21,7 +21,6 @@ namespace lazarus
 
 namespace storage
 {
-    class frontline_cache;
     class container_management_service;
     class object_management_service;
 }
@@ -43,7 +42,6 @@ public:
     //
     server(
         const server_configuration& server_config,
-        std::shared_ptr<storage::frontline_cache> frontline_cache,
         std::shared_ptr<storage::container_management_service> container_management_service_handle,
         std::shared_ptr<storage::object_management_service> object_management_service);
 
@@ -67,7 +65,6 @@ public:
     //
     void
     register_endpoints(
-        std::shared_ptr<storage::frontline_cache> frontline_cache,
         std::shared_ptr<storage::container_management_service> container_management_service_handle,
         std::shared_ptr<storage::object_management_service> object_management_service);
         

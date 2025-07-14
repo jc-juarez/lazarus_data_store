@@ -24,7 +24,6 @@ namespace network
 
 server::server(
     const server_configuration& server_config,
-    std::shared_ptr<storage::frontline_cache> frontline_cache,
     std::shared_ptr<storage::container_management_service> container_management_service_handle,
     std::shared_ptr<storage::object_management_service> object_management_service)
     : http_server_{drogon::app()},
@@ -45,7 +44,6 @@ server::server(
     // Register all needed endpoints for the server.
     //
     register_endpoints(
-        frontline_cache,
         container_management_service_handle,
         object_management_service);
 }
@@ -69,7 +67,6 @@ server::stop()
 
 void
 server::register_endpoints(
-    std::shared_ptr<storage::frontline_cache> frontline_cache,
     std::shared_ptr<storage::container_management_service> container_management_service_handle,
     std::shared_ptr<storage::object_management_service> object_management_service)
 {
@@ -83,7 +80,6 @@ server::register_endpoints(
     // Object endpoint.
     //
     http_server_.registerController(std::make_shared<object_endpoint>(
-        frontline_cache,
         object_management_service));
 }
 

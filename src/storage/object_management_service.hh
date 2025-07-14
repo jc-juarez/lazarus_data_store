@@ -23,6 +23,7 @@ class container;
 class container_index;
 class write_io_dispatcher;
 class read_io_dispatcher;
+class frontline_cache;
 
 //
 // Core storage access interface.
@@ -38,7 +39,8 @@ public:
         const storage_configuration& storage_configuration,
         std::shared_ptr<container_index> container_index,
         std::shared_ptr<write_io_dispatcher> write_request_dispatcher,
-        std::shared_ptr<read_io_dispatcher> read_request_dispatcher);
+        std::shared_ptr<read_io_dispatcher> read_request_dispatcher,
+        std::shared_ptr<storage::frontline_cache> frontline_cache);
 
     //
     // Validates if an object operation request can be executed.
@@ -124,6 +126,11 @@ private:
     // Handle for the read request dispatcher component.
     //
     std::shared_ptr<read_io_dispatcher> read_request_dispatcher_;
+
+    //
+    // Frontline cache handle.
+    //
+    std::shared_ptr<storage::frontline_cache> frontline_cache_;
 };
 
 } // namespace storage.

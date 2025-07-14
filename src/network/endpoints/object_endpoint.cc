@@ -22,10 +22,8 @@ namespace network
 {
 
 object_endpoint::object_endpoint(
-    std::shared_ptr<storage::frontline_cache> frontline_cache,
     std::shared_ptr<storage::object_management_service> object_management_service)
-    : frontline_cache_{std::move(frontline_cache)},
-      object_management_service_{std::move(object_management_service)}
+    : object_management_service_{std::move(object_management_service)}
 {}
 
 void
