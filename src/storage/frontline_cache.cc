@@ -8,6 +8,7 @@
 //      objects from the server context within shards.
 // ****************************************************
 
+#include <spdlog/spdlog.h>
 #include "frontline_cache.hh"
 #include "container_index.hh"
 
@@ -18,9 +19,9 @@ frontline_cache::frontline_cache(
     const std::uint16_t number_cache_shards,
     const std::size_t max_cache_shard_size_bytes,
     const std::size_t max_object_size_bytes,
-    std::shared_ptr<container_index> container_index_handle)
+    std::shared_ptr<container_index> container_index)
     : number_cache_shards_{number_cache_shards},
-      container_index_handle_{std::move(container_index_handle)}
+      container_index_{std::move(container_index)}
 {
     for (std::uint16_t index = 0; index < number_cache_shards_; ++index)
     {
@@ -35,6 +36,25 @@ frontline_cache::put(
     byte_stream&& object_data,
     std::string&& container_name)
 {
+    status::status_code status =
+        container_index_->get_container_existence_status(container_name);
+
+    if (status != status::container_already_exists)
+    {
+        //
+        // Invalid cache access for an object container which is no longer indexed.
+        //
+        spdlog::error("Invalid frontline cache put operation as the object container is not active. "
+            "ObjectId={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            object_id,
+            container_name,
+            status);
+
+        return status;
+    }
+
     const std::uint16_t cache_shard_index =
         get_associated_cache_shard_index(object_id);
 
@@ -49,6 +69,25 @@ frontline_cache::get(
     const std::string& object_id,
     const std::string& container_name)
 {
+    status::status_code status =
+        container_index_->get_container_existence_status(container_name);
+
+    if (status != status::container_already_exists)
+    {
+        //
+        // Invalid cache access for an object container which is no longer indexed.
+        //
+        spdlog::error("Invalid frontline cache get operation as the object container is not active. "
+            "ObjectId={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            object_id,
+            container_name,
+            status);
+
+        return std::nullopt;
+    }
+
     const std::uint16_t cache_shard_index =
         get_associated_cache_shard_index(object_id);
 
