@@ -54,6 +54,7 @@ set(SOURCE_FILES
     src/storage/container_bucket.cc
     src/storage/cache_shard.cc
     src/storage/object.cc
+    src/storage/frontline_cache.cc
 )
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})

@@ -191,5 +191,10 @@ status_code_definition(object_data_exceeds_size_limit, 0x8'0000025, drogon::Http
 //
 status_code_definition(container_insertion_collision, 0x8'0000026, drogon::HttpStatusCode::k500InternalServerError);
 
+//
+// Object data size exceeds limit for the frontline cache.
+//
+status_code_definition(object_data_size_exceeds_cache_limit, 0x8'0000027, drogon::HttpStatusCode::k500InternalServerError);
+
 } // namespace status.
 } // namespace lazarus.

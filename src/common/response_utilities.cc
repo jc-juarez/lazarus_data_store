@@ -24,9 +24,9 @@ generate_server_json_response(
 
     if (response_fields != nullptr)
     {
-        for (auto&& [key, value] : std::move(*response_fields))
+        for (auto& [key, value] : *response_fields)
         {
-            response_body[key] = std::move(value);
+            response_body[key] = *value;
         }
     }
 

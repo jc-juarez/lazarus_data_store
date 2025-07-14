@@ -20,7 +20,7 @@ namespace lazarus::common::response_utilities
 //
 // Generates a server response in JSON
 // format to be sent back to the client.
-// Performs a move of the additional parameters if present as to avoid copying.
+// Expects that the response fields given are references with a valid lifetime.
 //
 std::string
 generate_server_json_response(
