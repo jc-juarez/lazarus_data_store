@@ -84,7 +84,6 @@ read_io_dispatcher::concurrent_io_request_proxy(
         //
         network::response_fields response_fields;
         response_fields.emplace(schemas::object_request::object_data_key_tag, &object_data);
-
         network::server::send_response(
             response_callback,
             status,

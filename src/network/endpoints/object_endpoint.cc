@@ -149,6 +149,35 @@ object_endpoint::get_object(
                  object_request.get_object_id(),
                  object_request.get_container_name());
 
+    //
+    // Before calling the thread pool to look for the object,
+    // check the frontline cache. If present, this avoids
+    // context-switch overhead and calling the storage engine backend.
+    //
+    std::optional<storage::byte_stream> object_data = object_management_service_->get_object_from_frontline_cache(
+        object_request.get_object_id(),
+        object_request.get_container_name());
+
+    if (object_data.has_value())
+    {
+        spdlog::info("Frontline cache has the requested object for get object operation. Completing request. "
+            "Optype={}, "
+            "ObjectId={}, "
+            "ObjectContainerName={}.",
+            static_cast<std::uint8_t>(object_request.get_optype()),
+            object_request.get_object_id(),
+            object_request.get_container_name());
+
+        network::response_fields response_fields;
+        response_fields.emplace(schemas::object_request::object_data_key_tag, &(object_data.value()));
+        network::server::send_response(
+            response_callback,
+            status::success,
+            &response_fields);
+
+        return;
+    }
+
     std::shared_ptr<storage::container> container =
         object_management_service_->get_container_reference(object_request.get_container_name());
 
