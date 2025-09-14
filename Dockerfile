@@ -6,7 +6,7 @@
 # Description:
 #      Ubuntu base image for running
 #      lazarus. Build with:
-#      `docker build -t clion-lazarus-ubuntu .`
+#      `docker build -t ubuntu-lazarus-ds.`
 # ****************************************************
 
 FROM ubuntu:24.04
@@ -44,7 +44,7 @@ RUN git clone --recursive https://github.com/drogonframework/drogon.git /tmp/dro
     && make install \
     && rm -rf /tmp/drogon
 
-# Create a non-root user can map to.
+# Create a non-root user.
 RUN useradd -ms /bin/bash dev && echo "dev:dev" | chpasswd
 USER dev
 WORKDIR /home/dev
