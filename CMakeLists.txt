@@ -7,7 +7,7 @@
 #      Builds Lazarus Data Store. 
 # *************************************
 
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.28)
 project(lazarus)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -59,6 +59,7 @@ set(SOURCE_FILES
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})
 target_include_directories(lazarus PRIVATE build/)
+target_include_directories(lazarus PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(
     lazarus PRIVATE
     Drogon::Drogon

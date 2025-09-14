@@ -9,9 +9,9 @@
 #      `docker build -t clion-lazarus-ubuntu .`
 # ****************************************************
 
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
-# Install build essentials + dev libraries
+# Install build essentials + dev libraries.
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     curl \
     unzip \
+    libboost-all-dev \
     libtbb-dev \
     libprotobuf-dev protobuf-compiler \
     libspdlog-dev \
@@ -31,9 +32,10 @@ RUN apt-get update && apt-get install -y \
     libc-ares-dev \
     doxygen \
     uuid-dev \
+    nlohmann-json3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Drogon is not in Ubuntu repos, build from source
+# Drogon is not in Ubuntu repos, build from source.
 RUN git clone --recursive https://github.com/drogonframework/drogon.git /tmp/drogon \
     && cd /tmp/drogon \
     && mkdir build && cd build \
@@ -42,7 +44,7 @@ RUN git clone --recursive https://github.com/drogonframework/drogon.git /tmp/dro
     && make install \
     && rm -rf /tmp/drogon
 
-# Create a non-root user CLion can map to
+# Create a non-root user CLion can map to.
 RUN useradd -ms /bin/bash dev && echo "dev:dev" | chpasswd
 USER dev
 WORKDIR /home/dev
