@@ -5,7 +5,7 @@
 # Author: jcjuarez
 # Description:
 #      Ubuntu base image for running
-#      lazarus along the CLion IDE. Build with:
+#      lazarus. Build with:
 #      `docker build -t clion-lazarus-ubuntu .`
 # ****************************************************
 
@@ -44,7 +44,7 @@ RUN git clone --recursive https://github.com/drogonframework/drogon.git /tmp/dro
     && make install \
     && rm -rf /tmp/drogon
 
-# Create a non-root user CLion can map to.
+# Create a non-root user can map to.
 RUN useradd -ms /bin/bash dev && echo "dev:dev" | chpasswd
 USER dev
 WORKDIR /home/dev

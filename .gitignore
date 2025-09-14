@@ -1,11 +1,11 @@
-# *************************************
+# ****************************************************
 # Lazarus Data Store
 # Build
 # '.gitignore'
 # Author: jcjuarez
 # Description:
 #      Ignore certain files for tracking. 
-# *************************************
+# ****************************************************
 
 .idea/
 .vscode/
