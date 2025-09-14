@@ -58,6 +58,15 @@ protected:
         network::server_response_callback&& response_callback) = 0;
 
     //
+    // Handles the insertion of an element into the frontline cache.
+    // Must be implemented by derived classes.
+    //
+    virtual
+    void
+    insert_object_into_cache(
+        schemas::object_request& object_request) = 0;
+
+    //
     // Reference for the storage engine component.
     //
     std::shared_ptr<storage_engine> storage_engine_;

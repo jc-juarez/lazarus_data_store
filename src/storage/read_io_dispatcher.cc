@@ -91,39 +91,10 @@ read_io_dispatcher::concurrent_io_request_proxy(
 
         //
         // If the operation was successful, insert the object into the cache,
-        // but only after replying back to the server. The cache is not intended to be
-        // strongly consistent, so clients might not see the new object entry until later.
+        // but only after replying back to the server. Cache insertions triggered
+        // by get operations do not need a strong feedback loop; eventual cache alignment is accepted.
         //
-        const std::string object_id = object_request.get_object_id();
-        const std::string container_name = object_request.get_container_name();
-
-        status = frontline_cache_->put(
-            std::move(object_request.get_object_id_mutable()),
-            std::move(object_request.get_object_data_mutable()),
-            std::move(object_request.get_container_name_mutable()));
-
-        if (status::succeeded(status))
-        {
-            spdlog::info("Frontline cache object insertion succeeded on get object operation. "
-                "Optype={}, "
-                "ObjectId={}, "
-                "ObjectContainerName={}.",
-                static_cast<std::uint8_t>(object_request.get_optype()),
-                object_id,
-                container_name);
-        }
-        else
-        {
-            spdlog::error("Frontline cache object insertion failed on get object operation. "
-                "Optype={}, "
-                "ObjectId={}, "
-                "ObjectContainerName={}, "
-                "Status={:#x}.",
-                static_cast<std::uint8_t>(object_request.get_optype()),
-                object_id,
-                container_name,
-                status);
-        }
+        insert_object_into_cache(object_request);
     }
     else
     {
@@ -132,6 +103,45 @@ read_io_dispatcher::concurrent_io_request_proxy(
         //
         network::server::send_response(
             response_callback,
+            status);
+    }
+}
+
+void
+read_io_dispatcher::insert_object_into_cache(
+    schemas::object_request& object_request)
+{
+    //
+    // Create a copy of these parameters since
+    // they will be moved after the cache insertion.
+    //
+    const std::string object_id = object_request.get_object_id();
+    const std::string container_name = object_request.get_container_name();
+    const status::status_code status = frontline_cache_->put(
+        std::move(object_request.get_object_id_mutable()),
+        std::move(object_request.get_object_data_mutable()),
+        std::move(object_request.get_container_name_mutable()));
+
+    if (status::succeeded(status))
+    {
+        spdlog::info("Frontline cache object insertion succeeded on get object operation. "
+            "Optype={}, "
+            "ObjectId={}, "
+            "ObjectContainerName={}.",
+            static_cast<std::uint8_t>(object_request.get_optype()),
+            object_id,
+            container_name);
+    }
+    else
+    {
+        spdlog::error("Frontline cache object insertion failed on get object operation. "
+            "Optype={}, "
+            "ObjectId={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            static_cast<std::uint8_t>(object_request.get_optype()),
+            object_id,
+            container_name,
             status);
     }
 }

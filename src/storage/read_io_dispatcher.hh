@@ -41,6 +41,13 @@ private:
         network::server_response_callback&& response_callback) override;
 
     //
+    // Handles the insertion of elements into the frontline cache.
+    //
+    void
+    insert_object_into_cache(
+        schemas::object_request& object_request) override;
+
+    //
     // Executes a get operation with the storage engine.
     //
     status::status_code

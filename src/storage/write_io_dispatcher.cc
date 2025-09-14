@@ -83,51 +83,22 @@ write_io_dispatcher::concurrent_io_request_proxy(
     }
 
     //
+    // If the operation was successful, insert the object into the frontline cache.
+    // Doing this before returning a response back to the client
+    // guarantees that all future request see a consistent state for the object.
+    // This provides strong consistency for get operations after a well-acknowledged object insertion.
+    //
+    if (status::succeeded(status))
+    {
+        insert_object_into_cache(object_request);
+    }
+
+    //
     // Provide the response back to the client over the async callback.
     //
     network::server::send_response(
         response_callback,
         status);
-
-    //
-    // If the operation was successful and inserted an object, insert the object into the cache,
-    // but only after replying back to the server. The cache is not intended to be
-    // strongly consistent, so clients might not see the new object entry until later.
-    //
-    if (status::succeeded(status) &&
-        object_request.get_optype() == schemas::object_request_optype::insert)
-    {
-        const std::string object_id = object_request.get_object_id();
-        const std::string container_name = object_request.get_container_name();
-
-        status = frontline_cache_->put(
-            std::move(object_request.get_object_id_mutable()),
-            std::move(object_request.get_object_data_mutable()),
-            std::move(object_request.get_container_name_mutable()));
-
-        if (status::succeeded(status))
-        {
-            spdlog::info("Frontline cache object insertion succeeded on insert object operation. "
-                "Optype={}, "
-                "ObjectId={}, "
-                "ObjectContainerName={}.",
-                static_cast<std::uint8_t>(object_request.get_optype()),
-                object_id,
-                container_name);
-        }
-        else
-        {
-            spdlog::error("Frontline cache object insertion failed on insert object operation. "
-                "Optype={}, "
-                "ObjectId={}, "
-                "ObjectContainerName={}, "
-                "Status={:#x}.",
-                static_cast<std::uint8_t>(object_request.get_optype()),
-                object_id,
-                container_name,
-                status);
-        }
-    }
 }
 
 status::status_code
@@ -199,6 +170,53 @@ write_io_dispatcher::execute_remove_operation(
     }
 
     return status;
+}
+
+void write_io_dispatcher::insert_object_into_cache(
+    schemas::object_request& object_request)
+{
+    //
+    // Insert the object into the cache if the operation was an insertion.
+    // Removals are not tracked as part of the caching strategy.
+    //
+    if (object_request.get_optype() != schemas::object_request_optype::insert)
+    {
+        return;
+    }
+
+    //
+    // Create a copy of these parameters since
+    // they will be moved after the cache insertion.
+    //
+    const std::string object_id = object_request.get_object_id();
+    const std::string container_name = object_request.get_container_name();
+    const status::status_code status = frontline_cache_->put(
+        std::move(object_request.get_object_id_mutable()),
+        std::move(object_request.get_object_data_mutable()),
+        std::move(object_request.get_container_name_mutable()));
+
+    if (status::succeeded(status))
+    {
+        spdlog::info("Frontline cache object insertion succeeded on insert object operation. "
+            "Optype={}, "
+            "ObjectId={}, "
+            "ObjectContainerName={}.",
+            static_cast<std::uint8_t>(object_request.get_optype()),
+            object_id,
+            container_name);
+    }
+    else
+    {
+        spdlog::error("Frontline cache object insertion failed on insert object operation. "
+            "Optype={}, "
+            "ObjectId={}, "
+            "ObjectContainerName={}, "
+            "Status={:#x}.",
+            static_cast<std::uint8_t>(object_request.get_optype()),
+            object_id,
+            container_name,
+            status);
+    }
 }
 
 } // namespace lazarus::common.

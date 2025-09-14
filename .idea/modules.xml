@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/lazarus-ds.iml" filepath="$PROJECT_DIR$/.idea/lazarus-ds.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/lazarus_data_store.iml" filepath="$PROJECT_DIR$/.idea/lazarus_data_store.iml" />
     </modules>
   </component>
 </project>
