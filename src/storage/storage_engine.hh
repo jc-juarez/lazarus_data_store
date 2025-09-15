@@ -125,9 +125,9 @@ private:
     get_engine_configurations() const;
 
     //
-    // Main handle for the underlying storage backend database.
+    // Main handle for the underlying storage backend key-value store.
     //
-    std::unique_ptr<rocksdb::DB> core_database_;
+    std::unique_ptr<rocksdb::DB> kv_store_;
 
     //
     // Configurations for the storage subsystem.

@@ -21,7 +21,7 @@ namespace storage
 storage_engine::storage_engine(
     const storage_configuration& storage_configuration)
     : storage_configuration_{storage_configuration},
-      core_database_{nullptr}
+      kv_store_{nullptr}
 {}
 
 status::status_code
@@ -32,7 +32,7 @@ storage_engine::start(
     std::vector<rocksdb::ColumnFamilyDescriptor> column_family_descriptors;
     
     //
-    // Append all mappings for the core database initialization.
+    // Append all mappings for the core key-value store initialization.
     //
     for (const auto& container_name : containers_names)
     {
@@ -41,7 +41,7 @@ storage_engine::start(
             rocksdb::ColumnFamilyOptions());
     }
 
-    rocksdb::DB* database_handle;
+    rocksdb::DB* kv_store_handle;
     const rocksdb::Options options = get_engine_configurations();
     std::vector<storage_engine_reference_handle*> storage_engine_references;
 
@@ -51,10 +51,10 @@ storage_engine::start(
     //
     const rocksdb::Status status = rocksdb::DB::Open(
         options,
-        storage_configuration_.core_database_path_,
+        storage_configuration_.kv_store_path_,
         column_family_descriptors,
         &storage_engine_references,
-        &database_handle);
+        &kv_store_handle);
 
     if (!status.ok())
     {
@@ -71,9 +71,9 @@ storage_engine::start(
 
     //
     // At this point, the storage engine has been successfully started,
-    // so assign the core database handle.
+    // so assign the core key-value store handle.
     //
-    core_database_.reset(database_handle);
+    kv_store_.reset(kv_store_handle);
 
     //
     // Map the object container names to their respective column family references.
@@ -93,7 +93,7 @@ storage_engine::insert_object(
     const char* object_id,
     const byte_stream& object_data)
 {
-    const rocksdb::Status status = core_database_->Put(
+    const rocksdb::Status status = kv_store_->Put(
         rocksdb::WriteOptions(),
         container_storage_engine_reference,
         object_id,
@@ -123,7 +123,7 @@ storage_engine::get_object(
     const char* object_id,
     byte_stream* object_data)
 {
-    const rocksdb::Status status = core_database_->Get(
+    const rocksdb::Status status = kv_store_->Get(
         rocksdb::ReadOptions(),
         container_storage_engine_reference,
         object_id,
@@ -152,7 +152,7 @@ storage_engine::create_container(
     const char* container_name,
     storage_engine_reference_handle** container_storage_engine_reference)
 {
-    const rocksdb::Status status = core_database_->CreateColumnFamily(
+    const rocksdb::Status status = kv_store_->CreateColumnFamily(
         rocksdb::ColumnFamilyOptions(),
         container_name,
         container_storage_engine_reference);
@@ -184,7 +184,7 @@ storage_engine::get_all_objects_from_container(
     std::unordered_map<std::string, byte_stream>* objects)
 {
     rocksdb::ReadOptions read_options;
-    std::unique_ptr<rocksdb::Iterator> it(core_database_->NewIterator(
+    std::unique_ptr<rocksdb::Iterator> it(kv_store_->NewIterator(
         read_options,
         container_storage_engine_reference));
 
@@ -227,7 +227,7 @@ storage_engine::fetch_containers_from_disk(
 {
     const rocksdb::Status status = rocksdb::DB::ListColumnFamilies(
         rocksdb::DBOptions(),
-        storage_configuration_.core_database_path_,
+        storage_configuration_.kv_store_path_,
         containers_names);
 
     //
@@ -251,7 +251,7 @@ storage_engine::fetch_containers_from_disk(
         //
         // In case there are no initial object containers, this is
         // a first-time or fresh startup for the data store, so the
-        // default column family needs to be added to the core database initialization.
+        // default column family needs to be added to the core key-value store initialization.
         //
         containers_names->push_back(rocksdb::kDefaultColumnFamilyName);
     }
@@ -263,7 +263,7 @@ status::status_code
 storage_engine::close_container_storage_engine_reference(
     storage_engine_reference_handle* container_storage_engine_reference)
 {
-    const rocksdb::Status status = core_database_->DestroyColumnFamilyHandle(
+    const rocksdb::Status status = kv_store_->DestroyColumnFamilyHandle(
         container_storage_engine_reference);
 
     if (!status.ok())
@@ -287,7 +287,7 @@ storage_engine::remove_object(
     storage_engine_reference_handle* container_storage_engine_reference,
     const char* object_id)
 {
-    const rocksdb::Status status = core_database_->Delete(
+    const rocksdb::Status status = kv_store_->Delete(
         rocksdb::WriteOptions(),
         container_storage_engine_reference,
         object_id);
@@ -314,7 +314,7 @@ status::status_code
 storage_engine::remove_container(
     storage_engine_reference_handle* container_storage_engine_reference)
 {
-    const rocksdb::Status status = core_database_->DropColumnFamily(
+    const rocksdb::Status status = kv_store_->DropColumnFamily(
         container_storage_engine_reference);
 
     if (!status.ok())
