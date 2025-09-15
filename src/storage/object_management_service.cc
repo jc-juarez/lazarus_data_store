@@ -121,29 +121,32 @@ object_management_service::validate_request_parameters(
         return status;
     }
 
-    status = common::request_validations::validate_object_data(
-        object_request.get_object_data(),
-        storage_configuration_);
-
-    if (status::failed(status))
+    if (object_request.get_optype() == schemas::object_request_optype::insert)
     {
-        //
-        // Given object data stream is invalid.
-        // Not logging the parameters as to avoid potential
-        // large-buffer attacks in case the parameters are too big.
-        //
-        spdlog::error("Object operation will be failed as the "
-            "object data stream is invalid. "
-            "Optype={}, "
-            "ObjectDataStreamSizeInBytes={}, "
-            "ObjectDataStreamMaxSizeInBytes={}, "
-            "Status={:#x}.",
-            static_cast<std::uint8_t>(object_request.get_optype()),
-            object_request.get_object_data().size(),
-            storage_configuration_.max_object_data_size_bytes_,
-            status);
+        status = common::request_validations::validate_object_data(
+            object_request.get_object_data(),
+            storage_configuration_);
 
-        return status;
+        if (status::failed(status))
+        {
+            //
+            // Given object data stream is invalid.
+            // Not logging the parameters as to avoid potential
+            // large-buffer attacks in case the parameters are too big.
+            //
+            spdlog::error("Object operation will be failed as the "
+                "object data stream is invalid. "
+                "Optype={}, "
+                "ObjectDataStreamSizeInBytes={}, "
+                "ObjectDataStreamMaxSizeInBytes={}, "
+                "Status={:#x}.",
+                static_cast<std::uint8_t>(object_request.get_optype()),
+                object_request.get_object_data().size(),
+                storage_configuration_.max_object_data_size_bytes_,
+                status);
+
+            return status;
+        }
     }
 
     return status::success;
