@@ -1,7 +1,7 @@
 # ☄️ Lazarus Data Store
 
-Lazarus DS is a high-performance object store with an HTTP API.  
-It’s designed for **speed, persistence, and simplicity**, built in C++ on top of RocksDB.
+Lazarus Data Store is a high performance object container data store HTTP server implemented in C++ for GNU/Linux. 
+It’s designed for **speed, persistence, and simplicity**, built on top of RocksDB.
 
 ---
 
