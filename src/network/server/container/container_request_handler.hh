@@ -11,15 +11,15 @@
 #pragma once
 
 #include <memory>
-#include "../../common/aliases.hh"
-#include "../../schemas/request-interfaces/container_request.hh"
+#include "../../../common/aliases.hh"
+#include "../../../schemas/request-interfaces/container_request.hh"
 
 namespace lazarus
 {
 
 namespace storage
 {
-    class container_management_service;
+class container_management_service;
 }
 
 namespace network

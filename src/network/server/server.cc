@@ -15,8 +15,11 @@
 #include "../../storage/frontline_cache.hh"
 #include "../../common/response_utilities.hh"
 #include "../endpoints/container_endpoint.hh"
-#include "create_container_request_handler.hh"
-#include "remove_container_request_handler.hh"
+#include "object/get_object_request_handler.hh"
+#include "object/insert_object_request_handler.hh"
+#include "object/remove_object_request_handler.hh"
+#include "container/create_container_request_handler.hh"
+#include "container/remove_container_request_handler.hh"
 
 namespace lazarus
 {
@@ -27,7 +30,9 @@ server::server(
     const server_configuration& server_config,
     std::unique_ptr<create_container_request_handler> create_container_request_handler,
     std::unique_ptr<remove_container_request_handler> remove_container_request_handler,
-    std::shared_ptr<storage::object_management_service> object_management_service)
+    std::unique_ptr<insert_object_request_handler> insert_object_request_handler,
+    std::unique_ptr<get_object_request_handler> get_object_request_handler,
+    std::unique_ptr<remove_object_request_handler> remove_object_request_handler)
     : http_server_{drogon::app()},
       server_config_{server_config}
 {
@@ -49,7 +54,9 @@ server::server(
     register_endpoints(
         std::move(create_container_request_handler),
         std::move(remove_container_request_handler),
-        object_management_service);
+        std::move(insert_object_request_handler),
+        std::move(get_object_request_handler),
+        std::move(remove_object_request_handler));
 }
 
 void
@@ -73,20 +80,24 @@ void
 server::register_endpoints(
     std::unique_ptr<create_container_request_handler> create_container_request_handler,
     std::unique_ptr<remove_container_request_handler> remove_container_request_handler,
-    std::shared_ptr<storage::object_management_service> object_management_service)
+    std::unique_ptr<insert_object_request_handler> insert_object_request_handler,
+    std::unique_ptr<get_object_request_handler> get_object_request_handler,
+    std::unique_ptr<remove_object_request_handler> remove_object_request_handler)
 {
     //
-    // Object container endpoint.
+    // Container endpoint along its request handlers.
     //
     http_server_.registerController(std::make_shared<container_endpoint>(
         std::move(create_container_request_handler),
         std::move(remove_container_request_handler)));
 
     //
-    // Object endpoint.
+    // Object endpoint along its request handlers.
     //
     http_server_.registerController(std::make_shared<object_endpoint>(
-        object_management_service));
+        std::move(insert_object_request_handler),
+        std::move(get_object_request_handler),
+        std::move(remove_object_request_handler)));
 }
 
 std::uint16_t

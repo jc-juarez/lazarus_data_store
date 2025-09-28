@@ -26,8 +26,11 @@
 #include "../storage/orphaned_container_scavenger.hh"
 #include "../storage/container_management_service.hh"
 #include "../storage/container_operation_serializer.hh"
-#include "../network/server/create_container_request_handler.hh"
-#include "../network/server/remove_container_request_handler.hh"
+#include "../network/server/object/get_object_request_handler.hh"
+#include "../network/server/object/insert_object_request_handler.hh"
+#include "../network/server/object/remove_object_request_handler.hh"
+#include "../network/server/container/create_container_request_handler.hh"
+#include "../network/server/container/remove_container_request_handler.hh"
 
 namespace lazarus
 {
@@ -202,13 +205,33 @@ lazarus_data_store::construct_dependency_tree(
         container_management_service_);
 
     //
+    // Insert object request handler allocation
+    //
+    auto insert_object_request_handler = std::make_unique<network::insert_object_request_handler>(
+        object_management_service_);
+
+    //
+    // Get object request handler allocation
+    //
+    auto get_object_request_handler = std::make_unique<network::get_object_request_handler>(
+        object_management_service_);
+
+    //
+    // Remove object request handler allocation
+    //
+    auto remove_object_request_handler = std::make_unique<network::remove_object_request_handler>(
+        object_management_service_);
+
+    //
     // Server component allocation.
     //
     server_ = std::make_shared<network::server>(
         server_config,
         std::move(create_container_request_handler),
         std::move(remove_container_request_handler),
-        object_management_service_);
+        std::move(insert_object_request_handler),
+        std::move(get_object_request_handler),
+        std::move(remove_object_request_handler));
 }
 
 status::status_code

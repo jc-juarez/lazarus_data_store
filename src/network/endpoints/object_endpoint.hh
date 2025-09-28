@@ -15,14 +15,12 @@
 
 namespace lazarus
 {
-
-namespace storage
-{
-class container_management_service;
-}
-
 namespace network
 {
+
+class insert_object_request_handler;
+class get_object_request_handler;
+class remove_object_request_handler;
 
 class object_endpoint : public drogon::HttpController<object_endpoint, false>
 {
@@ -32,7 +30,9 @@ public:
     // Endpoint constructor.
     //
     object_endpoint(
-        std::shared_ptr<storage::object_management_service> object_management_service);
+        std::unique_ptr<insert_object_request_handler> insert_object_request_handler,
+        std::unique_ptr<get_object_request_handler> get_object_request_handler,
+        std::unique_ptr<remove_object_request_handler> remove_object_request_handler);
 
     METHOD_LIST_BEGIN
     METHOD_ADD(object_endpoint::insert_object, "/", drogon::Post);
@@ -45,31 +45,41 @@ public:
     //
     void
     insert_object(
-    const drogon::HttpRequestPtr& request,
-    server_response_callback&& response_callback);
+        const http_request& request,
+        server_response_callback&& response_callback);
 
     //
     // Retrieves an object from an object container.
     //
     void
     get_object(
-    const drogon::HttpRequestPtr& request,
-    server_response_callback&& response_callback);
+        const http_request& request,
+        server_response_callback&& response_callback);
 
     //
     // Removes an object from an object container.
     //
     void
     remove_object(
-    const drogon::HttpRequestPtr& request,
-    server_response_callback&& response_callback);
+        const http_request& request,
+        server_response_callback&& response_callback);
 
 private:
 
     //
-    // Object management service handle.
+    // Object insertion request handler.
     //
-    std::shared_ptr<storage::object_management_service> object_management_service_;
+    std::unique_ptr<insert_object_request_handler> insert_object_request_handler_;
+
+    //
+    // Object retrieval request handler.
+    //
+    std::unique_ptr<get_object_request_handler> get_object_request_handler_;
+
+    //
+    // Object removal request handler.
+    //
+    std::unique_ptr<remove_object_request_handler> remove_object_request_handler_;
 };
 
 } // namespace network.

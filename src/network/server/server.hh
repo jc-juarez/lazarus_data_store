@@ -18,17 +18,14 @@
 
 namespace lazarus
 {
-
-namespace storage
-{
-    class object_management_service; // remove later.
-}
-
 namespace network
 {
 
 class create_container_request_handler;
 class remove_container_request_handler;
+class insert_object_request_handler;
+class get_object_request_handler;
+class remove_object_request_handler;
 
 //
 // Main HTTP server wrapper.
@@ -46,7 +43,9 @@ public:
         const server_configuration& server_config,
         std::unique_ptr<create_container_request_handler> create_container_request_handler,
         std::unique_ptr<remove_container_request_handler> remove_container_request_handler,
-        std::shared_ptr<storage::object_management_service> object_management_service);
+        std::unique_ptr<insert_object_request_handler> insert_object_request_handler,
+        std::unique_ptr<get_object_request_handler> get_object_request_handler,
+        std::unique_ptr<remove_object_request_handler> remove_object_request_handler);
 
     //
     // Starts the HTTP server for processing storage requests.
@@ -70,7 +69,9 @@ public:
     register_endpoints(
         std::unique_ptr<create_container_request_handler> create_container_request_handler,
         std::unique_ptr<remove_container_request_handler> remove_container_request_handler,
-        std::shared_ptr<storage::object_management_service> object_management_service);
+        std::unique_ptr<insert_object_request_handler> insert_object_request_handler,
+        std::unique_ptr<get_object_request_handler> get_object_request_handler,
+        std::unique_ptr<remove_object_request_handler> remove_object_request_handler);
         
     //
     // Gets the server associated port number.
