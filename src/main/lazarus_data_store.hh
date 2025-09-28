@@ -68,13 +68,22 @@ public:
     std::stop_token
     get_stop_source_token();
 
+private:
+
+    //
+    // Constructs the dependency tree and injects
+    // the required dependencies across components.
+    //
+    void
+    construct_dependency_tree(
+        const network::server_configuration& server_config,
+        const storage::storage_configuration& storage_configuration);
+
     //
     // Start the lazarus data store system.
     //
     status::status_code
     start_data_store() const;
-
-private:
 
     //
     // Initializes the global logger to be used by the system.

@@ -40,6 +40,76 @@ lazarus_data_store::lazarus_data_store(
     const storage::storage_configuration& storage_configuration)
     : session_id_{session_id}
 {
+    construct_dependency_tree(
+        server_config,
+        storage_configuration);
+}
+
+exit_code
+lazarus_data_store::run(
+    const std::vector<std::string>& args)
+{
+    status::status_code status = status::success;
+    const boost::uuids::uuid session_id = common::generate_uuid();
+
+    //
+    // Register termination signals to be handled by the system.
+    //
+    register_signals();
+
+    //
+    // Initialize the logger to be used by the system.
+    // This must be placed outside the root exception handler for
+    // ensuring the system throws with an unhandled exception if initialization
+    // fails given that the system must not start without the logger enabled.
+    //
+    initialize_logger(
+        session_id,
+        lazarus::logger::logger_configuration{});
+
+    try
+    {
+        //
+        // Initialize all core dependencies of the data store.
+        //
+        lazarus::lazarus_data_store lazarus_ds{
+            session_id,
+            lazarus::network::server_configuration{},
+            lazarus::storage::storage_configuration{}};
+
+        //
+        // Start the data store system. This will start the core 
+        // storage engine and the main server for handling data requests.
+        //
+        status = lazarus_ds.start_data_store();
+    }
+    catch (const std::exception& exception)
+    {
+        //
+        // Generic operation failed and threw.
+        // Handle the error gracefully and terminate the system.
+        //
+        status = status::fail;
+
+        spdlog::critical("Exception thrown in the data store startup path. Terminating the data store. "
+            "Exception={}",
+            exception.what());
+    }
+
+    return status::succeeded(status) ? EXIT_SUCCESS : EXIT_FAILURE;
+}
+
+std::stop_token
+lazarus_data_store::get_stop_source_token()
+{
+    return stop_source_.get_token();
+}
+
+void
+lazarus_data_store::construct_dependency_tree(
+    const network::server_configuration& server_config,
+    const storage::storage_configuration& storage_configuration)
+{
     //
     // Storage engine component allocation.
     //
@@ -139,66 +209,6 @@ lazarus_data_store::lazarus_data_store(
         std::move(create_container_request_handler),
         std::move(remove_container_request_handler),
         object_management_service_);
-}
-
-exit_code
-lazarus_data_store::run(
-    const std::vector<std::string>& args)
-{
-    status::status_code status = status::success;
-    const boost::uuids::uuid session_id = common::generate_uuid();
-
-    //
-    // Register termination signals to be handled by the system.
-    //
-    register_signals();
-
-    //
-    // Initialize the logger to be used by the system.
-    // This must be placed outside the root exception handler for
-    // ensuring the system throws with an unhandled exception if initialization
-    // fails given that the system must not start without the logger enabled.
-    //
-    initialize_logger(
-        session_id,
-        lazarus::logger::logger_configuration{});
-
-    try
-    {
-        //
-        // Initialize all core dependencies of the data store.
-        //
-        lazarus::lazarus_data_store lazarus_ds{
-            session_id,
-            lazarus::network::server_configuration{},
-            lazarus::storage::storage_configuration{}};
-
-        //
-        // Start the data store system. This will start the core 
-        // storage engine and the main server for handling data requests.
-        //
-        status = lazarus_ds.start_data_store();
-    }
-    catch (const std::exception& exception)
-    {
-        //
-        // Generic operation failed and threw.
-        // Handle the error gracefully and terminate the system.
-        //
-        status = status::fail;
-
-        spdlog::critical("Exception thrown in the data store startup path. Terminating the data store. "
-            "Exception={}",
-            exception.what());
-    }
-
-    return status::succeeded(status) ? EXIT_SUCCESS : EXIT_FAILURE;
-}
-
-std::stop_token
-lazarus_data_store::get_stop_source_token()
-{
-    return stop_source_.get_token();
 }
 
 status::status_code
