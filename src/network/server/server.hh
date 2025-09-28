@@ -72,30 +72,6 @@ public:
         std::unique_ptr<insert_object_request_handler> insert_object_request_handler,
         std::unique_ptr<get_object_request_handler> get_object_request_handler,
         std::unique_ptr<remove_object_request_handler> remove_object_request_handler);
-        
-    //
-    // Gets the server associated port number.
-    //
-    std::uint16_t
-    get_port_number() const;
-
-    //
-    // Gets the server associated logs directory path.
-    //
-    const char*
-    get_server_logs_directory_path() const;
-
-    //
-    // Gets the number of threads used by the HTTP server.
-    //
-    std::uint16_t
-    get_server_number_threads() const;
-
-    //
-    // Gets the IP address on which the HTTP server listens to incoming requests.
-    //
-    const char*
-    get_server_listener_ip_address() const;
 
     //
     // Sends back a response to a client over a provided response_callback.

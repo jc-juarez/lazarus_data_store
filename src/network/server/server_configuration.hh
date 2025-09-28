@@ -32,8 +32,7 @@ struct server_configuration
         : port_number_{8080},
           server_logs_directory_path_{"./"},
           server_number_threads_{16u},
-          server_listener_ip_address_{"0.0.0.0"},
-          run_as_daemon_{false}
+          server_listener_ip_address_{"0.0.0.0"}
     {
         //
         // Set the server logs path with the default home directory path if no path
@@ -75,11 +74,6 @@ struct server_configuration
     // HTTP server listener IP address.
     //
     std::string server_listener_ip_address_;
-
-    //
-    // Run the lazarus server as daemon.
-    //
-    bool run_as_daemon_;
 };
 
 } // namespace network.

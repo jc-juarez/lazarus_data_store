@@ -8,7 +8,6 @@
 //      incoming storage processing requests. 
 // ****************************************************
 
-#include <format>
 #include "server.hh"
 #include <spdlog/spdlog.h>
 #include "../endpoints/object_endpoint.hh"
@@ -42,11 +41,6 @@ server::server(
          .setThreadNum(server_config_.server_number_threads_)
          .disableSigtermHandling();
 
-    if (server_config_.run_as_daemon_)
-    {
-        http_server_.enableRunAsDaemon();
-    }
-
     //
     // Register all needed endpoints for the server
     // along with their required request handlers.
@@ -62,8 +56,15 @@ server::server(
 void
 server::start()
 {
-    spdlog::info("Starting lazarus data store server on port={}.",
-        server_config_.port_number_);
+    spdlog::info("Starting lazarus data store server. "
+        "Port={}, "
+        "LogsDirectoryPath={}, "
+        "NumThreads={}, "
+        "ListenerIpAddress={}.",
+        server_config_.port_number_,
+        server_config_.server_logs_directory_path_,
+        server_config_.server_number_threads_,
+        server_config_.server_listener_ip_address_);
 
     http_server_.run();
 }
@@ -98,30 +99,6 @@ server::register_endpoints(
         std::move(insert_object_request_handler),
         std::move(get_object_request_handler),
         std::move(remove_object_request_handler)));
-}
-
-std::uint16_t
-server::get_port_number() const
-{
-    return server_config_.port_number_;
-}
-
-const char*
-server::get_server_logs_directory_path() const
-{
-    return server_config_.server_logs_directory_path_.c_str();
-}
-
-std::uint16_t
-server::get_server_number_threads() const
-{
-    return server_config_.server_number_threads_;
-}
-
-const char*
-server::get_server_listener_ip_address() const
-{
-    return server_config_.server_listener_ip_address_.c_str();
 }
 
 void
