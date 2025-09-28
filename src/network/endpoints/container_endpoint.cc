@@ -1,7 +1,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Network
-// 'container_endpoint.hh'
+// 'container_endpoint.cc'
 // Author: jcjuarez
 // Description:
 //      Object container controller endpoints collection.

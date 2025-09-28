@@ -42,16 +42,16 @@ public:
     //
     void
     create_container(
-    const http_request& request,
-    server_response_callback&& response_callback);
+        const http_request& request,
+        server_response_callback&& response_callback);
 
     //
     // Removes an object container from the data store and all of its contents.
     //
     void
     remove_container(
-    const http_request& request,
-    server_response_callback&& response_callback);
+        const http_request& request,
+        server_response_callback&& response_callback);
 
 private:
 
