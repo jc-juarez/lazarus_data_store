@@ -15,7 +15,8 @@
 #include "../../storage/frontline_cache.hh"
 #include "../../common/response_utilities.hh"
 #include "../endpoints/container_endpoint.hh"
-#include "../../storage/container_management_service.hh"
+#include "create_container_request_handler.hh"
+#include "remove_container_request_handler.hh"
 
 namespace lazarus
 {
@@ -24,7 +25,8 @@ namespace network
 
 server::server(
     const server_configuration& server_config,
-    std::shared_ptr<storage::container_management_service> container_management_service_handle,
+    std::unique_ptr<create_container_request_handler> create_container_request_handler,
+    std::unique_ptr<remove_container_request_handler> remove_container_request_handler,
     std::shared_ptr<storage::object_management_service> object_management_service)
     : http_server_{drogon::app()},
       server_config_{server_config}
@@ -41,10 +43,12 @@ server::server(
     }
 
     //
-    // Register all needed endpoints for the server.
+    // Register all needed endpoints for the server
+    // along with their required request handlers.
     //
     register_endpoints(
-        container_management_service_handle,
+        std::move(create_container_request_handler),
+        std::move(remove_container_request_handler),
         object_management_service);
 }
 
@@ -67,14 +71,16 @@ server::stop()
 
 void
 server::register_endpoints(
-    std::shared_ptr<storage::container_management_service> container_management_service_handle,
+    std::unique_ptr<create_container_request_handler> create_container_request_handler,
+    std::unique_ptr<remove_container_request_handler> remove_container_request_handler,
     std::shared_ptr<storage::object_management_service> object_management_service)
 {
     //
     // Object container endpoint.
     //
     http_server_.registerController(std::make_shared<container_endpoint>(
-        container_management_service_handle));
+        std::move(create_container_request_handler),
+        std::move(remove_container_request_handler)));
 
     //
     // Object endpoint.

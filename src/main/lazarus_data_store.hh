@@ -58,7 +58,8 @@ public:
     //
     static
     exit_code
-    run();
+    run(
+        const std::vector<std::string>& args);
 
     //
     // Gets the stop source token for listening to termination requests.

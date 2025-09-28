@@ -16,13 +16,11 @@
 namespace lazarus
 {
 
-namespace storage
-{
-class container_management_service;
-}
-
 namespace network
 {
+
+class create_container_request_handler;
+class remove_container_request_handler;
 
 class container_endpoint : public drogon::HttpController<container_endpoint, false>
 {
@@ -32,7 +30,8 @@ public:
   // Endpoint constructor.
   //
   container_endpoint(
-    std::shared_ptr<storage::container_management_service> container_management_service_handle);
+    std::unique_ptr<create_container_request_handler> create_container_request_handler,
+    std::unique_ptr<remove_container_request_handler> remove_container_request_handler);
 
   METHOD_LIST_BEGIN
   METHOD_ADD(container_endpoint::create_container, "/", drogon::Put);
@@ -44,7 +43,7 @@ public:
   //
   void
   create_container(
-    const drogon::HttpRequestPtr& request,
+    const http_request& request,
     server_response_callback&& response_callback);
 
   //
@@ -52,15 +51,20 @@ public:
   //
   void
   remove_container(
-    const drogon::HttpRequestPtr& request,
+    const http_request& request,
     server_response_callback&& response_callback);
 
 private:
 
   //
-  // Object container management service handle.
+  // Container creation request handler.
   //
-  std::shared_ptr<storage::container_management_service> container_management_service_;
+  std::unique_ptr<create_container_request_handler> create_container_request_handler_;
+
+  //
+  // Container removal request handler.
+  //
+  std::unique_ptr<remove_container_request_handler> remove_container_request_handler_;
 };
 
 } // namespace network.

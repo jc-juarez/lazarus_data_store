@@ -26,6 +26,8 @@
 #include "../storage/orphaned_container_scavenger.hh"
 #include "../storage/container_management_service.hh"
 #include "../storage/container_operation_serializer.hh"
+#include "../network/server/create_container_request_handler.hh"
+#include "../network/server/remove_container_request_handler.hh"
 
 namespace lazarus
 {
@@ -118,16 +120,30 @@ lazarus_data_store::lazarus_data_store(
         frontline_cache_);
 
     //
+    // Create container request handler allocation.
+    //
+    auto create_container_request_handler = std::make_unique<network::create_container_request_handler>(
+        container_management_service_);
+
+    //
+    // Remove container request handler allocation.
+    //
+    auto remove_container_request_handler = std::make_unique<network::remove_container_request_handler>(
+        container_management_service_);
+
+    //
     // Server component allocation.
     //
     server_ = std::make_shared<network::server>(
         server_config,
-        container_management_service_,
+        std::move(create_container_request_handler),
+        std::move(remove_container_request_handler),
         object_management_service_);
 }
 
 exit_code
-lazarus_data_store::run()
+lazarus_data_store::run(
+    const std::vector<std::string>& args)
 {
     status::status_code status = status::success;
     const boost::uuids::uuid session_id = common::generate_uuid();

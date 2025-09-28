@@ -21,12 +21,14 @@ namespace lazarus
 
 namespace storage
 {
-    class container_management_service;
-    class object_management_service;
+    class object_management_service; // remove later.
 }
 
 namespace network
 {
+
+class create_container_request_handler;
+class remove_container_request_handler;
 
 //
 // Main HTTP server wrapper.
@@ -42,7 +44,8 @@ public:
     //
     server(
         const server_configuration& server_config,
-        std::shared_ptr<storage::container_management_service> container_management_service_handle,
+        std::unique_ptr<create_container_request_handler> create_container_request_handler,
+        std::unique_ptr<remove_container_request_handler> remove_container_request_handler,
         std::shared_ptr<storage::object_management_service> object_management_service);
 
     //
@@ -65,7 +68,8 @@ public:
     //
     void
     register_endpoints(
-        std::shared_ptr<storage::container_management_service> container_management_service_handle,
+        std::unique_ptr<create_container_request_handler> create_container_request_handler,
+        std::unique_ptr<remove_container_request_handler> remove_container_request_handler,
         std::shared_ptr<storage::object_management_service> object_management_service);
         
     //

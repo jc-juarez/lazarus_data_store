@@ -23,7 +23,8 @@
 
 #include "lazarus_data_store.hh"
 
-int main()
+int main(int argc, char** argv)
 {
-   return lazarus::lazarus_data_store::run();
+   const std::vector<std::string> args(argv, argv + argc);
+   return lazarus::lazarus_data_store::run(args);
 }

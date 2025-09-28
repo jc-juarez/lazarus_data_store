@@ -32,7 +32,7 @@ struct storage_configuration
     //
     storage_configuration()
         : kv_store_path_{},
-          garbage_collector_periodic_interval_ms_{10'000u},
+          garbage_collector_periodic_interval_ms_{60'000u},
           max_container_name_size_bytes_{512u},
           max_object_id_size_bytes_{1'024u},
           max_object_data_size_bytes_{1'024u * 1'024u},

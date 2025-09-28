@@ -29,6 +29,7 @@ namespace network
 {
 using server_response_callback = std::function<void(const drogon::HttpResponsePtr&)>;
 using response_fields = std::unordered_map<const char*, std::string*>;
+using http_request = drogon::HttpRequestPtr;
 }
 
 //

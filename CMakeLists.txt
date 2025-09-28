@@ -55,6 +55,12 @@ set(SOURCE_FILES
     src/storage/cache_shard.cc
     src/storage/object.cc
     src/storage/frontline_cache.cc
+    src/network/server/create_container_request_handler.cc
+    src/network/server/create_container_request_handler.hh
+    src/network/server/remove_container_request_handler.cc
+    src/network/server/remove_container_request_handler.hh
+    src/network/server/container_request_handler.cc
+    src/network/server/container_request_handler.hh
 )
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})
