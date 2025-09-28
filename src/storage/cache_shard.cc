@@ -55,8 +55,12 @@ cache_shard::put(
         if (lru_doubly_linked_list_.begin() == lru_cache_map_.at(object_id_pair))
         {
             //
-            // This means the object is already at the front of the list, no action needed.
+            // This means the object is already at the front of the list.
+            // Even though no position change is needed, the actual object data
+            // could be different from the one in the cache, so update the current value
+            // with the one provided.
             //
+            lru_doubly_linked_list_.begin()->second = std::move(object_data);
             return status::success;
         }
 
