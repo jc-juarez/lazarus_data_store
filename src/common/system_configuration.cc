@@ -26,7 +26,7 @@ system_configuration::load_configuration_from_file(
     if (!config_file.is_open())
     {
         throw std::runtime_error(std::format(
-            "Failed to open provided configuration file path for starting lazarus. "
+            "Failed to open the provided configuration file path for starting lazarus. "
             "ConfigFilePath={}.",
             config_file_path));
     }

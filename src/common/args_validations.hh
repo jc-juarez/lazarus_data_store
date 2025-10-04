@@ -48,7 +48,7 @@ validate_process_args(
             max_args_count));
     }
 
-    const std::string& config_file_path = args.front();
+    const std::string& config_file_path = args.back();
 
     if (config_file_path.empty())
     {
