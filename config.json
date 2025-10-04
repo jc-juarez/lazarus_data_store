@@ -1,0 +1,29 @@
+{
+  "logger": {
+    "component_name": "LazarusDataStore",
+    "queue_size_bytes": 32768,
+    "max_log_file_size_bytes": 10485760,
+    "max_number_files_for_session": 100,
+    "flush_frequency_ms": 1000,
+    "log_file_prefix": "lazarus_ds.log",
+    "logging_session_directory_prefix": "lazarus-logs"
+  },
+  "storage": {
+    "garbage_collector_periodic_interval_ms": 60000,
+    "max_container_name_size_bytes": 512,
+    "max_object_id_size_bytes": 1024,
+    "max_object_data_size_bytes": 1048576,
+    "max_number_containers": 10000,
+    "number_write_io_threads": 4,
+    "storage_engine_block_cache_size_mib": 512,
+    "container_index_number_buckets": 8,
+    "number_frontline_cache_shards": 8,
+    "max_frontline_cache_shard_size_mib": 64,
+    "max_frontline_cache_shard_object_size_bytes": 10240
+  },
+  "server": {
+    "port_number": 8080,
+    "server_number_threads": 16,
+    "server_listener_ip_address": "0.0.0.0"
+  }
+}
