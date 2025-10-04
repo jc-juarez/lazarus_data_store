@@ -1,4 +1,9 @@
 {
+  "server": {
+    "port_number": 8080,
+    "server_number_threads": 16,
+    "server_listener_ip_address": "0.0.0.0"
+  },
   "logger": {
     "component_name": "LazarusDataStore",
     "queue_size_bytes": 32768,
@@ -20,10 +25,5 @@
     "number_frontline_cache_shards": 8,
     "max_frontline_cache_shard_size_mib": 64,
     "max_frontline_cache_shard_object_size_bytes": 10240
-  },
-  "server": {
-    "port_number": 8080,
-    "server_number_threads": 16,
-    "server_listener_ip_address": "0.0.0.0"
   }
 }
