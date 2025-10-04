@@ -17,9 +17,11 @@
 #include "../storage/storage_engine.hh"
 #include "../storage/container_index.hh"
 #include "../storage/frontline_cache.hh"
+#include "../common/args_validations.hh"
 #include "../storage/garbage_collector.hh"
 #include "../storage/read_io_dispatcher.hh"
 #include "../storage/write_io_dispatcher.hh"
+#include "../common/system_configuration.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "../storage/object_management_service.hh"
 #include "../network/server/server_configuration.hh"
@@ -53,32 +55,56 @@ lazarus_data_store::run(
     const std::vector<std::string>& args)
 {
     status::status_code status = status::success;
-    const boost::uuids::uuid session_id = common::generate_uuid();
-
-    //
-    // Register termination signals to be handled by the system.
-    //
-    register_signals();
-
-    //
-    // Initialize the logger to be used by the system.
-    // This must be placed outside the root exception handler for
-    // ensuring the system throws with an unhandled exception if initialization
-    // fails given that the system must not start without the logger enabled.
-    //
-    initialize_logger(
-        session_id,
-        lazarus::logger::logger_configuration{});
 
     try
     {
+        //
+        // Assign the session ID for the process-lifetime.
+        // This ID is used for logging correlation.
+        //
+        const boost::uuids::uuid session_id = common::generate_uuid();
+
+        //
+        // Register termination signals to be handled by the system.
+        //
+        register_signals();
+
+        //
+        // Validate the args provided by the process invoker.
+        // At the point the logger has not been yet initialized,
+        // so the function below can throw for debuggability purposes.
+        //
+        common::validate_process_args(args);
+
+        //
+        // Instantiate the configurations to be used by the system
+        // and load the configurations from a config file if available.
+        //
+        common::system_configuration system_config;
+
+        if (args.size() == common::max_args_count)
+        {
+            //
+            // This implies a config file was provided, so override
+            // the default configurations with the ones provided in the file.
+            //
+            system_config.load_configuration_from_file(args.back());
+        }
+
+        //
+        // Initialize the logger to be used by the system.
+        //
+        initialize_logger(
+            session_id,
+            system_config.logger_configuration_);
+
         //
         // Initialize all core dependencies of the data store.
         //
         lazarus::lazarus_data_store lazarus_ds{
             session_id,
-            lazarus::network::server_configuration{},
-            lazarus::storage::storage_configuration{}};
+            system_config.server_configuration_,
+            system_config.storage_configuration_};
 
         //
         // Start the data store system. This will start the core 

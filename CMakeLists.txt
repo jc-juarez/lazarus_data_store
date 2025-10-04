@@ -69,6 +69,9 @@ set(SOURCE_FILES
     src/network/server/object/get_object_request_handler.hh
     src/network/server/object/object_request_handler.cc
     src/network/server/object/object_request_handler.hh
+    src/common/system_configuration.hh
+    src/common/system_configuration.cc
+    src/common/args_validations.hh
 )
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})
