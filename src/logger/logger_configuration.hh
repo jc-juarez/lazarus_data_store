@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <filesystem>
-
 namespace lazarus
 {
 namespace logger

@@ -12,7 +12,6 @@
 
 #include <string>
 #include <cstdint>
-#include <filesystem>
 
 namespace lazarus
 {

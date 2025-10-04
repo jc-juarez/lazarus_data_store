@@ -14,7 +14,6 @@
 #include <thread>
 #include <cstdlib>
 #include <stdexcept>
-#include <filesystem>
 
 namespace lazarus
 {
