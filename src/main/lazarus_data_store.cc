@@ -92,6 +92,12 @@ lazarus_data_store::run(
         }
 
         //
+        // Create the required system directories which need to be present
+        // before spinning up the rest of the system.
+        //
+        system_config.set_up_system_directories();
+
+        //
         // Initialize the logger to be used by the system.
         //
         initialize_logger(

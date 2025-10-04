@@ -30,13 +30,12 @@ struct server_configuration
     //
     server_configuration()
         : port_number_{8080},
-          server_logs_directory_path_{"./"},
           server_number_threads_{16u},
           server_listener_ip_address_{"0.0.0.0"}
     {
         //
-        // Set the server logs path with the default home directory path if no path
-        // override was specified. Throws if fails to obtain the home environment variable.
+        // Set the server logs path with the default home directory path.
+        // Throws if fails to obtain the home environment variable.
         //
         const char* home_environment_variable = std::getenv("HOME");
 
@@ -48,11 +47,6 @@ struct server_configuration
 
         server_logs_directory_path_ =
             std::string(home_environment_variable) + "/lazarus/server-logs";
-
-        //
-        // Create the path if it does not exist.
-        //
-        std::filesystem::create_directories(server_logs_directory_path_);
     }
 
     //

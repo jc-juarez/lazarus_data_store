@@ -75,6 +75,14 @@ system_configuration::load_configuration_from_file(
 }
 
 void
+system_configuration::set_up_system_directories()
+{
+    std::filesystem::create_directories(storage_configuration_.kv_store_path_);
+    std::filesystem::create_directories(logger_configuration_.logs_directory_path_);
+    std::filesystem::create_directories(server_configuration_.server_logs_directory_path_);
+}
+
+void
 system_configuration::load_logger_configuration(
     const nlohmann::json& config_section)
 {

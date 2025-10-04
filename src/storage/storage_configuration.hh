@@ -31,8 +31,7 @@ struct storage_configuration
     // Specifies the default values to be used by the storage components.
     //
     storage_configuration()
-        : kv_store_path_{},
-          garbage_collector_periodic_interval_ms_{60'000u},
+        : garbage_collector_periodic_interval_ms_{60'000u},
           max_container_name_size_bytes_{512u},
           max_object_id_size_bytes_{1'024u},
           max_object_data_size_bytes_{1'024u * 1'024u},
@@ -46,8 +45,8 @@ struct storage_configuration
           max_frontline_cache_shard_object_size_bytes{10 * 1'024u}
     {
         //
-        // Set the core key-value store path with the default home directory path if no path
-        // override was specified. Throws if fails to obtain the home environment variable.
+        // Set the core key-value store path with the default home directory path.
+        // Throws if fails to obtain the home environment variable.
         //
         const char* home_environment_variable = std::getenv("HOME");
 
@@ -59,11 +58,6 @@ struct storage_configuration
 
         kv_store_path_ =
             std::string(home_environment_variable) + "/lazarus/lazarus-ds";
-
-        //
-        // Create the path if it does not exist.
-        //
-        std::filesystem::create_directories(kv_store_path_);
     }
 
     //

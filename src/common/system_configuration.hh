@@ -37,6 +37,12 @@ public:
         const std::string& config_file_path);
 
     //
+    // Creates the system directories required for the data store to start.
+    //
+    void
+    set_up_system_directories();
+
+    //
     // Configurations for the logger components.
     //
     logger::logger_configuration logger_configuration_;
