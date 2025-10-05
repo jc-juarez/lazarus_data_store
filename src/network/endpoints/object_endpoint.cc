@@ -9,9 +9,9 @@
 // ****************************************************
 
 #include "object_endpoint.hh"
-#include "../server/object/insert_object_request_handler.hh"
-#include "../server/object/get_object_request_handler.hh"
-#include "../server/object/remove_object_request_handler.hh"
+#include "../server/request-handlers/object/get_object_request_handler.hh"
+#include "../server/request-handlers/object/insert_object_request_handler.hh"
+#include "../server/request-handlers/object/remove_object_request_handler.hh"
 
 namespace lazarus
 {

@@ -1,0 +1,15 @@
+# Core testing framework
+pytest>=8.0.0
+
+# Lazarus client dependency
+requests>=2.31.0
+
+# For containerized integration testing
+testcontainers>=4.3.0
+
+# (Optional but recommended)
+# Add timeouts to prevent hanging tests
+pytest-timeout>=2.3.1
+
+# Enable parallel test execution (safe with testcontainers)
+pytest-xdist>=3.5.0

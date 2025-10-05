@@ -8,10 +8,10 @@
 //      object insertion requests.
 // ****************************************************
 
-#include "../server.hh"
+#include "../../server.hh"
 #include <spdlog/spdlog.h>
 #include "insert_object_request_handler.hh"
-#include "../../../storage/object_management_service.hh"
+#include "../../../../storage/object_management_service.hh"
 
 namespace lazarus
 {

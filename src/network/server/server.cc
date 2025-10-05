@@ -10,15 +10,16 @@
 
 #include "server.hh"
 #include <spdlog/spdlog.h>
+#include "../endpoints/ping_endpoint.hh"
 #include "../endpoints/object_endpoint.hh"
 #include "../../storage/frontline_cache.hh"
 #include "../../common/response_utilities.hh"
 #include "../endpoints/container_endpoint.hh"
-#include "object/get_object_request_handler.hh"
-#include "object/insert_object_request_handler.hh"
-#include "object/remove_object_request_handler.hh"
-#include "container/create_container_request_handler.hh"
-#include "container/remove_container_request_handler.hh"
+#include "request-handlers/object/get_object_request_handler.hh"
+#include "request-handlers/object/insert_object_request_handler.hh"
+#include "request-handlers/object/remove_object_request_handler.hh"
+#include "request-handlers/container/create_container_request_handler.hh"
+#include "request-handlers/container/remove_container_request_handler.hh"
 
 namespace lazarus
 {
@@ -99,6 +100,11 @@ server::register_endpoints(
         std::move(insert_object_request_handler),
         std::move(get_object_request_handler),
         std::move(remove_object_request_handler)));
+
+    //
+    // Ping endpoint for liveliness probes.
+    //
+    http_server_.registerController(std::make_shared<ping_endpoint>());
 }
 
 void

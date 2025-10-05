@@ -10,7 +10,6 @@
 #include <csignal>
 #include <spdlog/async.h>
 #include <spdlog/spdlog.h>
-#include <drogon/drogon.h>
 #include "../common/aliases.hh"
 #include "lazarus_data_store.hh"
 #include "../network/server/server.hh"
@@ -24,15 +23,14 @@
 #include "../common/system_configuration.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "../storage/object_management_service.hh"
-#include "../network/server/server_configuration.hh"
 #include "../storage/orphaned_container_scavenger.hh"
 #include "../storage/container_management_service.hh"
 #include "../storage/container_operation_serializer.hh"
-#include "../network/server/object/get_object_request_handler.hh"
-#include "../network/server/object/insert_object_request_handler.hh"
-#include "../network/server/object/remove_object_request_handler.hh"
-#include "../network/server/container/create_container_request_handler.hh"
-#include "../network/server/container/remove_container_request_handler.hh"
+#include "../network/server/request-handlers/object/get_object_request_handler.hh"
+#include "../network/server/request-handlers/object/insert_object_request_handler.hh"
+#include "../network/server/request-handlers/object/remove_object_request_handler.hh"
+#include "../network/server/request-handlers/container/create_container_request_handler.hh"
+#include "../network/server/request-handlers/container/remove_container_request_handler.hh"
 
 namespace lazarus
 {

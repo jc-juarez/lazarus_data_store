@@ -55,23 +55,25 @@ set(SOURCE_FILES
     src/storage/cache_shard.cc
     src/storage/object.cc
     src/storage/frontline_cache.cc
-    src/network/server/container/create_container_request_handler.cc
-    src/network/server/container/create_container_request_handler.hh
-    src/network/server/container/remove_container_request_handler.cc
-    src/network/server/container/remove_container_request_handler.hh
-    src/network/server/container/container_request_handler.cc
-    src/network/server/container/container_request_handler.hh
-    src/network/server/object/insert_object_request_handler.cc
-    src/network/server/object/insert_object_request_handler.hh
-    src/network/server/object/remove_object_request_handler.cc
-    src/network/server/object/remove_object_request_handler.hh
-    src/network/server/object/get_object_request_handler.cc
-    src/network/server/object/get_object_request_handler.hh
-    src/network/server/object/object_request_handler.cc
-    src/network/server/object/object_request_handler.hh
+        src/network/server/request-handlers/container/create_container_request_handler.cc
+        src/network/server/request-handlers/container/create_container_request_handler.hh
+        src/network/server/request-handlers/container/remove_container_request_handler.cc
+        src/network/server/request-handlers/container/remove_container_request_handler.hh
+        src/network/server/request-handlers/container/container_request_handler.cc
+        src/network/server/request-handlers/container/container_request_handler.hh
+        src/network/server/request-handlers/object/insert_object_request_handler.cc
+        src/network/server/request-handlers/object/insert_object_request_handler.hh
+        src/network/server/request-handlers/object/remove_object_request_handler.cc
+        src/network/server/request-handlers/object/remove_object_request_handler.hh
+        src/network/server/request-handlers/object/get_object_request_handler.cc
+        src/network/server/request-handlers/object/get_object_request_handler.hh
+        src/network/server/request-handlers/object/object_request_handler.cc
+        src/network/server/request-handlers/object/object_request_handler.hh
     src/common/system_configuration.hh
     src/common/system_configuration.cc
     src/common/args_validations.hh
+    src/network/endpoints/ping_endpoint.cc
+    src/network/endpoints/ping_endpoint.hh
 )
 
 add_executable(lazarus ${SOURCE_FILES} ${PROTO_SRCS})

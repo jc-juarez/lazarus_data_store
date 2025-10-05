@@ -5,17 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "lazarus-client"
 version = "0.1.0"
-description = "Python client for Lazarus Data Store"
-readme = "README.md"
+description = "Python client for the Lazarus Data Store"
+authors = [
+    { name = "Your Name", email = "you@example.com" }
+]
 requires-python = ">=3.8"
-dependencies = [
-    "requests>=2.31.0",
-]
-
-[project.optional-dependencies]
-dev = [
-    "pytest",
-]
+dependencies = ["requests"]
 
 [tool.setuptools.packages.find]
 where = ["."]
+include = ["lazarus_client"]

@@ -9,8 +9,8 @@
 // ****************************************************
 
 #include "container_endpoint.hh"
-#include "../server/container/create_container_request_handler.hh"
-#include "../server/container/remove_container_request_handler.hh"
+#include "../server/request-handlers/container/create_container_request_handler.hh"
+#include "../server/request-handlers/container/remove_container_request_handler.hh"
 
 namespace lazarus
 {

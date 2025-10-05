@@ -1,0 +1,5 @@
+# SDK (editable install)
+-e sdk/python
+
+# Integration test dependencies
+-r src/tests/integration/requirements.txt
