@@ -75,7 +75,7 @@ class LazarusClient:
                 # If no exception was thrown, and the internal status code
                 # is considered as success, return back the parsed response object.
                 return response_object
-            except Exception:
+            except (ValueError, TypeError, KeyError):
                 # This situation is not expected since the server should
                 # always reply back with a well-formed response.
                 raise LazarusClientError(
@@ -97,7 +97,7 @@ class LazarusClient:
                     "Lazarus Data Store returned an error.",
                     self.host,
                     self.port) from None
-            except Exception:
+            except (ValueError, TypeError, KeyError) as e:
                 # This situation is not expected since the server should
                 # always reply back with a well-formed response.
                 raise LazarusClientError(

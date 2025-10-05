@@ -31,9 +31,9 @@ class LazarusClientError(Exception):
             self) -> str:
         parts = ["LazarusClientError"]
         if self.http_status_code is not None:
-            parts.append(f"HTTP={self.http_status_code}")
+            parts.append(f"HttpStatusCode={self.http_status_code}")
         if self.internal_status_code is not None:
-            parts.append(f"Lazarus=0x{self.internal_status_code:X}")
+            parts.append(f"InternalStatusCode=0x{self.internal_status_code:X}")
         parts.append(f"Details={self.details}")
         parts.append(f"Server={self.host}:{self.port}")
         return " ".join(parts)
