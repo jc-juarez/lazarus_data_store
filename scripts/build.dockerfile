@@ -1,12 +1,10 @@
 # ****************************************************
 # Lazarus Data Store
-# Build
-# 'Dockerfile'
+# Scripts
+# 'build.dockerfile'
 # Author: jcjuarez
 # Description:
-#      Ubuntu base image for running
-#      lazarus. Build with:
-#      `docker build -t ubuntu-lazarus-ds.`
+#      Ubuntu base image for building lazarus.
 # ****************************************************
 
 FROM ubuntu:24.04
