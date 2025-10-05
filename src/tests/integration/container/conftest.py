@@ -18,7 +18,7 @@ def lazarus_container():
 
     # Wait for Lazarus to become ready using the SDK itself
     client = LazarusClient(host=host, port=mapped_port)
-    for _ in range(30):
+    for _ in range(5):
         try:
             if client.ping():
                 break

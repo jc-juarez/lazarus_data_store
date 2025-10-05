@@ -16,7 +16,7 @@ def test_container_lifecycle(client):
     assert data == data_value
 
     # Delete object
-    client.delete_object(container_name, object_id)
+    client.remove_object(container_name, object_id)
 
     # Delete container
-    client.delete_container(container_name)
+    client.remove_container(container_name)
