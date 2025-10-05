@@ -1,4 +1,12 @@
-# Lazarus Data Store - Runtime Dockerfile (Ubuntu 24.04)
+# ****************************************************
+# Lazarus Data Store
+# Scripts
+# 'runtime.dockerfile'
+# Author: jcjuarez
+# Description:
+#      Ubuntu base image for running lazarus.
+# ****************************************************
+
 FROM ubuntu:24.04
 
 RUN apt-get update && apt-get install -y \
@@ -17,5 +25,6 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 COPY cmake-build-docker-debug/lazarus /usr/local/bin/lazarus
+COPY config.json /app/config.json
 
-ENTRYPOINT ["/usr/local/bin/lazarus"]
+ENTRYPOINT ["/usr/local/bin/lazarus", "/app/config.json"]
