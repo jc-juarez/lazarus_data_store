@@ -1,0 +1,157 @@
+# ****************************************************
+# Lazarus Data Store
+# SDK
+# 'generate_status_code.py'
+# Author: jcjuarez
+# Description:
+#      Status codes for error handling.
+#      Do not edit manually. Use
+#      'scripts/generate_status_codes.py' to add
+#      new status codes.
+# ****************************************************
+
+codes:
+  - name: success
+    internal: "0x00000000"
+    http: 200
+    desc: Operation succeeded.
+
+  - name: fail
+    internal: "0x80000001"
+    http: 500
+    desc: Generic operation failed.
+
+  - name: container_already_exists
+    internal: "0x80000002"
+    http: 409
+    desc: Object container already exists.
+
+  - name: invalid_operation
+    internal: "0x80000003"
+    http: 400
+    desc: Invalid state for a given operation.
+
+  - name: storage_engine_startup_failed
+    internal: "0x80000004"
+    http: 500
+    desc: Storage engine failed to start.
+
+  - name: object_insertion_failed
+    internal: "0x80000005"
+    http: 500
+    desc: Failed to insert an object into an object container.
+
+  - name: object_retrieval_failed
+    internal: "0x80000006"
+    http: 500
+    desc: Failed to retrieve an object from an object container.
+
+  - name: container_creation_failed
+    internal: "0x80000007"
+    http: 500
+    desc: Failed to create an object container.
+
+  - name: objects_retrieval_from_container_failed
+    internal: "0x80000008"
+    http: 500
+    desc: Failed to retrieve all the objects inside an object container.
+
+  - name: fetch_containers_from_disk_failed
+    internal: "0x80000009"
+    http: 500
+    desc: Failed to retrieve initial object containers from disk during startup.
+
+  - name: containers_internal_metadata_lookup_failed
+    internal: "0x8000000a"
+    http: 500
+    desc: Failed to find the object containers internal metadata column family during startup.
+
+  - name: parsing_failed
+    internal: "0x8000000b"
+    http: 500
+    desc: Failed to parse a byte stream into an object.
+
+  - name: missing_storage_engine_reference
+    internal: "0x8000000c"
+    http: 500
+    desc: Failed to find a storage engine reference for an object container.
+
+  - name: storage_engine_reference_close_failed
+    internal: "0x8000000d"
+    http: 500
+    desc: Failed to close an object container storage engine reference.
+
+  - name: container_not_exists
+    internal: "0x8000000e"
+    http: 404
+    desc: Object container does not exist.
+
+  - name: serialization_failed
+    internal: "0x8000000f"
+    http: 500
+    desc: Failed to serialize an object into a byte stream.
+
+  - name: object_deletion_failed
+    internal: "0x80000010"
+    http: 500
+    desc: Failed to remove an object from the storage engine.
+
+  - name: container_in_deletion_process
+    internal: "0x80000011"
+    http: 409
+    desc: Specified object container is currently in deletion process.
+
+  - name: container_storage_engine_deletion_failed
+    internal: "0x80000012"
+    http: 500
+    desc: Object container storage engine deletion failed.
+
+  - name: container_name_exceeds_size_limit
+    internal: "0x80000013"
+    http: 400
+    desc: Object container name exceeds max size limit.
+
+  - name: unreachable
+    internal: "0x80000014"
+    http: 500
+    desc: Error for unreachable code blocks.
+
+  - name: max_number_containers_reached
+    internal: "0x80000015"
+    http: 429
+    desc: Max number of object containers reached.
+
+  - name: container_name_empty
+    internal: "0x80000016"
+    http: 400
+    desc: Given object container name is empty.
+
+  - name: object_id_empty
+    internal: "0x80000017"
+    http: 400
+    desc: Given object ID is empty.
+
+  - name: object_data_empty
+    internal: "0x80000018"
+    http: 400
+    desc: Given object data stream is empty.
+
+  - name: object_id_exceeds_size_limit
+    internal: "0x80000019"
+    http: 400
+    desc: Object ID exceeds max size limit.
+
+  - name: object_data_exceeds_size_limit
+    internal: "0x8000001a"
+    http: 400
+    desc: Object data stream exceeds max size limit.
+
+  - name: container_insertion_collision
+    internal: "0x8000001b"
+    http: 500
+    desc: Container insertion collision.
+
+  - name: object_data_size_exceeds_cache_limit
+    internal: "0x8000001c"
+    http: 500
+    desc: Object data size exceeds limit for the frontline cache.
