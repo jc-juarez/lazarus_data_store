@@ -1,4 +1,4 @@
-# pytest -v --tb=line -p no:warnings
+# pytest -v -s --tb=line -p no:warnings
 
 from lazarus_client import LazarusClientError, LazarusStatus
 
@@ -13,8 +13,7 @@ def test_container_lifecycle(client):
     try:
         client.create_container(container_name)
     except LazarusClientError as e:
-        assert e.internal_status_code == LazarusStatus.container_already_exists
-
+        assert e.lazarus_status_code == LazarusStatus.container_already_exists
 
     # Insert object
     client.insert_object(container_name, object_id, data_value)
@@ -28,3 +27,8 @@ def test_container_lifecycle(client):
 
     # Delete container
     client.remove_container(container_name)
+
+    try:
+        client.create_container(container_name)
+    except LazarusClientError as e:
+        assert e.lazarus_status_code == LazarusStatus.container_in_deletion_process
