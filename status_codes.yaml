@@ -1,7 +1,7 @@
 # ****************************************************
 # Lazarus Data Store
-# SDK
-# 'generate_status_code.py'
+# Build
+# 'status_codes.yaml'
 # Author: jcjuarez
 # Description:
 #      Status codes for error handling.
