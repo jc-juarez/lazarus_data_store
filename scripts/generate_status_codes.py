@@ -1,6 +1,6 @@
 # ****************************************************
 # Lazarus Data Store
-# SDK
+# Scripts
 # 'generate_status_code.py'
 # Author: jcjuarez
 # Description:
@@ -25,7 +25,7 @@ import argparse
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CONFIG_FILE = ROOT / "status_codes.yaml"
 SERVER_CPP_FILE = ROOT / "src/status/status.hh"
-SDK_PY_FILE = ROOT / "sdk/python/lazarus_client/status.py"
+SDK_PY_FILE = ROOT / "sdk/python/lazarus_client/lazarus_status.py"
 
 def to_int(val):
     if isinstance(val, int):
@@ -94,7 +94,7 @@ def py_header():
         "# ****************************************************\n"
         "# Lazarus Data Store\n"
         "# Status\n"
-        "# 'status.py'\n"
+        "# 'lazarus_status.py'\n"
         "# Author: Auto-Generated\n"
         "# Description:\n"
         "#      Status codes for error handling.\n"

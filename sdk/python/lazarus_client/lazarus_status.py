@@ -1,7 +1,7 @@
 # ****************************************************
 # Lazarus Data Store
 # Status
-# 'status.py'
+# 'lazarus_status.py'
 # Author: Auto-Generated
 # Description:
 #      Status codes for error handling.
