@@ -128,6 +128,29 @@ def generate_server_cpp(codes):
             f"    {code_str},\n"
             f"    static_cast<drogon::HttpStatusCode>({http_num}));\n\n"
         )
+        if c["name"] == "fail":
+            lines.append(
+                "//\n"
+                "// Determines whether a given status is considered as failure.\n"
+                "//\n"
+                "inline static\n"
+                "bool\n"
+                "failed(\n"
+                "    const status_code& status_code)\n"
+                "{\n"
+                "    return static_cast<std::int32_t>(status_code) < 0;\n"
+                "}\n\n"
+                "//\n"
+                "// Determines whether a given status is considered as success.\n"
+                "//\n"
+                "inline static\n"
+                "bool\n"
+                "succeeded(\n"
+                "    const status_code& status_code)\n"
+                "{\n"
+                "    return status_code == success;\n"
+                "}\n\n"
+            )
     lines.append("} // namespace status.\n")
     lines.append("} // namespace lazarus.")
     SERVER_CPP_FILE.parent.mkdir(parents=True, exist_ok=True)
