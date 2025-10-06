@@ -25,7 +25,7 @@ import argparse
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CONFIG_FILE = ROOT / "status_codes.yaml"
 SERVER_CPP_FILE = ROOT / "src/status/status.hh"
-SDK_PY_FILE = ROOT / "sdk/python/lazarus_client/lazarus_status.py"
+SDK_PY_FILE = ROOT / "sdk/python/lazarus_client/lazarus_status_code.py"
 
 def to_int(val):
     if isinstance(val, int):
@@ -94,7 +94,7 @@ def py_header():
         "# ****************************************************\n"
         "# Lazarus Data Store\n"
         "# Status\n"
-        "# 'lazarus_status.py'\n"
+        "# 'lazarus_status_code.py'\n"
         "# Author: Auto-Generated\n"
         "# Description:\n"
         "#      Status codes for error handling.\n"
@@ -162,7 +162,7 @@ def generate_sdk_python(codes):
     lines = [
         py_header(),
         "from enum import Enum\n\n",
-        "class LazarusStatus(Enum):\n",
+        "class LazarusStatusCode(Enum):\n",
         "\n",
     ]
     for i, c in enumerate(codes):

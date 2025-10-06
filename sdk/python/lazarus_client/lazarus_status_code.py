@@ -1,7 +1,7 @@
 # ****************************************************
 # Lazarus Data Store
 # Status
-# 'lazarus_status.py'
+# 'lazarus_status_code.py'
 # Author: Auto-Generated
 # Description:
 #      Status codes for error handling.
@@ -12,7 +12,7 @@
 
 from enum import Enum
 
-class LazarusStatus(Enum):
+class LazarusStatusCode(Enum):
 
     # Operation succeeded.
     success = 0x00000000

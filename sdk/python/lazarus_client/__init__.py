@@ -8,5 +8,5 @@
 # ****************************************************
 
 from .lazarus_client import LazarusClient
-from .lazarus_status import LazarusStatus
+from .lazarus_status_code import LazarusStatusCode
 from .lazarus_client_error import LazarusClientError
