@@ -35,6 +35,28 @@ status_code_definition(
     0x80000001,
     static_cast<drogon::HttpStatusCode>(500));
 
+//
+// Determines whether a given status is considered as failure.
+//
+inline static
+bool
+failed(
+    const status_code& status_code)
+{
+    return static_cast<std::int32_t>(status_code) < 0;
+}
+
+//
+// Determines whether a given status is considered as success.
+//
+inline static
+bool
+succeeded(
+    const status_code& status_code)
+{
+    return status_code == success;
+}
+
 // Object container already exists.
 status_code_definition(
     container_already_exists,
