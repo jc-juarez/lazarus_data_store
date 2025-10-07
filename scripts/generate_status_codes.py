@@ -24,7 +24,7 @@ import argparse
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CONFIG_FILE = ROOT / "status_codes.yaml"
-SERVER_CPP_FILE = ROOT / "src/status/status.hh"
+SERVER_CPP_FILE = ROOT / "src/core/status/status.hh"
 SDK_PY_FILE = ROOT / "sdk/python/lazarus_client/lazarus_status_code.py"
 
 def to_int(val):
