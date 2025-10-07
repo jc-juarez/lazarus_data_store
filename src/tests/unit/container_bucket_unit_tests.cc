@@ -8,9 +8,9 @@
 // ****************************************************
 
 #include <gtest/gtest.h>
-#include "../../status/status.hh"
+#include "../../core/status/status.hh"
 #include "../mocks/mock_storage_engine.hh"
-#include "../../storage/container_bucket.hh"
+#include "../../core/storage/container_bucket.hh"
 
 namespace lazarus
 {

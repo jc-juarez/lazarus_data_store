@@ -10,7 +10,7 @@
 #pragma once
 
 #include <gmock/gmock.h>
-#include "../../storage/storage_engine_interface.hh"
+#include "../../core/storage/storage_engine_interface.hh"
 
 namespace lazarus
 {
