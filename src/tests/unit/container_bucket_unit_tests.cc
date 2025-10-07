@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 #include "../../core/status/status.hh"
 #include "../mocks/mock_storage_engine.hh"
+#include "../../core/storage/container.hh"
 #include "../../core/storage/container_bucket.hh"
 
 namespace lazarus
@@ -87,6 +88,34 @@ TEST_F(
     EXPECT_EQ(
         bucket.insert_container(reference_handle, container_metadata2),
         status::success);
+}
+
+TEST_F(
+    container_bucket_unit_tests,
+    get_container_not_present)
+{
+    storage::container_bucket bucket{mock_storage_engine_};
+    EXPECT_EQ(
+        bucket.get_container("Container"),
+        nullptr);
+}
+
+TEST_F(
+    container_bucket_unit_tests,
+    get_container_present)
+{
+    storage::container_bucket bucket{mock_storage_engine_};
+    storage::storage_engine_reference_handle* reference_handle{};
+    const schemas::container_persistent_interface container_metadata =
+        storage::container::create_container_persistent_metadata("Container");
+    bucket.insert_container(reference_handle, container_metadata);
+    std::shared_ptr<storage::container> container = bucket.get_container("Container");
+    EXPECT_NE(
+        container,
+        nullptr);
+    EXPECT_EQ(
+        container->get_name(),
+        "Container");
 }
 
 } // namespace tests.
