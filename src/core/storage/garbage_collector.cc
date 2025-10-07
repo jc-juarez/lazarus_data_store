@@ -13,7 +13,7 @@
 #include "storage_engine.hh"
 #include "garbage_collector.hh"
 #include "container_index.hh"
-#include "../main/lazarus_data_store.hh"
+#include "../startup/lazarus_data_store.hh"
 #include "orphaned_container_scavenger.hh"
 
 namespace lazarus

@@ -21,7 +21,7 @@
 ┗━┛┗━╸╹ ╹┗━╸╹┗╸╹ ╹┗━╸   ╹  ┗━┛╹┗╸╹  ┗━┛┗━┛┗━╸   ╹ ╹╹┗━┛╹ ╹   ╹  ┗━╸╹┗╸╹  ┗━┛╹┗╸╹ ╹╹ ╹╹ ╹┗━╸┗━╸   ╺┻┛╹ ╹ ╹ ╹ ╹   ┗━┛ ╹ ┗━┛╹┗╸┗━╸   ┗━┛┗━╸╹┗╸┗┛ ┗━╸╹┗╸
 */
 
-#include "lazarus_data_store.hh"
+#include "../core/startup/lazarus_data_store.hh"
 
 int main(int argc, char** argv)
 {
