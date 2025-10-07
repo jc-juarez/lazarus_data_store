@@ -24,7 +24,7 @@ namespace storage
 
 container_management_service::container_management_service(
     const storage_configuration& storage_configuration,
-    std::shared_ptr<storage_engine> storage_engine_handle,
+    std::shared_ptr<storage_engine_interface> storage_engine_handle,
     std::shared_ptr<container_index> container_index_handle,
     std::unique_ptr<container_operation_serializer> container_operation_serializer_handle)
     : storage_configuration_{storage_configuration},

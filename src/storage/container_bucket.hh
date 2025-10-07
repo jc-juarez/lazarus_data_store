@@ -16,7 +16,7 @@
 namespace lazarus::storage
 {
 
-class storage_engine;
+class storage_engine_interface;
 
 class container_bucket
 {
@@ -26,7 +26,7 @@ public:
     // Constructor.
     //
     container_bucket(
-        std::shared_ptr<storage_engine> storage_engine);
+        std::shared_ptr<storage_engine_interface> storage_engine);
 
     //
     // Sets the container bucket index identifier.
@@ -92,7 +92,7 @@ private:
     //
     // Handle for the storage engine.
     //
-    std::shared_ptr<storage_engine> storage_engine_;
+    std::shared_ptr<storage_engine_interface> storage_engine_;
 };
 
 } // namespace lazarus::storage.

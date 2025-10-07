@@ -21,7 +21,7 @@ namespace lazarus
 namespace storage
 {
 
-class storage_engine;
+class storage_engine_interface;
 
 //
 // Object container metadata internal structure.
@@ -36,7 +36,7 @@ public:
     // Constructor for the object container.
     //
     container(
-        std::shared_ptr<storage_engine> storage_engine_handle,
+        std::shared_ptr<storage_engine_interface> storage_engine_handle,
         storage_engine_reference_handle* storage_engine_reference,
         const schemas::container_persistent_interface& container_persistent_metadata);
 
@@ -89,9 +89,9 @@ public:
 private:
 
     //
-    // Handle for the storage enine.
+    // Handle for the storage engine.
     //
-    std::shared_ptr<storage_engine> storage_engine_;
+    std::shared_ptr<storage_engine_interface> storage_engine_;
 
     //
     // Object container persistent metadata.

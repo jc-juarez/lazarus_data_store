@@ -21,8 +21,8 @@ namespace lazarus
 namespace storage
 {
 
-class storage_engine;
 class container_index;
+class storage_engine_interface;
 
 //
 // Serialized object container operation orchestrator.
@@ -35,7 +35,7 @@ public:
     // Constructor for the object operation serializer.
     //
     container_operation_serializer(
-        std::shared_ptr<storage_engine> storage_engine_handle,
+        std::shared_ptr<storage_engine_interface> storage_engine_handle,
         std::shared_ptr<container_index> container_index);
 
     //
@@ -80,7 +80,7 @@ private:
     //
     // Reference for the storage engine component.
     //
-    std::shared_ptr<storage_engine> storage_engine_;
+    std::shared_ptr<storage_engine_interface> storage_engine_;
 
     //
     // Reference for the object container index component.

@@ -17,7 +17,7 @@ namespace lazarus::storage
 using index_table_type = tbb::concurrent_hash_map<std::string, std::shared_ptr<container>>;
 
 container_bucket::container_bucket(
-    std::shared_ptr<storage_engine> storage_engine)
+    std::shared_ptr<storage_engine_interface> storage_engine)
     : storage_engine_{std::move(storage_engine)}
 {}
 

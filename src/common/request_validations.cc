@@ -1,6 +1,6 @@
 // ****************************************************
 // Lazarus Data Store
-// Schemas
+// Common
 // 'request_validations.cc'
 // Author: jcjuarez
 // Description:

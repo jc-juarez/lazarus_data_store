@@ -1,7 +1,17 @@
-# SDK (editable install)
+# ****************************************************
+# Lazarus Data Store
+# Build
+# 'requirements.txt'
+# Author: jcjuarez
+# Description:
+#      Root python requirements dependencies.
+# ****************************************************
+
+# Python SDK requirements.
 -e sdk/python
 
-# Integration test dependencies
--r src/tests/integration/requirements.txt
+# E2E tests requirements.
+-r src/tests/e2e/requirements.txt
 
+# Scripts requirements.
 -r scripts/requirements.txt

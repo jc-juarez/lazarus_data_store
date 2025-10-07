@@ -21,7 +21,7 @@ namespace storage
 {
 
 container_operation_serializer::container_operation_serializer(
-    std::shared_ptr<storage_engine> storage_engine_handle,
+    std::shared_ptr<storage_engine_interface> storage_engine_handle,
     std::shared_ptr<container_index> container_index)
     : storage_engine_{std::move(storage_engine_handle)},
       container_index_{std::move(container_index)}

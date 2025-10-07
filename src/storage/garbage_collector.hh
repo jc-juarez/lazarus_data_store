@@ -21,8 +21,8 @@ namespace lazarus
 namespace storage
 {
 
-class storage_engine;
 class container_index;
+class storage_engine_interface;
 class orphaned_container_scavenger;
 
 //

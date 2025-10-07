@@ -1,6 +1,6 @@
 // ****************************************************
 // Lazarus Data Store
-// Schemas
+// Common
 // 'response_utilities.hh'
 // Author: jcjuarez
 // Description:

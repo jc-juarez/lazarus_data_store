@@ -28,12 +28,12 @@ class server;
 
 namespace storage
 {
-class storage_engine;
 class garbage_collector;
 class container_index;
 class frontline_cache;
 class write_io_dispatcher;
 class read_io_dispatcher;
+class storage_engine_interface;
 class object_management_service;
 class container_management_service;
 }
@@ -131,7 +131,7 @@ private:
     //
     // Storage engine handle.
     //
-    std::shared_ptr<storage::storage_engine> storage_engine_;
+    std::shared_ptr<storage::storage_engine_interface> storage_engine_;
 
     //
     // Object container management service handle.

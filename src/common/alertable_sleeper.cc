@@ -1,6 +1,6 @@
 // ****************************************************
 // Lazarus Data Store
-// Schemas
+// Common
 // 'alertable_sleeper.hh'
 // Author: jcjuarez
 // Description:

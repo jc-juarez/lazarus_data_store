@@ -11,7 +11,6 @@
 #include "rocksdb/table.h"
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
-#include "../status/status.hh"
 
 namespace lazarus
 {

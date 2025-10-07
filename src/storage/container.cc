@@ -20,7 +20,7 @@ namespace storage
 {
 
 container::container(
-    std::shared_ptr<storage_engine> storage_engine_handle,
+    std::shared_ptr<storage_engine_interface> storage_engine_handle,
     storage_engine_reference_handle* storage_engine_reference,
     const schemas::container_persistent_interface& container_persistent_metadata)
     : storage_engine_{std::move(storage_engine_handle)},

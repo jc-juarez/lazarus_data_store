@@ -21,7 +21,7 @@ namespace storage
 
 container_index::container_index(
     const std::uint16_t number_container_buckets,
-    std::shared_ptr<storage_engine> storage_engine)
+    std::shared_ptr<storage_engine_interface> storage_engine)
     : container_index_table_{number_container_buckets, container_bucket{std::move(storage_engine)}},
       number_container_buckets_{number_container_buckets},
       number_containers_{0u}

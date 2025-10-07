@@ -24,7 +24,7 @@ namespace lazarus
 namespace storage
 {
 
-class storage_engine;
+class storage_engine_interface;
 
 //
 // Core object container indexing system.
@@ -38,7 +38,7 @@ public:
     //
     container_index(
         const std::uint16_t number_container_buckets,
-        std::shared_ptr<storage_engine> storage_engine);
+        std::shared_ptr<storage_engine_interface> storage_engine);
 
     //
     // Internal column family name for persisting

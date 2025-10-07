@@ -16,9 +16,9 @@
 namespace lazarus::storage
 {
 
-class storage_engine;
 class container;
 class container_index;
+class storage_engine_interface;
 
 class orphaned_container_scavenger
 {
@@ -28,7 +28,7 @@ public:
     // Constructor.
     //
     orphaned_container_scavenger(
-        std::shared_ptr<storage_engine> storage_engine,
+        std::shared_ptr<storage_engine_interface> storage_engine,
         std::shared_ptr<container_index> container_index);
 
     //
@@ -45,7 +45,7 @@ private:
     //
     // Handle for the storage engine.
     //
-    std::shared_ptr<storage_engine> storage_engine_;
+    std::shared_ptr<storage_engine_interface> storage_engine_;
 
     //
     // Handle for the object container index.

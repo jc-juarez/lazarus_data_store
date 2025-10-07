@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
     doxygen \
     uuid-dev \
     nlohmann-json3-dev \
+    libjsoncpp-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Drogon is not in Ubuntu repos, build from source.

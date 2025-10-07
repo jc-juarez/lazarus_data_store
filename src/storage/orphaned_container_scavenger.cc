@@ -18,7 +18,7 @@ namespace lazarus::storage
 {
 
 orphaned_container_scavenger::orphaned_container_scavenger(
-    std::shared_ptr<storage_engine> storage_engine,
+    std::shared_ptr<storage_engine_interface> storage_engine,
     std::shared_ptr<container_index> container_index)
     : storage_engine_{std::move(storage_engine)},
       container_index_{std::move(container_index)}
