@@ -49,5 +49,45 @@ TEST_F(
         status::success);
 }
 
+TEST_F(
+    container_bucket_unit_tests,
+    insert_container_collision)
+{
+    storage::container_bucket bucket{mock_storage_engine_};
+    storage::storage_engine_reference_handle* reference_handle{};
+    const schemas::container_persistent_interface container_metadata1 =
+        storage::container::create_container_persistent_metadata("Container");
+    EXPECT_EQ(
+        bucket.insert_container(reference_handle, container_metadata1),
+        status::success);
+
+    //
+    // Append a new entry with the same name and expect a collision error.
+    //
+    const schemas::container_persistent_interface container_metadata2 =
+        storage::container::create_container_persistent_metadata("Container");
+    EXPECT_EQ(
+        bucket.insert_container(reference_handle, container_metadata2),
+        status::container_insertion_collision);
+}
+
+TEST_F(
+    container_bucket_unit_tests,
+    insert_container_different_names)
+{
+    storage::container_bucket bucket{mock_storage_engine_};
+    storage::storage_engine_reference_handle* reference_handle{};
+    const schemas::container_persistent_interface container_metadata1 =
+        storage::container::create_container_persistent_metadata("Container1");
+    EXPECT_EQ(
+        bucket.insert_container(reference_handle, container_metadata1),
+        status::success);
+    const schemas::container_persistent_interface container_metadata2 =
+        storage::container::create_container_persistent_metadata("Container2");
+    EXPECT_EQ(
+        bucket.insert_container(reference_handle, container_metadata2),
+        status::success);
+}
+
 } // namespace tests.
 } // namespace lazarus.
