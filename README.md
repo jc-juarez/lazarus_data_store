@@ -5,6 +5,15 @@ It’s designed for **speed, persistence, and simplicity**, built on top of Rock
 
 ---
 
+## License
+
+This software is licensed under the **Business Source License 1.1 (BSL)**.
+
+You may use, modify, and distribute this software for non-commercial and non-production use only.  
+Commercial or production use requires a license from the Licensor.
+
+Contact: [lazarusdatastore@gmail.com](mailto:lazarusdatastore@gmail.com)
+
 ## 🧩 What is Lazarus DS?
 
 Lazarus DS is an **object container store**:

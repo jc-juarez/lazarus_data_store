@@ -1,4 +1,9 @@
 // ****************************************************
+// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Licensed under the Business Source License 1.1
+// See the LICENSE file in the
+// project root for license terms.
+// ****************************************************
 // Lazarus Data Store
 // Network
 // 'object_request_handler.hh'
