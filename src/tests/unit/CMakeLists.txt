@@ -8,6 +8,7 @@
 # *************************************
 
 add_executable(container_bucket_tests
+        container_index_unit_tests.cc
         container_bucket_unit_tests.cc
 )
 

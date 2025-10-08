@@ -49,7 +49,8 @@ TEST_F(
 {
     storage::container_bucket bucket{mock_storage_engine_};
     storage::storage_engine_reference_handle* reference_handle{};
-    schemas::container_persistent_interface container_metadata{};
+    const schemas::container_persistent_interface container_metadata =
+        storage::container::create_container_persistent_metadata("Container");
     EXPECT_EQ(
         bucket.insert_container(reference_handle, container_metadata),
         status::success);

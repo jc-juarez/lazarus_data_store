@@ -110,8 +110,9 @@ target_link_libraries(lazarus PRIVATE lazarus_core)
 
 # Lazarus tests.
 add_executable(lazarus_tests
-        src/tests/unit/container_bucket_unit_tests.cc
         src/tests/mocks/mock_storage_engine.hh
+        src/tests/unit/container_index_unit_tests.cc
+        src/tests/unit/container_bucket_unit_tests.cc
 )
 target_include_directories(lazarus_tests PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
