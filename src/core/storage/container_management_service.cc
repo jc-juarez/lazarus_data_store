@@ -285,7 +285,7 @@ container_management_service::validate_container_operation_request(
         }
         default:
         {
-            spdlog::error("Invalid optype received for object operation. "
+            spdlog::error("Invalid optype received for container operation. "
                 "Optype={}, "
                 "ObjectContainerName={}.",
                 static_cast<std::uint8_t>(container_request.get_optype()),

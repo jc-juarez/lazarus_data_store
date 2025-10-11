@@ -39,8 +39,8 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 set(SOURCE_FILES
         src/core/startup/lazarus_data_store.cc
         src/core/network/server/server.cc
-        src/core/network/endpoints/container_endpoint.cc
-        src/core/network/endpoints/object_endpoint.cc
+        src/core/network/endpoints/containers.cc
+        src/core/network/endpoints/objects.cc
         src/core/common/uuid_utilities.cc
         src/core/storage/container_management_service.cc
         src/core/storage/storage_engine.cc
@@ -81,8 +81,8 @@ set(SOURCE_FILES
         src/core/common/system_configuration.hh
         src/core/common/system_configuration.cc
         src/core/common/args_validations.hh
-        src/core/network/endpoints/ping_endpoint.cc
-        src/core/network/endpoints/ping_endpoint.hh
+        src/core/network/endpoints/ping.cc
+        src/core/network/endpoints/ping.hh
         src/core/storage/storage_engine_interface.hh
         src/core/common/interface.hh
 )

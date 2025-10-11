@@ -6,7 +6,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Network
-// 'container_endpoint.hh'
+// 'containers.hh'
 // Author: jcjuarez
 // Description:
 //      Object container controller endpoints collection.
@@ -26,20 +26,23 @@ namespace network
 class create_container_request_handler;
 class remove_container_request_handler;
 
-class container_endpoint : public drogon::HttpController<container_endpoint, false>
+namespace endpoints
+{
+
+class containers : public drogon::HttpController<containers, false>
 {
 public:
 
     //
     // Endpoint constructor.
     //
-    container_endpoint(
-    std::unique_ptr<create_container_request_handler> create_container_request_handler,
-    std::unique_ptr<remove_container_request_handler> remove_container_request_handler);
+    containers(
+        std::unique_ptr<create_container_request_handler> create_container_request_handler,
+        std::unique_ptr<remove_container_request_handler> remove_container_request_handler);
 
     METHOD_LIST_BEGIN
-    METHOD_ADD(container_endpoint::create_container, "/", drogon::Put);
-    METHOD_ADD(container_endpoint::remove_container, "/", drogon::Delete);
+    METHOD_ADD(containers::create_container, "", drogon::Post);
+    METHOD_ADD(containers::remove_container, "", drogon::Delete);
     METHOD_LIST_END
 
     //
@@ -71,5 +74,6 @@ private:
     std::unique_ptr<remove_container_request_handler> remove_container_request_handler_;
 };
 
+} // namespace endpoints.
 } // namespace network.
 } // namespace lazarus.

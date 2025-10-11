@@ -6,22 +6,24 @@
 // ****************************************************
 // Lazarus Data Store
 // Network
-// 'ping_endpoint.cc'
+// 'ping.cc'
 // Author: jcjuarez
 // Description:
 //     Ping service endpoint for liveliness probes.
 // ****************************************************
 
-#include "ping_endpoint.hh"
+#include "ping.hh"
 #include "../server/server.hh"
 
 namespace lazarus
 {
 namespace network
 {
+namespace endpoints
+{
 
 void
-ping_endpoint::ping(
+ping::reply_to_ping(
     const http_request& request,
     server_response_callback&& response_callback)
 {
@@ -30,5 +32,6 @@ ping_endpoint::ping(
         status::success);
 }
 
+} // namespace endpoints.
 } // namespace network.
 } // namespace lazarus.

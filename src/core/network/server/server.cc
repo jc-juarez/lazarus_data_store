@@ -15,11 +15,11 @@
 
 #include "server.hh"
 #include <spdlog/spdlog.h>
-#include "../endpoints/ping_endpoint.hh"
-#include "../endpoints/object_endpoint.hh"
+#include "../endpoints/ping.hh"
+#include "../endpoints/objects.hh"
+#include "../endpoints/containers.hh"
 #include "../../storage/frontline_cache.hh"
 #include "../../common/response_utilities.hh"
-#include "../endpoints/container_endpoint.hh"
 #include "request-handlers/object/get_object_request_handler.hh"
 #include "request-handlers/object/insert_object_request_handler.hh"
 #include "request-handlers/object/remove_object_request_handler.hh"
@@ -42,7 +42,7 @@ server::server(
       server_config_{server_config}
 {
     http_server_.setLogPath(server_config_.server_logs_directory_path_)
-         .setLogLevel(trantor::Logger::kWarn)
+         .setLogLevel(trantor::Logger::kInfo)
          .addListener(server_config_.server_listener_ip_address_, server_config_.port_number_)
          .setThreadNum(server_config_.server_number_threads_)
          .disableSigtermHandling();
@@ -94,14 +94,14 @@ server::register_endpoints(
     //
     // Container endpoint along its request handlers.
     //
-    http_server_.registerController(std::make_shared<container_endpoint>(
+    http_server_.registerController(std::make_shared<endpoints::containers>(
         std::move(create_container_request_handler),
         std::move(remove_container_request_handler)));
 
     //
     // Object endpoint along its request handlers.
     //
-    http_server_.registerController(std::make_shared<object_endpoint>(
+    http_server_.registerController(std::make_shared<endpoints::objects>(
         std::move(insert_object_request_handler),
         std::move(get_object_request_handler),
         std::move(remove_object_request_handler)));
@@ -109,7 +109,7 @@ server::register_endpoints(
     //
     // Ping endpoint for liveliness probes.
     //
-    http_server_.registerController(std::make_shared<ping_endpoint>());
+    http_server_.registerController(std::make_shared<endpoints::ping>());
 }
 
 void

@@ -36,7 +36,7 @@ container_request::container_request(
 
     switch (request->getMethod())
     {
-        case drogon::HttpMethod::Put:
+        case drogon::HttpMethod::Post:
         {
             optype_ = container_request_optype::create;
             break;

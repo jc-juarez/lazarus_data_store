@@ -6,14 +6,14 @@
 // ****************************************************
 // Lazarus Data Store
 // Network
-// 'object_endpoint.cc'
+// 'objects.cc'
 // Author: jcjuarez
 // Description:
 //      Object controller endpoints collection.
 //      Handles CRUD operations for objects.
 // ****************************************************
 
-#include "object_endpoint.hh"
+#include "objects.hh"
 #include "../server/request-handlers/object/get_object_request_handler.hh"
 #include "../server/request-handlers/object/insert_object_request_handler.hh"
 #include "../server/request-handlers/object/remove_object_request_handler.hh"
@@ -22,8 +22,10 @@ namespace lazarus
 {
 namespace network
 {
+namespace endpoints
+{
 
-object_endpoint::object_endpoint(
+objects::objects(
     std::unique_ptr<insert_object_request_handler> insert_object_request_handler,
     std::unique_ptr<get_object_request_handler> get_object_request_handler,
     std::unique_ptr<remove_object_request_handler> remove_object_request_handler)
@@ -33,7 +35,7 @@ object_endpoint::object_endpoint(
 {}
 
 void
-object_endpoint::insert_object(
+objects::insert_object(
     const http_request& request,
     server_response_callback&& response_callback)
 {
@@ -43,7 +45,7 @@ object_endpoint::insert_object(
 }
 
 void
-object_endpoint::get_object(
+objects::get_object(
     const http_request& request,
     server_response_callback&& response_callback)
 {
@@ -53,7 +55,7 @@ object_endpoint::get_object(
 }
 
 void
-object_endpoint::remove_object(
+objects::remove_object(
     const http_request& request,
     server_response_callback&& response_callback)
 {
@@ -62,5 +64,6 @@ object_endpoint::remove_object(
         std::move(response_callback));
 }
 
+} // namespace endpoints.
 } // namespace network.
 } // namespace lazarus.

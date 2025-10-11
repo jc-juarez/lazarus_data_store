@@ -6,7 +6,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Network
-// 'ping_endpoint.hh'
+// 'ping.hh'
 // Author: jcjuarez
 // Description:
 //      Ping service endpoint for liveliness probes.
@@ -21,28 +21,31 @@ namespace lazarus
 {
 namespace network
 {
+namespace endpoints
+{
 
-class ping_endpoint : public drogon::HttpController<ping_endpoint, false>
+class ping : public drogon::HttpController<ping, false>
 {
 public:
 
     //
     // Endpoint constructor.
     //
-    ping_endpoint() = default;
+    ping() = default;
 
     METHOD_LIST_BEGIN
-        METHOD_ADD(ping_endpoint::ping, "/", drogon::Get);
+        METHOD_ADD(ping::reply_to_ping, "", drogon::Get);
     METHOD_LIST_END
 
     //
     // Liveliness probe method.
     //
     void
-    ping(
+    reply_to_ping(
         const http_request& request,
         server_response_callback&& response_callback);
 };
 
+} // namespace endpoints.
 } // namespace network.
 } // namespace lazarus.

@@ -6,14 +6,14 @@
 // ****************************************************
 // Lazarus Data Store
 // Network
-// 'container_endpoint.cc'
+// 'containers.cc'
 // Author: jcjuarez
 // Description:
 //      Object container controller endpoints collection.
 //      Handles CRUD operations for object containers.
 // ****************************************************
 
-#include "container_endpoint.hh"
+#include "containers.hh"
 #include "../server/request-handlers/container/create_container_request_handler.hh"
 #include "../server/request-handlers/container/remove_container_request_handler.hh"
 
@@ -21,8 +21,10 @@ namespace lazarus
 {
 namespace network
 {
+namespace endpoints
+{
 
-container_endpoint::container_endpoint(
+containers::containers(
     std::unique_ptr<create_container_request_handler> create_container_request_handler,
     std::unique_ptr<remove_container_request_handler> remove_container_request_handler)
     : create_container_request_handler_{std::move(create_container_request_handler)},
@@ -30,7 +32,7 @@ container_endpoint::container_endpoint(
 {}
 
 void
-container_endpoint::create_container(
+containers::create_container(
     const http_request& request,
     server_response_callback&& response_callback)
 {
@@ -40,7 +42,7 @@ container_endpoint::create_container(
 }
 
 void
-container_endpoint::remove_container(
+containers::remove_container(
     const http_request& request,
     server_response_callback&& response_callback)
 {
@@ -49,5 +51,6 @@ container_endpoint::remove_container(
         std::move(response_callback));
 }
 
+} // namespace endpoints.
 } // namespace network.
 } // namespace lazarus.

@@ -6,7 +6,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Network
-// 'object_endpoint.hh'
+// 'objects.hh'
 // Author: jcjuarez
 // Description:
 //      Object controller endpoints collection.
@@ -27,22 +27,25 @@ class insert_object_request_handler;
 class get_object_request_handler;
 class remove_object_request_handler;
 
-class object_endpoint : public drogon::HttpController<object_endpoint, false>
+namespace endpoints
+{
+
+class objects : public drogon::HttpController<objects, false>
 {
 public:
 
     //
     // Endpoint constructor.
     //
-    object_endpoint(
+    objects(
         std::unique_ptr<insert_object_request_handler> insert_object_request_handler,
         std::unique_ptr<get_object_request_handler> get_object_request_handler,
         std::unique_ptr<remove_object_request_handler> remove_object_request_handler);
 
     METHOD_LIST_BEGIN
-    METHOD_ADD(object_endpoint::insert_object, "/", drogon::Post);
-    METHOD_ADD(object_endpoint::get_object, "/", drogon::Get);
-    METHOD_ADD(object_endpoint::remove_object, "/", drogon::Delete);
+    METHOD_ADD(objects::insert_object, "", drogon::Post);
+    METHOD_ADD(objects::get_object, "", drogon::Get);
+    METHOD_ADD(objects::remove_object, "", drogon::Delete);
     METHOD_LIST_END
 
     //
@@ -87,5 +90,6 @@ private:
     std::unique_ptr<remove_object_request_handler> remove_object_request_handler_;
 };
 
+} // namespace endpoints.
 } // namespace network.
 } // namespace lazarus.
