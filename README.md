@@ -14,7 +14,7 @@ Commercial or production use requires a license from the Licensor.
 
 Contact: [lazarusdatastore@gmail.com](mailto:lazarusdatastore@gmail.com)
 
-## 🧩 What is Lazarus DS?
+## 🧩 What is Lazarus Data Store?
 
 Lazarus DS is an **object container store**:
 
