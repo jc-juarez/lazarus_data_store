@@ -33,9 +33,7 @@ read_io_dispatcher::read_io_dispatcher(
 
 void
 read_io_dispatcher::enqueue_io_task(
-    schemas::object_request&& object_request,
-    std::shared_ptr<container> container,
-    network::server_response_callback&& response_callback)
+    object_io_task&& object_io_task)
 {
     //
     // Enqueue the async IO action.
@@ -43,14 +41,10 @@ read_io_dispatcher::enqueue_io_task(
     //
     boost::asio::post(read_io_thread_pool_,
         [this,
-        object_request = std::move(object_request),
-        container = std::move(container),
-        response_callback = std::move(response_callback)]() mutable
+        object_io_task = std::move(object_io_task)]() mutable
         {
-          this->dispatch_read_io_operation(
-          std::move(object_request),
-          container,
-          std::move(response_callback));
+          this->dispatch_read_io_task(
+              std::move(object_io_task));
         });
 }
 
@@ -65,10 +59,8 @@ read_io_dispatcher::wait_for_stop()
 }
 
 void
-read_io_dispatcher::dispatch_read_io_operation(
-    schemas::object_request&& object_request,
-    std::shared_ptr<container> container,
-    network::server_response_callback&& response_callback)
+read_io_dispatcher::dispatch_read_io_task(
+    object_io_task&& object_io_task)
 {
     //
     // The underlying storage engine is of blocking nature,
@@ -84,13 +76,13 @@ read_io_dispatcher::dispatch_read_io_operation(
     // the storage engine reference will not be dropped by the storage engine.
     //
     byte_stream object_data;
-    switch (object_request.get_optype())
+    switch (object_io_task.object_request_.get_optype())
     {
         case schemas::object_request_optype::get:
         {
             status = execute_get_operation(
-                container->get_storage_engine_reference(),
-                object_request,
+                object_io_task.container_->get_storage_engine_reference(),
+                object_io_task.object_request_,
                 object_data);
             break;
         }
@@ -105,9 +97,9 @@ read_io_dispatcher::dispatch_read_io_operation(
                 "Optype={}, "
                 "ObjectId={}, "
                 "ObjectContainerName={}.",
-                static_cast<std::uint8_t>(object_request.get_optype()),
-                object_request.get_object_id(),
-                object_request.get_container_name());
+                static_cast<std::uint8_t>(object_io_task.object_request_.get_optype()),
+                object_io_task.object_request_.get_object_id(),
+                object_io_task.object_request_.get_container_name());
 
             status = status::invalid_operation;
             break;
@@ -122,7 +114,7 @@ read_io_dispatcher::dispatch_read_io_operation(
         network::response_fields response_fields;
         response_fields.emplace(schemas::object_request::object_data_key_tag, &object_data);
         network::server::send_response(
-            response_callback,
+            object_io_task.response_callback_,
             status,
             &response_fields);
 
@@ -131,7 +123,7 @@ read_io_dispatcher::dispatch_read_io_operation(
         // but only after replying back to the server. Cache insertions triggered
         // by get operations do not need a strong feedback loop; eventual cache alignment is accepted.
         //
-        insert_object_into_cache(object_request);
+        insert_object_into_cache(object_io_task.object_request_);
     }
     else
     {
@@ -139,7 +131,7 @@ read_io_dispatcher::dispatch_read_io_operation(
         // Empty response on failure.
         //
         network::server::send_response(
-            response_callback,
+            object_io_task.response_callback_,
             status);
     }
 }

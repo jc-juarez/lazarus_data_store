@@ -41,9 +41,7 @@ public:
     //
     void
     enqueue_io_task(
-        schemas::object_request&& object_request,
-        std::shared_ptr<container> container,
-        network::server_response_callback&& response_callback) override;
+        object_io_task&& object_io_task) override;
 
     //
     // Waits for the read dispatcher thread pool
@@ -59,10 +57,8 @@ private:
     // This is the upcall entry point for the thread pool.
     //
     void
-    dispatch_read_io_operation(
-        schemas::object_request&& object_request,
-        std::shared_ptr<container> container,
-        network::server_response_callback&& response_callback);
+    dispatch_read_io_task(
+        object_io_task&& object_io_task);
 
     //
     // Handles the insertion of elements into the frontline cache.

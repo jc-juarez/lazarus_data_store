@@ -49,9 +49,7 @@ public:
     //
     void
     enqueue_io_task(
-        schemas::object_request&& object_request,
-        std::shared_ptr<container> container,
-        network::server_response_callback&& response_callback) override;
+        object_io_task&& object_io_task) override;
 
     //
     // Waits for the write dispatcher master

@@ -11,6 +11,7 @@
 // Description:
 //      Individual unit of data
 //      for object IO operations.
+//      Members are intended to be of free use.
 // ****************************************************
 
 #pragma once
@@ -24,6 +25,28 @@ namespace lazarus::storage
 
 struct object_io_task
 {
+    //
+    // Inline constructor with moved parameters.
+    //
+    object_io_task(
+        schemas::object_request&& object_request,
+        std::shared_ptr<container> container,
+        network::server_response_callback&& response_callback)
+        : object_request_{std::move(object_request)},
+          container_{std::move(container)},
+          response_callback_{std::move(response_callback)}
+    {}
+
+    //
+    // Inline move constructor.
+    //
+    object_io_task(
+        object_io_task&& other)
+        : object_request_{std::move(other.object_request_)},
+          container_{std::move(other.container_)},
+          response_callback_{std::move(other.response_callback_)}
+    {}
+
     //
     // Contains the data for the object request.
     //

@@ -87,7 +87,6 @@ set(SOURCE_FILES
         src/core/startup/shutdown_orchestrator.cc
         src/core/startup/shutdown_orchestrator.hh
         src/core/storage/object_io_task.hh
-        src/core/storage/read_io_task.hh
         src/core/storage/write_batch_aggregator.cc
         src/core/storage/write_batch_aggregator.hh
         src/core/common/startable_interface.hh

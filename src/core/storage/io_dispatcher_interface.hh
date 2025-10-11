@@ -14,8 +14,8 @@
 
 #pragma once
 
+#include "object_io_task.hh"
 #include "../common/interface.hh"
-#include "../schemas/request-interfaces/object_request.hh"
 
 namespace lazarus
 {
@@ -33,9 +33,7 @@ public:
     virtual
     void
     enqueue_io_task(
-        schemas::object_request&& object_request,
-        std::shared_ptr<container> container,
-        network::server_response_callback&& response_callback) = 0;
+        object_io_task&& object_io_task) = 0;
 
     //
     // Waits for the dispatcher to be stopped in a blocking manner.
