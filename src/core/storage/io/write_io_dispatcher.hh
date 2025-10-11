@@ -16,12 +16,12 @@
 
 #pragma once
 
-#include "object_io_task.hh"
+#include "../models/object_io_task.hh"
 #include "io_dispatcher_interface.hh"
-#include "../network/server/server.hh"
+#include "../../network/server/server.hh"
 #include <moodycamel/concurrentqueue.h>
-#include "../common/startable_interface.hh"
-#include "../schemas/request-interfaces/object_request.hh"
+#include "../../common/startable_interface.hh"
+#include "../../schemas/request-interfaces/object_request.hh"
 
 namespace lazarus::storage
 {

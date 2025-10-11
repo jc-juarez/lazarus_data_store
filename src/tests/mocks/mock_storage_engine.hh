@@ -15,7 +15,7 @@
 #pragma once
 
 #include <gmock/gmock.h>
-#include "../../core/storage/storage_engine_interface.hh"
+#include "core/storage/io/storage_engine_interface.hh"
 
 namespace lazarus
 {

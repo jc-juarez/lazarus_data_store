@@ -16,10 +16,10 @@
 #pragma once
 
 #include <memory>
-#include "../status/status.hh"
-#include "../network/server/server.hh"
-#include "../common/task_serializer.hh"
-#include "../schemas/request-interfaces/container_request.hh"
+#include "../../status/status.hh"
+#include "../../network/server/server.hh"
+#include "../../common/task_serializer.hh"
+#include "../../schemas/request-interfaces/container_request.hh"
 
 namespace lazarus
 {

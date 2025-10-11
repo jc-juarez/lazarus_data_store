@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "../common/aliases.hh"
+#include "../../common/aliases.hh"
 
 namespace lazarus::storage
 {

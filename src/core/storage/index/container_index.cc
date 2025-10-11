@@ -15,9 +15,9 @@
 
 #include <cassert>
 #include <spdlog/spdlog.h>
-#include "storage_engine.hh"
+#include "../io/storage_engine.hh"
 #include "container_index.hh"
-#include "../common/uuid_utilities.hh"
+#include "../../common/uuid_utilities.hh"
 
 namespace lazarus
 {

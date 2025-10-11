@@ -23,8 +23,8 @@
 #include <string>
 #include <utility>
 #include <optional>
-#include "../status/status.hh"
-#include "../common/aliases.hh"
+#include "../../status/status.hh"
+#include "../../common/aliases.hh"
 
 namespace lazarus::storage
 {

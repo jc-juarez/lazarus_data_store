@@ -14,8 +14,8 @@
 
 #pragma once
 
-#include "object_io_task.hh"
-#include "../common/interface.hh"
+#include "../models/object_io_task.hh"
+#include "../../common/interface.hh"
 
 namespace lazarus
 {

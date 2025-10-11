@@ -13,12 +13,12 @@
 // ****************************************************
 
 #include <spdlog/spdlog.h>
-#include "container_index.hh"
-#include "frontline_cache.hh"
-#include "read_io_dispatcher.hh"
-#include "write_io_dispatcher.hh"
+#include "../index/container_index.hh"
+#include "../cache/frontline_cache.hh"
+#include "../io/read_io_dispatcher.hh"
+#include "../io/write_io_dispatcher.hh"
 #include "object_management_service.hh"
-#include "../common/request_validations.hh"
+#include "../../common/request_validations.hh"
 
 namespace lazarus
 {

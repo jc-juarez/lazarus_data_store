@@ -19,7 +19,7 @@
 #include <cstdint>
 #include <drogon/HttpController.h>
 #include "../../common/aliases.hh"
-#include "../../storage/object.hh"
+#include "../../storage/models/object.hh"
 #include "../request-optypes/object_request_optype.hh"
 
 namespace lazarus

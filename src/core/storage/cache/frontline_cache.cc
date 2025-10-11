@@ -15,7 +15,7 @@
 
 #include <spdlog/spdlog.h>
 #include "frontline_cache.hh"
-#include "container_index.hh"
+#include "../index/container_index.hh"
 
 namespace lazarus::storage
 {

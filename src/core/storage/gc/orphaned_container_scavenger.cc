@@ -14,9 +14,9 @@
 // ****************************************************
 
 #include <spdlog/spdlog.h>
-#include "storage_engine.hh"
-#include "container.hh"
-#include "container_index.hh"
+#include "../io/storage_engine.hh"
+#include "../models/container.hh"
+#include "../index/container_index.hh"
 #include "orphaned_container_scavenger.hh"
 
 namespace lazarus::storage

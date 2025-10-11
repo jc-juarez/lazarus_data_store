@@ -18,8 +18,8 @@
 #include <thread>
 #include <memory>
 #include <stop_token>
-#include "storage_configuration.hh"
-#include "../common/alertable_sleeper.hh"
+#include "../storage_configuration.hh"
+#include "../../common/alertable_sleeper.hh"
 
 namespace lazarus
 {

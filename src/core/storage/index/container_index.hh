@@ -20,8 +20,8 @@
 #include <tbb/tbb.h>
 #include <functional>
 #include "container_bucket.hh"
-#include "container.hh"
-#include "../status/status.hh"
+#include "../models/container.hh"
+#include "../../status/status.hh"
 #include "container_persistent_interface.pb.h"
 
 namespace lazarus

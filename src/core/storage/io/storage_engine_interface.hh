@@ -9,134 +9,109 @@
 // 'storage_engine.hh'
 // Author: jcjuarez
 // Description:
-//      Core storage engine for handling IO operations
-//      with a RocksDB key-value store backend.
+//      Interface for the core storage engine
+//      for handling IO operations.
 // ****************************************************
 
 #pragma once
 
 #include <string>
-#include <memory>
-#include <cstdint>
-#include <rocksdb/db.h>
-#include "../status/status.hh"
-#include "../common/aliases.hh"
-#include "storage_configuration.hh"
-#include "storage_engine_interface.hh"
+#include "../../status/status.hh"
+#include "../../common/aliases.hh"
+#include "../../common/interface.hh"
+#include "../storage_configuration.hh"
 
 namespace lazarus
 {
 namespace storage
 {
 
-class storage_engine : public storage_engine_interface
+class storage_engine_interface : public common::interface
 {
 public:
 
     //
-    // Constructor for the storage engine.
-    //
-    storage_engine(
-        const storage_configuration& storage_configuration);
-
-    //
     // Starts the storage engine.
-    // Requires a list of all object containers present on disk
-    // and returns a list in respective order with all column family references.
     //
+    virtual
     status::status_code
     start(
         const std::vector<std::string>& containers_names,
-        std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping) override;
+        std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping) = 0;
 
     //
     // Inserts a single object into the data store.
     //
+    virtual
     status::status_code
     insert_object(
         storage_engine_reference_handle* container_storage_engine_reference,
         const char* object_id,
-        const byte_stream& object_data) override;
+        const byte_stream& object_data) = 0;
 
     //
     // Get an object from the data store.
     // Stores the object contents into the data stream if it exists.
     //
+    virtual
     status::status_code
     get_object(
         storage_engine_reference_handle* container_storage_engine_reference,
         const char* object_id,
-        byte_stream* object_data) override;
+        byte_stream* object_data) = 0;
 
     //
     // Creates a new object container inside the data store.
     // Returns the associated column family reference on success.
     //
+    virtual
     status::status_code
     create_container(
         const char* container_name,
-        storage_engine_reference_handle** container_storage_engine_reference) override;
+        storage_engine_reference_handle** container_storage_engine_reference) = 0;
 
     //
     // Gets all the objects from a specified object container.
     // Returns them in an unordered fashion.
     //
+    virtual
     status::status_code
     get_all_objects_from_container(
         storage_engine_reference_handle* container_storage_engine_reference,
-        std::unordered_map<std::string, byte_stream>* objects) override;
+        std::unordered_map<std::string, byte_stream>* objects) = 0;
 
     //
     // Fetches the existing object containers in the data store.
-    // In case of a system crash, the underlying core engine ensures
-    // that all operations are written into the WAL entries, thus lazarus
-    // only acknowledges object container references that were successfully
-    // recorded into the storage engine WAL.
-    // This should be invoked before starting the storage engine.
     //
+    virtual
     status::status_code
     fetch_containers_from_disk(
-        std::vector<std::string>* containers_names) override;
+        std::vector<std::string>* containers_names) = 0;
 
     //
     // Closes the in-memory object container storage engine reference.
     //
+    virtual
     status::status_code
     close_container_storage_engine_reference(
-        storage_engine_reference_handle* container_storage_engine_reference) override;
+        storage_engine_reference_handle* container_storage_engine_reference) = 0;
 
     //
     // Removes an object from a given object container.
     //
+    virtual
     status::status_code
     remove_object(
         storage_engine_reference_handle* container_storage_engine_reference,
-        const char* object_id) override;
+        const char* object_id) = 0;
 
     //
     // Removes an object container permanently from the filesystem.
     //
+    virtual
     status::status_code
     remove_container(
-        storage_engine_reference_handle* container_storage_engine_reference) override;
-
-private:
-
-    //
-    // Gets the configurations to be used by the engine.
-    //
-    rocksdb::Options
-    get_engine_configurations() const;
-
-    //
-    // Main handle for the underlying storage backend key-value store.
-    //
-    std::unique_ptr<rocksdb::DB> kv_store_;
-
-    //
-    // Configurations for the storage subsystem.
-    //
-    const storage_configuration storage_configuration_;
+        storage_engine_reference_handle* container_storage_engine_reference) = 0;
 };
 
 } // namespace storage.

@@ -14,10 +14,10 @@
 // ****************************************************
 
 #include <spdlog/spdlog.h>
-#include "storage_engine.hh"
-#include "container_index.hh"
-#include "../network/server/server.hh"
-#include "../common/uuid_utilities.hh"
+#include "../io/storage_engine.hh"
+#include "../index/container_index.hh"
+#include "../../network/server/server.hh"
+#include "../../common/uuid_utilities.hh"
 #include "container_operation_serializer.hh"
 
 namespace lazarus

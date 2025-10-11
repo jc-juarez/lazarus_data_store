@@ -17,8 +17,8 @@
 #pragma once
 
 #include "container.hh"
-#include "../common/aliases.hh"
-#include "../schemas/request-interfaces/object_request.hh"
+#include "../../common/aliases.hh"
+#include "../../schemas/request-interfaces/object_request.hh"
 
 namespace lazarus::storage
 {

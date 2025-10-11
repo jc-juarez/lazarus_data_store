@@ -17,8 +17,8 @@
 
 #include <boost/asio.hpp>
 #include "io_dispatcher_interface.hh"
-#include "../network/server/server.hh"
-#include "../schemas/request-interfaces/object_request.hh"
+#include "../../network/server/server.hh"
+#include "../../schemas/request-interfaces/object_request.hh"
 
 namespace lazarus::storage
 {

@@ -14,10 +14,10 @@
 // ****************************************************
 
 #include <spdlog/spdlog.h>
-#include "storage_engine.hh"
-#include "garbage_collector.hh"
-#include "container_index.hh"
-#include "../common/request_validations.hh"
+#include "../io/storage_engine.hh"
+#include "../gc/garbage_collector.hh"
+#include "../index/container_index.hh"
+#include "../../common/request_validations.hh"
 #include "container_management_service.hh"
 #include "container_operation_serializer.hh"
 #include "container_persistent_interface.pb.h"

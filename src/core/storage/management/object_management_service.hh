@@ -15,9 +15,9 @@
 #pragma once
 
 #include <memory>
-#include "../status/status.hh"
-#include "storage_configuration.hh"
-#include "../schemas/request-interfaces/object_request.hh"
+#include "../../status/status.hh"
+#include "../storage_configuration.hh"
+#include "../../schemas/request-interfaces/object_request.hh"
 
 namespace lazarus
 {

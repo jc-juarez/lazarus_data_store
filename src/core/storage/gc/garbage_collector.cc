@@ -15,10 +15,10 @@
 
 #include <chrono>
 #include <spdlog/spdlog.h>
-#include "storage_engine.hh"
+#include "../io/storage_engine.hh"
 #include "garbage_collector.hh"
-#include "container_index.hh"
-#include "../startup/lazarus_data_store.hh"
+#include "../index/container_index.hh"
+#include "../../startup/lazarus_data_store.hh"
 #include "orphaned_container_scavenger.hh"
 
 namespace lazarus
