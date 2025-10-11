@@ -28,13 +28,13 @@ namespace storage
 object_management_service::object_management_service(
     const storage_configuration& storage_configuration,
     std::shared_ptr<container_index> container_index,
-    std::shared_ptr<write_io_dispatcher> write_request_dispatcher,
-    std::shared_ptr<read_io_dispatcher> read_request_dispatcher,
+    std::shared_ptr<io_dispatcher_interface> write_request_dispatcher,
+    std::shared_ptr<io_dispatcher_interface> read_request_dispatcher,
     std::shared_ptr<storage::frontline_cache> frontline_cache)
     : storage_configuration_{storage_configuration},
       container_index_{std::move(container_index)},
-      write_request_dispatcher_{std::move(write_request_dispatcher)},
-      read_request_dispatcher_{std::move(read_request_dispatcher)},
+      write_io_task_dispatcher_{std::move(write_request_dispatcher)},
+      read_io_task_dispatcher_{std::move(read_request_dispatcher)},
       frontline_cache_{std::move(frontline_cache)}
 {}
 
@@ -187,7 +187,7 @@ object_management_service::orchestrate_concurrent_write_request(
         return status::invalid_operation;
     }
 
-    write_request_dispatcher_->enqueue_concurrent_io_request(
+    write_io_task_dispatcher_->enqueue_io_task(
         std::move(object_request),
         std::move(container),
         std::move(response_callback));
@@ -218,7 +218,7 @@ object_management_service::orchestrate_concurrent_read_request(
         return status::invalid_operation;
     }
 
-    read_request_dispatcher_->enqueue_concurrent_io_request(
+    read_io_task_dispatcher_->enqueue_io_task(
         std::move(object_request),
         std::move(container),
         std::move(response_callback));

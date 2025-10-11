@@ -43,6 +43,13 @@ RUN git clone --recursive https://github.com/drogonframework/drogon.git /tmp/dro
     && make install \
     && rm -rf /tmp/drogon
 
+# Install the ConcurrentQueue dependency.
+RUN git clone https://github.com/cameron314/concurrentqueue.git /tmp/concurrentqueue \
+    && mkdir -p /usr/local/include/moodycamel \
+    && cp /tmp/concurrentqueue/concurrentqueue.h /usr/local/include/moodycamel/ \
+    && cp /tmp/concurrentqueue/blockingconcurrentqueue.h /usr/local/include/moodycamel/ \
+    && rm -rf /tmp/concurrentqueue
+
 # Create a non-root user.
 RUN useradd -ms /bin/bash dev && echo "dev:dev" | chpasswd
 USER dev

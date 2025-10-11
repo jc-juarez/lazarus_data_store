@@ -57,7 +57,6 @@ set(SOURCE_FILES
         src/core/common/request_validations.cc
         src/core/common/task_serializer.cc
         src/core/storage/orphaned_container_scavenger.cc
-        src/core/storage/concurrent_io_dispatcher.cc
         src/core/status/status_code.hh
         src/core/common/response_utilities.cc
         src/core/storage/container_bucket.cc
@@ -85,6 +84,17 @@ set(SOURCE_FILES
         src/core/network/endpoints/ping.hh
         src/core/storage/storage_engine_interface.hh
         src/core/common/interface.hh
+        src/core/startup/shutdown_orchestrator.cc
+        src/core/startup/shutdown_orchestrator.hh
+        src/core/storage/object_io_task.hh
+        src/core/storage/read_io_task.hh
+        src/core/storage/write_batch_aggregator.cc
+        src/core/storage/write_batch_aggregator.hh
+        src/core/common/startable_interface.hh
+        src/core/storage/inflight_operations_tracker.cc
+        src/core/storage/inflight_operations_tracker.hh
+        src/core/storage/cache_accessor.cc
+        src/core/storage/cache_accessor.hh
 )
 
 # Lazarus core library.

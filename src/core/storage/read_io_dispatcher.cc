@@ -25,15 +25,47 @@ namespace lazarus::storage
 read_io_dispatcher::read_io_dispatcher(
     const std::uint32_t number_read_io_threads,
     std::shared_ptr<storage_engine_interface> storage_engine,
-    std::shared_ptr<storage::frontline_cache> frontline_cache)
-    : concurrent_io_dispatcher{
-    number_read_io_threads,
-    std::move(storage_engine),
-    std::move(frontline_cache)}
+    std::shared_ptr<frontline_cache> frontline_cache)
+    : storage_engine_{std::move(storage_engine)},
+      frontline_cache_{std::move(frontline_cache)},
+      read_io_thread_pool_{number_read_io_threads}
 {}
 
 void
-read_io_dispatcher::concurrent_io_request_proxy(
+read_io_dispatcher::enqueue_io_task(
+    schemas::object_request&& object_request,
+    std::shared_ptr<container> container,
+    network::server_response_callback&& response_callback)
+{
+    //
+    // Enqueue the async IO action.
+    // This is a concurrent operation.
+    //
+    boost::asio::post(read_io_thread_pool_,
+        [this,
+        object_request = std::move(object_request),
+        container = std::move(container),
+        response_callback = std::move(response_callback)]() mutable
+        {
+          this->dispatch_read_io_operation(
+          std::move(object_request),
+          container,
+          std::move(response_callback));
+        });
+}
+
+void
+read_io_dispatcher::wait_for_stop()
+{
+    //
+    // This call will make sure that all queued and in-progress
+    // tasks within the thread pool are completed, in a blocking manner.
+    //
+    read_io_thread_pool_.join();
+}
+
+void
+read_io_dispatcher::dispatch_read_io_operation(
     schemas::object_request&& object_request,
     std::shared_ptr<container> container,
     network::server_response_callback&& response_callback)

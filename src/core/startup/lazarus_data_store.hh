@@ -36,8 +36,8 @@ namespace storage
 class garbage_collector;
 class container_index;
 class frontline_cache;
-class write_io_dispatcher;
-class read_io_dispatcher;
+class io_dispatcher_interface;
+class io_dispatcher_interface;
 class storage_engine_interface;
 class object_management_service;
 class container_management_service;
@@ -161,12 +161,12 @@ private:
     //
     // Write request dispatcher handle.
     //
-    std::shared_ptr<storage::write_io_dispatcher> write_request_dispatcher_;
+    std::shared_ptr<storage::io_dispatcher_interface> write_io_task_dispatcher_;
 
     //
     // Read request dispatcher handle.
     //
-    std::shared_ptr<storage::read_io_dispatcher> read_request_dispatcher_;
+    std::shared_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher_;
 
     //
     // Frontline cache handle.

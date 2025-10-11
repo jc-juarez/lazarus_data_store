@@ -204,15 +204,14 @@ lazarus_data_store::construct_dependency_tree(
     //
     // Write request dispatcher component allocation.
     //
-    write_request_dispatcher_ = std::make_shared<storage::write_io_dispatcher>(
-        storage_configuration.number_write_io_threads_,
+    write_io_task_dispatcher_ = std::make_shared<storage::write_io_dispatcher>(
         storage_engine_,
         frontline_cache_);
 
     //
     // Read request dispatcher component allocation.
     //
-    read_request_dispatcher_ = std::make_shared<storage::read_io_dispatcher>(
+    read_io_task_dispatcher_ = std::make_shared<storage::read_io_dispatcher>(
         storage_configuration.number_read_io_threads_,
         storage_engine_,
         frontline_cache_);
@@ -223,8 +222,8 @@ lazarus_data_store::construct_dependency_tree(
     object_management_service_ = std::make_shared<storage::object_management_service>(
         storage_configuration,
         container_index_,
-        write_request_dispatcher_,
-        read_request_dispatcher_,
+        write_io_task_dispatcher_,
+        read_io_task_dispatcher_,
         frontline_cache_);
 
     //

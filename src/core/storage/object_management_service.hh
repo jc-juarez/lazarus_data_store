@@ -26,8 +26,8 @@ namespace storage
 
 class container;
 class container_index;
-class write_io_dispatcher;
-class read_io_dispatcher;
+class io_dispatcher_interface;
+class io_dispatcher_interface;
 class frontline_cache;
 
 //
@@ -43,8 +43,8 @@ public:
     object_management_service(
         const storage_configuration& storage_configuration,
         std::shared_ptr<container_index> container_index,
-        std::shared_ptr<write_io_dispatcher> write_request_dispatcher,
-        std::shared_ptr<read_io_dispatcher> read_request_dispatcher,
+        std::shared_ptr<io_dispatcher_interface> write_request_dispatcher,
+        std::shared_ptr<io_dispatcher_interface> read_request_dispatcher,
         std::shared_ptr<storage::frontline_cache> frontline_cache);
 
     //
@@ -134,12 +134,12 @@ private:
     //
     // Handle for the write request dispatcher component.
     //
-    std::shared_ptr<write_io_dispatcher> write_request_dispatcher_;
+    std::shared_ptr<io_dispatcher_interface> write_io_task_dispatcher_;
 
     //
     // Handle for the read request dispatcher component.
     //
-    std::shared_ptr<read_io_dispatcher> read_request_dispatcher_;
+    std::shared_ptr<io_dispatcher_interface> read_io_task_dispatcher_;
 
     //
     // Frontline cache handle.

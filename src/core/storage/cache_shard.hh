@@ -13,6 +13,8 @@
 //      cache.
 // ****************************************************
 
+// BUGBUG -> Implement removal of objects.
+
 #pragma once
 
 #include <map>

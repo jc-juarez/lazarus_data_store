@@ -10,7 +10,8 @@
 // Author: jcjuarez
 // Description:
 //      Write request dispatcher module for IO.
-//      Implemented as a thread pool dispatcher.
+//      Implemented as a single-threaded lock-free
+//      batching IO dispatcher.
 // ****************************************************
 
 #include "container.hh"
@@ -23,88 +24,33 @@ namespace lazarus::storage
 {
 
 write_io_dispatcher::write_io_dispatcher(
-    const std::uint32_t number_write_io_threads,
     std::shared_ptr<storage_engine_interface> storage_engine,
-    std::shared_ptr<storage::frontline_cache> frontline_cache)
-    : concurrent_io_dispatcher{
-        number_write_io_threads,
-        std::move(storage_engine),
-        std::move(frontline_cache)}
+    std::shared_ptr<frontline_cache> frontline_cache)
+    : storage_engine_{std::move(storage_engine)},
+      frontline_cache_{std::move(frontline_cache)}
 {}
 
 void
-write_io_dispatcher::concurrent_io_request_proxy(
+write_io_dispatcher::start()
+{}
+
+void
+write_io_dispatcher::enqueue_io_task(
     schemas::object_request&& object_request,
     std::shared_ptr<container> container,
     network::server_response_callback&& response_callback)
-{
-    //
-    // The underlying storage engine is of blocking nature,
-    // so all threads reaching the storage engine API will block until
-    // the storage IO makes progress, as to later provide a response to the client.
-    //
-    status::status_code status = status::success;
+{}
 
-    //
-    // At this point of execution, this scope guarantees that the
-    // object container will be held for as long as the storage API takes,
-    // so it is safe to only pass down the storage engine reference given
-    // the storage engine reference will not be dropped by the storage engine.
-    //
-    switch (object_request.get_optype())
-    {
-        case schemas::object_request_optype::insert:
-        {
-            status = execute_insert_operation(
-                container->get_storage_engine_reference(),
-                object_request);
-            break;
-        }
-        case schemas::object_request_optype::remove:
-        {
-            status = execute_remove_operation(
-                container->get_storage_engine_reference(),
-                object_request);
-            break;
-        }
-        default:
-        {
-            //
-            // This should never happen given this should have been
-            // taken care of before enqueuing the task to the thread pool.
-            //
-            spdlog::critical("Invalid write request optype for object "
-                "operation scheduled in the write IO thread pool. "
-                "Optype={}, "
-                "ObjectId={}, "
-                "ObjectContainerName={}.",
-                static_cast<std::uint8_t>(object_request.get_optype()),
-                object_request.get_object_id(),
-                object_request.get_container_name());
+void
+write_io_dispatcher::wait_for_stop()
+{}
 
-            status = status::invalid_operation;
-            break;
-        }
-    }
-
-    //
-    // If the operation was successful, insert the object into the frontline cache.
-    // Doing this before returning a response back to the client
-    // guarantees that all future request see a consistent state for the object.
-    // This provides strong consistency for get operations after a well-acknowledged object insertion.
-    //
-    if (status::succeeded(status))
-    {
-        insert_object_into_cache(object_request);
-    }
-
-    //
-    // Provide the response back to the client over the async callback.
-    //
-    network::server::send_response(
-        response_callback,
-        status);
-}
+void
+write_io_dispatcher::dispatch_write_io_operations(
+    schemas::object_request&& object_request,
+    std::shared_ptr<container> container,
+    network::server_response_callback&& response_callback)
+{}
 
 status::status_code
 write_io_dispatcher::execute_insert_operation(
