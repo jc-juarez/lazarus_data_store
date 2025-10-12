@@ -25,6 +25,8 @@
 #include "../storage/gc/garbage_collector.hh"
 #include "../storage/io/read_io_dispatcher.hh"
 #include "../storage/io/write_io_dispatcher.hh"
+#include "../storage/io/object_io_executor.hh"
+#include "../storage/cache/cache_accessor.hh"
 #include "../common/system_configuration.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "../storage/management/object_management_service.hh"
@@ -202,19 +204,31 @@ lazarus_data_store::construct_dependency_tree(
         container_index_);
 
     //
+    // Frontline cache accessor component allocation.
+    //
+    cache_accessor_ = std::make_shared<storage::cache_accessor>(
+        frontline_cache_);
+
+    //
+    // Object IO executor component allocation.
+    //
+    object_io_executor_ = std::make_shared<storage::object_io_executor>(
+        storage_engine_);
+
+    //
     // Write request dispatcher component allocation.
     //
     write_io_task_dispatcher_ = std::make_shared<storage::write_io_dispatcher>(
-        storage_engine_,
-        frontline_cache_);
+        object_io_executor_,
+        cache_accessor_);
 
     //
     // Read request dispatcher component allocation.
     //
     read_io_task_dispatcher_ = std::make_shared<storage::read_io_dispatcher>(
         storage_configuration.number_read_io_threads_,
-        storage_engine_,
-        frontline_cache_);
+        object_io_executor_,
+        cache_accessor_);
 
     //
     // Object management service component allocation.

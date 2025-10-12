@@ -94,6 +94,9 @@ set(SOURCE_FILES
         src/core/storage/management/inflight_operations_tracker.hh
         src/core/storage/cache/cache_accessor.cc
         src/core/storage/cache/cache_accessor.hh
+        src/core/storage/io/object_io_executor.cc
+        src/core/storage/io/object_io_executor.hh
+        src/core/storage/models/object_io_task.cc
 )
 
 # Lazarus core library.

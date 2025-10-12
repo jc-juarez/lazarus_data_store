@@ -16,15 +16,18 @@
 
 #pragma once
 
-#include "../models/object_io_task.hh"
 #include "io_dispatcher_interface.hh"
-#include "../../network/server/server.hh"
+#include "../models/object_io_task.hh"
 #include <moodycamel/concurrentqueue.h>
+#include "../../network/server/server.hh"
 #include "../../common/startable_interface.hh"
 #include "../../schemas/request-interfaces/object_request.hh"
 
 namespace lazarus::storage
 {
+
+class cache_accessor;
+class object_io_executor;
 
 class write_io_dispatcher : public io_dispatcher_interface, public common::startable_interface
 {
@@ -34,8 +37,8 @@ public:
     // Constructor.
     //
     write_io_dispatcher(
-        std::shared_ptr<storage_engine_interface> storage_engine,
-        std::shared_ptr<frontline_cache> frontline_cache);
+        std::shared_ptr<object_io_executor> object_io_executor,
+        std::shared_ptr<cache_accessor> cache_accessor);
 
     //
     // Starts the write dispatcher master thread.
@@ -49,7 +52,7 @@ public:
     //
     void
     enqueue_io_task(
-        object_io_task&& object_io_task) override;
+        object_io_task&& write_io_task) override;
 
     //
     // Waits for the write dispatcher master
@@ -65,33 +68,8 @@ private:
     // This is the long-running dispatcher master thread context.
     //
     void
-    dispatch_write_io_operations(
-        schemas::object_request&& object_request,
-        std::shared_ptr<container> container,
-        network::server_response_callback&& response_callback);
-
-    //
-    // Handles the insertion of elements into the frontline cache.
-    //
-    void
-    insert_object_into_cache(
-        schemas::object_request& object_request);
-
-    //
-    // Executes an insertion operation with the storage engine.
-    //
-    status::status_code
-    execute_insert_operation(
-        storage_engine_reference_handle* container_storage_engine_reference,
-        const schemas::object_request& object_request);
-
-    //
-    // Executes a removal operation with the storage engine.
-    //
-    status::status_code
-    execute_remove_operation(
-        storage_engine_reference_handle* container_storage_engine_reference,
-        const schemas::object_request& object_request);
+    dispatch_write_io_tasks(
+        std::stop_token stop_token);
 
     //
     // Long-running write io dispatcher master thread.
@@ -104,14 +82,14 @@ private:
     moodycamel::ConcurrentQueue<object_io_task> write_io_tasks_queue_;
 
     //
-    // Reference for the storage engine component.
+    // Object IO executor handle.
     //
-    std::shared_ptr<storage_engine_interface> storage_engine_;
+    std::shared_ptr<object_io_executor> object_io_executor_;
 
     //
-    // Frontline cache handle.
+    // Cache accessor handle.
     //
-    std::shared_ptr<storage::frontline_cache> frontline_cache_;
+    std::shared_ptr<cache_accessor> cache_accessor_;
 };
 
-} // namespace lazarus::common.
+} // namespace lazarus::storage.

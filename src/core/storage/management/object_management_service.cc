@@ -190,13 +190,13 @@ object_management_service::orchestrate_concurrent_write_request(
     //
     // Create the long-lived write IO task to be dispatched down to the storage engine.
     //
-    object_io_task io_task {
+    object_io_task write_io_task {
         std::move(object_request),
         std::move(container),
         std::move(response_callback)};
 
     write_io_task_dispatcher_->enqueue_io_task(
-        std::move(io_task));
+        std::move(write_io_task));
 
     return status::success;
 }
@@ -227,13 +227,13 @@ object_management_service::orchestrate_concurrent_read_request(
     //
     // Create the long-lived read IO task to be dispatched down to the storage engine.
     //
-    object_io_task io_task {
+    object_io_task read_io_task {
         std::move(object_request),
         std::move(container),
         std::move(response_callback)};
 
     read_io_task_dispatcher_->enqueue_io_task(
-        std::move(io_task));
+        std::move(read_io_task));
 
     return status::success;
 }

@@ -6,7 +6,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'write_io_task.hh'
+// 'object_io_task.hh'
 // Author: jcjuarez
 // Description:
 //      Individual unit of data
@@ -26,26 +26,18 @@ namespace lazarus::storage
 struct object_io_task
 {
     //
-    // Inline constructor with moved parameters.
+    // Constructor with moved parameters.
     //
     object_io_task(
         schemas::object_request&& object_request,
         std::shared_ptr<container> container,
-        network::server_response_callback&& response_callback)
-        : object_request_{std::move(object_request)},
-          container_{std::move(container)},
-          response_callback_{std::move(response_callback)}
-    {}
+        network::server_response_callback&& response_callback);
 
     //
-    // Inline move constructor.
+    // Move constructor.
     //
     object_io_task(
-        object_io_task&& other)
-        : object_request_{std::move(other.object_request_)},
-          container_{std::move(other.container_)},
-          response_callback_{std::move(other.response_callback_)}
-    {}
+        object_io_task&& other);
 
     //
     // Contains the data for the object request.
@@ -58,7 +50,8 @@ struct object_io_task
     std::shared_ptr<container> container_;
 
     //
-    // Callback on which to provide a response for the operation.
+    // Callback on which to provide a response for
+    // the operation associated to the respective IO task.
     //
     network::server_response_callback response_callback_;
 };

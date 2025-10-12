@@ -23,6 +23,9 @@
 namespace lazarus::storage
 {
 
+class cache_accessor;
+class object_io_executor;
+
 class read_io_dispatcher : public io_dispatcher_interface
 {
 public:
@@ -32,8 +35,8 @@ public:
     //
     read_io_dispatcher(
         const std::uint32_t number_read_io_threads,
-        std::shared_ptr<storage_engine_interface> storage_engine,
-        std::shared_ptr<frontline_cache> frontline_cache);
+        std::shared_ptr<object_io_executor> object_io_executor,
+        std::shared_ptr<cache_accessor> cache_accessor);
 
     //
     // Enqueues a read IO operation for to be processed
@@ -41,7 +44,7 @@ public:
     //
     void
     enqueue_io_task(
-        object_io_task&& object_io_task) override;
+        object_io_task&& read_io_task) override;
 
     //
     // Waits for the read dispatcher thread pool
@@ -58,22 +61,14 @@ private:
     //
     void
     dispatch_read_io_task(
-        object_io_task&& object_io_task);
+        object_io_task&& read_io_task);
 
     //
-    // Handles the insertion of elements into the frontline cache.
-    //
-    void
-    insert_object_into_cache(
-        schemas::object_request& object_request);
-
-    //
-    // Executes a get operation with the storage engine.
+    // Executes a get object task.
     //
     status::status_code
-    execute_get_operation(
-        storage_engine_reference_handle* container_storage_engine_reference,
-        const schemas::object_request& object_request,
+    execute_read_io_task(
+        object_io_task& read_io_task,
         byte_stream& object_data);
 
     //
@@ -82,14 +77,14 @@ private:
     boost::asio::thread_pool read_io_thread_pool_;
 
     //
-    // Reference for the storage engine component.
+    // Object IO executor handle.
     //
-    std::shared_ptr<storage_engine_interface> storage_engine_;
+    std::shared_ptr<storage::object_io_executor> object_io_executor_;
 
     //
-    // Frontline cache handle.
+    // Cache accessor handle.
     //
-    std::shared_ptr<storage::frontline_cache> frontline_cache_;
+    std::shared_ptr<storage::cache_accessor> cache_accessor_;
 };
 
 } // namespace lazarus::common.

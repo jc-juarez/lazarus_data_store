@@ -14,158 +14,66 @@
 //      batching IO dispatcher.
 // ****************************************************
 
-#include "../models/container.hh"
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
-#include "../cache/frontline_cache.hh"
 #include "write_io_dispatcher.hh"
+#include "../cache/frontline_cache.hh"
+#include "../../startup/lazarus_data_store.hh"
 
 namespace lazarus::storage
 {
 
 write_io_dispatcher::write_io_dispatcher(
-    std::shared_ptr<storage_engine_interface> storage_engine,
-    std::shared_ptr<frontline_cache> frontline_cache)
-    : storage_engine_{std::move(storage_engine)},
-      frontline_cache_{std::move(frontline_cache)}
+    std::shared_ptr<object_io_executor> object_io_executor,
+    std::shared_ptr<cache_accessor> cache_accessor)
+    : object_io_executor_{std::move(object_io_executor)},
+      cache_accessor_{std::move(cache_accessor)}
 {}
 
 void
 write_io_dispatcher::start()
-{}
+{
+    spdlog::info("Starting lazarus data store write IO dispatcher thread.");
+
+    write_dispatcher_master_thread_ = std::jthread(
+        &write_io_dispatcher::dispatch_write_io_tasks,
+        this,
+        lazarus_data_store::get_stop_source_token());
+}
 
 void
 write_io_dispatcher::enqueue_io_task(
-    object_io_task&& object_io_task)
-{}
+    object_io_task&& write_io_task)
+{
+    //
+    // This is a lock-free operation.
+    //
+    write_io_tasks_queue_.enqueue(std::move(write_io_task));
+}
 
 void
 write_io_dispatcher::wait_for_stop()
-{}
+{
+    //
+    // This call will make sure that the dispatcher
+    // thread gets stopped, in a blocking manner.
+    //
+    write_dispatcher_master_thread_.join();
+}
 
 void
-write_io_dispatcher::dispatch_write_io_operations(
-    schemas::object_request&& object_request,
-    std::shared_ptr<container> container,
-    network::server_response_callback&& response_callback)
-{}
-
-status::status_code
-write_io_dispatcher::execute_insert_operation(
-    storage_engine_reference_handle* container_storage_engine_reference,
-    const schemas::object_request& object_request)
-{
-    status::status_code status = storage_engine_->insert_object(
-        container_storage_engine_reference,
-        object_request.get_object_id().c_str(),
-        object_request.get_object_data());
-
-    if (status::succeeded(status))
-    {
-        spdlog::info("Object insertion succeeded. "
-            "Optype={}, "
-            "ObjectId={}, "
-            "ObjectContainerName={}.",
-            static_cast<std::uint8_t>(object_request.get_optype()),
-            object_request.get_object_id(),
-            object_request.get_container_name());
-    }
-    else
-    {
-        spdlog::error("Object insertion failed. "
-            "Optype={}, "
-            "ObjectId={}, "
-            "ObjectContainerName={}, "
-            "Status={:#x}.",
-            static_cast<std::uint8_t>(object_request.get_optype()),
-            object_request.get_object_id(),
-            object_request.get_container_name(),
-            status);
-    }
-
-    return status;
-}
-
-status::status_code
-write_io_dispatcher::execute_remove_operation(
-    storage_engine_reference_handle* container_storage_engine_reference,
-    const schemas::object_request& object_request)
-{
-    status::status_code status = storage_engine_->remove_object(
-        container_storage_engine_reference,
-        object_request.get_object_id().c_str());
-
-    if (status::succeeded(status))
-    {
-        spdlog::info("Object removal succeeded. "
-            "Optype={}, "
-            "ObjectId={}, "
-            "ObjectContainerName={}.",
-            static_cast<std::uint8_t>(object_request.get_optype()),
-            object_request.get_object_id(),
-            object_request.get_container_name());
-    }
-    else
-    {
-        spdlog::error("Object removal failed. "
-            "Optype={}, "
-            "ObjectId={}, "
-            "ObjectContainerName={}, "
-            "Status={:#x}.",
-            static_cast<std::uint8_t>(object_request.get_optype()),
-            object_request.get_object_id(),
-            object_request.get_container_name(),
-            status);
-    }
-
-    return status;
-}
-
-void write_io_dispatcher::insert_object_into_cache(
-    schemas::object_request& object_request)
+write_io_dispatcher::dispatch_write_io_tasks(
+    std::stop_token stop_token)
 {
     //
-    // Insert the object into the cache if the operation was an insertion.
-    // Removals are not tracked as part of the caching strategy.
+    // This is the core tight loop for dispatching write io tasks.
     //
-    if (object_request.get_optype() != schemas::object_request_optype::insert)
+    while (!stop_token.stop_requested())
     {
-        return;
+
     }
 
-    //
-    // Create a copy of these parameters since
-    // they will be moved after the cache insertion.
-    //
-    const std::string object_id = object_request.get_object_id();
-    const std::string container_name = object_request.get_container_name();
-    const status::status_code status = frontline_cache_->put(
-        std::move(object_request.get_object_id_mutable()),
-        std::move(object_request.get_object_data_mutable()),
-        std::move(object_request.get_container_name_mutable()));
-
-    if (status::succeeded(status))
-    {
-        spdlog::info("Frontline cache object insertion succeeded on insert object operation. "
-            "Optype={}, "
-            "ObjectId={}, "
-            "ObjectContainerName={}.",
-            static_cast<std::uint8_t>(object_request.get_optype()),
-            object_id,
-            container_name);
-    }
-    else
-    {
-        spdlog::error("Frontline cache object insertion failed on insert object operation. "
-            "Optype={}, "
-            "ObjectId={}, "
-            "ObjectContainerName={}, "
-            "Status={:#x}.",
-            static_cast<std::uint8_t>(object_request.get_optype()),
-            object_id,
-            container_name,
-            status);
-    }
+    spdlog::info("Stopping lazarus data store write IO dispatcher thread.");
 }
 
-} // namespace lazarus::common.
+} // namespace lazarus::storage.
