@@ -45,20 +45,11 @@ public:
         byte_stream& object_data);
 
     //
-    // Executes an insertion operation with the storage engine.
+    // Executes a batch of write operations with the storage engine.
     //
     status::status_code
-    execute_insert_operation(
-        storage_engine_reference_handle* container_storage_engine_reference,
-        const schemas::object_request& object_request);
-
-    //
-    // Executes a removal operation with the storage engine.
-    //
-    status::status_code
-    execute_remove_operation(
-        storage_engine_reference_handle* container_storage_engine_reference,
-        const schemas::object_request& object_request);
+    execute_write_batch_operation(
+        storage_engine_write_batch& write_batch);
 
 private:
 

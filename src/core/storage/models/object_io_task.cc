@@ -25,14 +25,16 @@ object_io_task::object_io_task(
     network::server_response_callback&& response_callback)
     : object_request_{std::move(object_request)},
       container_{std::move(container)},
-      response_callback_{std::move(response_callback)}
+      response_callback_{std::move(response_callback)},
+      id_{common::generate_uuid()}
 {}
 
 object_io_task::object_io_task(
     object_io_task&& other)
     : object_request_{std::move(other.object_request_)},
       container_{std::move(other.container_)},
-      response_callback_{std::move(other.response_callback_)}
+      response_callback_{std::move(other.response_callback_)},
+      id_{std::move(other.id_)}
 {}
 
 } // namespace lazarus::storage.

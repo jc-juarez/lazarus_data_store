@@ -337,6 +337,28 @@ storage_engine::remove_container(
     return status::success;
 }
 
+status::status_code
+storage_engine::execute_objects_write_batch(
+    storage_engine_write_batch& write_batch)
+{
+    const rocksdb::Status status = kv_store_->Write(
+        rocksdb::WriteOptions(),
+        &write_batch);
+
+    if (!status.ok())
+    {
+        spdlog::error("Failed to execute objects write batch operation. "
+            "StorageEngineCode={}, "
+            "StorageEngineSubCode={}.",
+            static_cast<std::uint32_t>(status.code()),
+            static_cast<std::uint32_t>(status.subcode()));
+
+        return status::object_write_batch_failed;
+    }
+
+    return status::success;
+}
+
 rocksdb::Options
 storage_engine::get_engine_configurations() const
 {

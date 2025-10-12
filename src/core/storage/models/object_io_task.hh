@@ -18,13 +18,16 @@
 
 #include "container.hh"
 #include "../../common/aliases.hh"
+#include "../../common/uuid_utilities.hh"
 #include "../../schemas/request-interfaces/object_request.hh"
 
 namespace lazarus::storage
 {
 
-struct object_io_task
+class object_io_task
 {
+public:
+
     //
     // Constructor with moved parameters.
     //
@@ -54,6 +57,14 @@ struct object_io_task
     // the operation associated to the respective IO task.
     //
     network::server_response_callback response_callback_;
+
+private:
+
+    //
+    // Unique ID for the object task.
+    // Generated upon construction.
+    //
+    const boost::uuids::uuid id_;
 };
 
 } // namespace lazarus::storage.

@@ -26,6 +26,7 @@
 #include "../storage/io/read_io_dispatcher.hh"
 #include "../storage/io/write_io_dispatcher.hh"
 #include "../storage/io/object_io_executor.hh"
+#include "../storage/io/write_batch_aggregator.hh"
 #include "../storage/cache/cache_accessor.hh"
 #include "../common/system_configuration.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
@@ -216,11 +217,17 @@ lazarus_data_store::construct_dependency_tree(
         storage_engine_);
 
     //
+    // Write batch aggregator component allocation.
+    //
+    auto write_batch_aggregator = std::make_unique<storage::write_batch_aggregator>(
+        object_io_executor_,
+        cache_accessor_);
+
+    //
     // Write request dispatcher component allocation.
     //
     write_io_task_dispatcher_ = std::make_shared<storage::write_io_dispatcher>(
-        object_io_executor_,
-        cache_accessor_);
+        std::move(write_batch_aggregator));
 
     //
     // Read request dispatcher component allocation.

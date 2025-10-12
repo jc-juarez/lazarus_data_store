@@ -15,19 +15,16 @@
 // ****************************************************
 
 #include <spdlog/spdlog.h>
-#include "storage_engine.hh"
 #include "write_io_dispatcher.hh"
-#include "../cache/frontline_cache.hh"
+#include "write_batch_aggregator.hh"
 #include "../../startup/lazarus_data_store.hh"
 
 namespace lazarus::storage
 {
 
 write_io_dispatcher::write_io_dispatcher(
-    std::shared_ptr<object_io_executor> object_io_executor,
-    std::shared_ptr<cache_accessor> cache_accessor)
-    : object_io_executor_{std::move(object_io_executor)},
-      cache_accessor_{std::move(cache_accessor)}
+    std::unique_ptr<write_batch_aggregator> write_batch_aggregator)
+    : write_batch_aggregator_{std::move(write_batch_aggregator)}
 {}
 
 void
@@ -70,7 +67,8 @@ write_io_dispatcher::dispatch_write_io_tasks(
     //
     while (!stop_token.stop_requested())
     {
-
+        write_batch_aggregator_->aggregate_and_commit_write_batch(
+            write_io_tasks_queue_);
     }
 
     spdlog::info("Stopping lazarus data store write IO dispatcher thread.");

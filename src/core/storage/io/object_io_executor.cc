@@ -64,71 +64,19 @@ object_io_executor::execute_get_operation(
 }
 
 status::status_code
-object_io_executor::execute_insert_operation(
-    storage_engine_reference_handle* container_storage_engine_reference,
-    const schemas::object_request& object_request)
+object_io_executor::execute_write_batch_operation(
+    storage_engine_write_batch& write_batch)
 {
-    status::status_code status = storage_engine_->insert_object(
-    container_storage_engine_reference,
-    object_request.get_object_id().c_str(),
-    object_request.get_object_data());
+    status::status_code status = storage_engine_->execute_objects_write_batch(
+        write_batch);
 
     if (status::succeeded(status))
     {
-        spdlog::info("Object insertion succeeded. "
-            "Optype={}, "
-            "ObjectId={}, "
-            "ObjectContainerName={}.",
-            static_cast<std::uint8_t>(object_request.get_optype()),
-            object_request.get_object_id(),
-            object_request.get_container_name());
+        spdlog::info("Write batch operation succeeded.");
     }
     else
     {
-        spdlog::error("Object insertion failed. "
-            "Optype={}, "
-            "ObjectId={}, "
-            "ObjectContainerName={}, "
-            "Status={:#x}.",
-            static_cast<std::uint8_t>(object_request.get_optype()),
-            object_request.get_object_id(),
-            object_request.get_container_name(),
-            status);
-    }
-
-    return status;
-}
-
-status::status_code
-object_io_executor::execute_remove_operation(
-    storage_engine_reference_handle* container_storage_engine_reference,
-    const schemas::object_request& object_request)
-{
-    status::status_code status = storage_engine_->remove_object(
-    container_storage_engine_reference,
-    object_request.get_object_id().c_str());
-
-    if (status::succeeded(status))
-    {
-        spdlog::info("Object removal succeeded. "
-            "Optype={}, "
-            "ObjectId={}, "
-            "ObjectContainerName={}.",
-            static_cast<std::uint8_t>(object_request.get_optype()),
-            object_request.get_object_id(),
-            object_request.get_container_name());
-    }
-    else
-    {
-        spdlog::error("Object removal failed. "
-            "Optype={}, "
-            "ObjectId={}, "
-            "ObjectContainerName={}, "
-            "Status={:#x}.",
-            static_cast<std::uint8_t>(object_request.get_optype()),
-            object_request.get_object_id(),
-            object_request.get_container_name(),
-            status);
+        spdlog::info("Write batch operation failed.");
     }
 
     return status;

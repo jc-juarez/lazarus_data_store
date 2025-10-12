@@ -45,6 +45,7 @@ namespace storage
 using byte = char;
 using byte_stream = std::string;
 using storage_engine_reference_handle = rocksdb::ColumnFamilyHandle;
+using storage_engine_write_batch = rocksdb::WriteBatch;
 }
 
 } // namespace lazarus.

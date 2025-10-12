@@ -19,15 +19,12 @@
 #include "io_dispatcher_interface.hh"
 #include "../models/object_io_task.hh"
 #include <moodycamel/concurrentqueue.h>
-#include "../../network/server/server.hh"
 #include "../../common/startable_interface.hh"
-#include "../../schemas/request-interfaces/object_request.hh"
 
 namespace lazarus::storage
 {
 
-class cache_accessor;
-class object_io_executor;
+class write_batch_aggregator;
 
 class write_io_dispatcher : public io_dispatcher_interface, public common::startable_interface
 {
@@ -37,8 +34,7 @@ public:
     // Constructor.
     //
     write_io_dispatcher(
-        std::shared_ptr<object_io_executor> object_io_executor,
-        std::shared_ptr<cache_accessor> cache_accessor);
+        std::unique_ptr<write_batch_aggregator> write_batch_aggregator);
 
     //
     // Starts the write dispatcher master thread.
@@ -82,14 +78,9 @@ private:
     moodycamel::ConcurrentQueue<object_io_task> write_io_tasks_queue_;
 
     //
-    // Object IO executor handle.
+    // Write batch aggregator handle.
     //
-    std::shared_ptr<object_io_executor> object_io_executor_;
-
-    //
-    // Cache accessor handle.
-    //
-    std::shared_ptr<cache_accessor> cache_accessor_;
+    std::unique_ptr<write_batch_aggregator> write_batch_aggregator_;
 };
 
 } // namespace lazarus::storage.
