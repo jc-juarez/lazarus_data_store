@@ -101,6 +101,9 @@ class LazarusStatusCode(Enum):
     # Object data size exceeds limit for the frontline cache.
     object_data_size_exceeds_cache_limit = 0x8000001c
 
+    # Objects write batch operation failed.
+    object_write_batch_failed = 0x8000001d
+
     @classmethod
     def from_code(cls, code: int):
         for s in cls:

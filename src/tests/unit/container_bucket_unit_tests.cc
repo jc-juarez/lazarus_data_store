@@ -15,8 +15,8 @@
 #include <gtest/gtest.h>
 #include "../../core/status/status.hh"
 #include "../mocks/mock_storage_engine.hh"
-#include "../../core/storage/container.hh"
-#include "../../core/storage/container_bucket.hh"
+#include "core/storage/models/container.hh"
+#include "core/storage/index/container_bucket.hh"
 
 namespace lazarus
 {

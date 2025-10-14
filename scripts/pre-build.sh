@@ -11,7 +11,7 @@
 set -euo pipefail
 
 BUILD_IMAGE_NAME="build-ubuntu-lazarus"
-BUILD_DOCKERFILE="build.dockerfile"
+BUILD_DOCKERFILE="scripts/build.dockerfile"
 
 echo "[PRE-BUILD] Checking for Docker build image: ${BUILD_IMAGE_NAME}"
 

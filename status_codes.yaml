@@ -155,3 +155,8 @@ codes:
     internal: "0x8000001c"
     http: 500
     desc: Object data size exceeds limit for the frontline cache.
+
+  - name: object_write_batch_failed
+    internal: "0x8000001d"
+    http: 500
+    desc: Objects write batch operation failed.

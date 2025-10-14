@@ -18,7 +18,7 @@
 #include "../endpoints/ping.hh"
 #include "../endpoints/objects.hh"
 #include "../endpoints/containers.hh"
-#include "../../storage/frontline_cache.hh"
+#include "../../storage/cache/frontline_cache.hh"
 #include "../../common/response_utilities.hh"
 #include "request-handlers/object/get_object_request_handler.hh"
 #include "request-handlers/object/insert_object_request_handler.hh"

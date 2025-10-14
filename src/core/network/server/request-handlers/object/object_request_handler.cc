@@ -16,8 +16,8 @@
 #include "../../server.hh"
 #include <spdlog/spdlog.h>
 #include "object_request_handler.hh"
-#include "../../../../storage/container.hh"
-#include "../../../../storage/object_management_service.hh"
+#include "../../../../storage/models/container.hh"
+#include "../../../../storage/management/object_management_service.hh"
 
 namespace lazarus
 {

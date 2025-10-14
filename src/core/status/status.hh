@@ -219,5 +219,11 @@ status_code_definition(
     0x8000001c,
     static_cast<drogon::HttpStatusCode>(500));
 
+// Objects write batch operation failed.
+status_code_definition(
+    object_write_batch_failed,
+    0x8000001d,
+    static_cast<drogon::HttpStatusCode>(500));
+
 } // namespace status.
 } // namespace lazarus.

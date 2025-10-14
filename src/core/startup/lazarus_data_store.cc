@@ -18,19 +18,22 @@
 #include "../common/aliases.hh"
 #include "lazarus_data_store.hh"
 #include "../network/server/server.hh"
-#include "../storage/storage_engine.hh"
-#include "../storage/container_index.hh"
-#include "../storage/frontline_cache.hh"
+#include "../storage/io/storage_engine.hh"
+#include "../storage/index/container_index.hh"
+#include "../storage/cache/frontline_cache.hh"
 #include "../common/args_validations.hh"
-#include "../storage/garbage_collector.hh"
-#include "../storage/read_io_dispatcher.hh"
-#include "../storage/write_io_dispatcher.hh"
+#include "../storage/gc/garbage_collector.hh"
+#include "../storage/io/read_io_dispatcher.hh"
+#include "../storage/io/write_io_dispatcher.hh"
+#include "../storage/io/object_io_executor.hh"
+#include "../storage/io/write_batch_aggregator.hh"
+#include "../storage/cache/cache_accessor.hh"
 #include "../common/system_configuration.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
-#include "../storage/object_management_service.hh"
-#include "../storage/orphaned_container_scavenger.hh"
-#include "../storage/container_management_service.hh"
-#include "../storage/container_operation_serializer.hh"
+#include "../storage/management/object_management_service.hh"
+#include "../storage/gc/orphaned_container_scavenger.hh"
+#include "../storage/management/container_management_service.hh"
+#include "../storage/management/container_operation_serializer.hh"
 #include "../network/server/request-handlers/object/get_object_request_handler.hh"
 #include "../network/server/request-handlers/object/insert_object_request_handler.hh"
 #include "../network/server/request-handlers/object/remove_object_request_handler.hh"
@@ -202,20 +205,37 @@ lazarus_data_store::construct_dependency_tree(
         container_index_);
 
     //
+    // Frontline cache accessor component allocation.
+    //
+    cache_accessor_ = std::make_shared<storage::cache_accessor>(
+        frontline_cache_);
+
+    //
+    // Object IO executor component allocation.
+    //
+    object_io_executor_ = std::make_shared<storage::object_io_executor>(
+        storage_engine_);
+
+    //
+    // Write batch aggregator component allocation.
+    //
+    auto write_batch_aggregator = std::make_unique<storage::write_batch_aggregator>(
+        object_io_executor_,
+        cache_accessor_);
+
+    //
     // Write request dispatcher component allocation.
     //
-    write_request_dispatcher_ = std::make_shared<storage::write_io_dispatcher>(
-        storage_configuration.number_write_io_threads_,
-        storage_engine_,
-        frontline_cache_);
+    write_io_task_dispatcher_ = std::make_shared<storage::write_io_dispatcher>(
+        std::move(write_batch_aggregator));
 
     //
     // Read request dispatcher component allocation.
     //
-    read_request_dispatcher_ = std::make_shared<storage::read_io_dispatcher>(
+    read_io_task_dispatcher_ = std::make_shared<storage::read_io_dispatcher>(
         storage_configuration.number_read_io_threads_,
-        storage_engine_,
-        frontline_cache_);
+        object_io_executor_,
+        cache_accessor_);
 
     //
     // Object management service component allocation.
@@ -223,8 +243,8 @@ lazarus_data_store::construct_dependency_tree(
     object_management_service_ = std::make_shared<storage::object_management_service>(
         storage_configuration,
         container_index_,
-        write_request_dispatcher_,
-        read_request_dispatcher_,
+        write_io_task_dispatcher_,
+        read_io_task_dispatcher_,
         frontline_cache_);
 
     //
