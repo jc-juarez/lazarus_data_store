@@ -1,0 +1,62 @@
+// ****************************************************
+// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Licensed under the Business Source License 1.1
+// See the LICENSE file in the
+// project root for license terms.
+// ****************************************************
+// Lazarus Data Store
+// Storage
+// 'data_partition_table.hh'
+// Author: jcjuarez
+// Description:
+//      Contains all data partitions in the system.
+// ****************************************************
+
+#pragma once
+
+#include <vector>
+#include <memory>
+
+namespace lazarus
+{
+namespace storage
+{
+
+class data_partition;
+class storage_engine;
+
+class data_partition_table
+{
+public:
+
+    //
+    // Constructor.
+    //
+    data_partition_table();
+
+    //
+    // Appends a new data partition instance to the table.
+    //
+    void
+    append_partition(
+        std::unique_ptr<storage_engine> storage_engine);
+
+    //
+    // Returns a reference to a data partition.
+    // This API is meant to be only be consumed by the data partition provider.
+    //
+    std::shared_ptr<data_partition>
+    get_partition(
+        const std::uint16_t collocation_index);
+
+private:
+
+    //
+    // Table for holding all data partitions in an owning model.
+    // References to be provided should be owning.
+    //
+    std::vector<std::shared_ptr<data_partition>> partitions_table_;
+};
+
+} // namespace storage.
+} // namespace lazarus.

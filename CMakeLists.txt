@@ -97,6 +97,22 @@ set(SOURCE_FILES
         src/core/storage/io/object_io_executor.cc
         src/core/storage/io/object_io_executor.hh
         src/core/storage/models/object_io_task.cc
+        src/core/storage/io/threading_context.cc
+        src/core/storage/io/threading_context.hh
+        src/core/storage/io/data_partition.cc
+        src/core/storage/io/data_partition.hh
+        src/core/storage/management/task_router.cc
+        src/core/storage/management/task_router.hh
+        src/core/startup/data_topology_orchestrator.cc
+        src/core/startup/data_topology_orchestrator.hh
+        src/core/storage/io/collocation_provider.cc
+        src/core/storage/io/collocation_provider.hh
+        src/core/storage/io/threading_context_provider.cc
+        src/core/storage/io/threading_context_provider.hh
+        src/core/storage/io/data_partition_table.cc
+        src/core/storage/io/data_partition_table.hh
+        src/core/storage/io/threading_context_table.cc
+        src/core/storage/io/threading_context_table.hh
 )
 
 # Lazarus core library.
