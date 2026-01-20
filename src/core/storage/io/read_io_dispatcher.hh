@@ -24,7 +24,7 @@ namespace lazarus::storage
 {
 
 class cache_accessor;
-class object_io_executor;
+class read_io_executor;
 
 class read_io_dispatcher : public io_dispatcher_interface
 {
@@ -79,7 +79,7 @@ private:
     //
     // Object IO executor handle.
     //
-    std::shared_ptr<storage::object_io_executor> object_io_executor_;
+    std::shared_ptr<storage::read_io_executor> object_io_executor_;
 
     //
     // Cache accessor handle.

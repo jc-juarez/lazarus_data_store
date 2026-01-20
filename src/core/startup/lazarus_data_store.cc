@@ -25,7 +25,7 @@
 #include "../storage/gc/garbage_collector.hh"
 #include "../storage/io/read_io_dispatcher.hh"
 #include "../storage/io/write_io_dispatcher.hh"
-#include "../storage/io/object_io_executor.hh"
+#include "../storage/io/read_io_executor.hh"
 #include "../storage/io/write_batch_aggregator.hh"
 #include "../storage/cache/cache_accessor.hh"
 #include "../common/system_configuration.hh"
@@ -213,7 +213,7 @@ lazarus_data_store::construct_dependency_tree(
     //
     // Object IO executor component allocation.
     //
-    object_io_executor_ = std::make_shared<storage::object_io_executor>(
+    object_io_executor_ = std::make_shared<storage::read_io_executor>(
         storage_engine_);
 
     //

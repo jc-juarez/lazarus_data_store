@@ -28,9 +28,9 @@ void
 data_partition_table::append_partition(
     std::unique_ptr<storage_engine> storage_engine)
 {
-    const std::uint16_t collocation_index = partitions_table_.size();
+    const std::uint16_t collocation_index = partitions_.size();
 
-    partitions_table_.emplace_back(
+    partitions_.emplace_back(
         std::make_shared<data_partition>(
             collocation_index,
             std::move(storage_engine)));
@@ -40,7 +40,7 @@ std::shared_ptr<data_partition>
 data_partition_table::get_partition(
     const std::uint16_t collocation_index)
 {
-    return partitions_table_.at(collocation_index);
+    return partitions_.at(collocation_index);
 }
 
 } // namespace storage.

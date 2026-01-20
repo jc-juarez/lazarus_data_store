@@ -55,7 +55,7 @@ private:
     // Table for holding all data partitions in an owning model.
     // References to be provided should be owning.
     //
-    std::vector<std::shared_ptr<data_partition>> partitions_table_;
+    std::vector<std::shared_ptr<data_partition>> partitions_;
 };
 
 } // namespace storage.

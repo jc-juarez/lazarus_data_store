@@ -1,10 +1,15 @@
 // ****************************************************
 // Lazarus Data Store
 // 
-// 'collocation_provider.cc'
+// 'threading_context_index.hh'
 // Author: jcjuarez
 // Description:
 //
 // ****************************************************
 
-#include "collocation_provider.hh"
+#pragma once
+
+
+class threading_context_index {
+
+};

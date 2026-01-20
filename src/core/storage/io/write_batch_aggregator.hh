@@ -27,7 +27,7 @@ namespace storage
 {
 
 class cache_accessor;
-class object_io_executor;
+class read_io_executor;
 
 class write_batch_aggregator
 {
@@ -54,7 +54,7 @@ private:
     //
     // Object IO executor handle.
     //
-    std::shared_ptr<object_io_executor> object_io_executor_;
+    std::shared_ptr<read_io_executor> object_io_executor_;
 
     //
     // Cache accessor handle.

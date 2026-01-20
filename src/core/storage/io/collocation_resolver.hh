@@ -6,7 +6,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'task_router.hh'
+// 'collocation_resolver.hh'
 // Author: jcjuarez
 // Description:
 //      Routes object keys to the corresponding
@@ -23,14 +23,14 @@ namespace lazarus
 namespace storage
 {
 
-class task_router
+class collocation_resolver
 {
 public:
 
     //
     // Constructor.
     //
-    task_router(
+    collocation_resolver(
         const std::uint16_t number_data_collocations);
 
     //
@@ -52,7 +52,6 @@ private:
     // Number of data collocations in the system.
     //
     const std::uint16_t number_data_collocations_;
-
 };
 
 } // namespace storage.

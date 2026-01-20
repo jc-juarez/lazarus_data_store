@@ -16,7 +16,7 @@
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 #include "read_io_dispatcher.hh"
-#include "object_io_executor.hh"
+#include "read_io_executor.hh"
 #include "../cache/cache_accessor.hh"
 
 namespace lazarus::storage
@@ -24,7 +24,7 @@ namespace lazarus::storage
 
 read_io_dispatcher::read_io_dispatcher(
     const std::uint32_t number_read_io_threads,
-    std::shared_ptr<object_io_executor> object_io_executor,
+    std::shared_ptr<read_io_executor> object_io_executor,
     std::shared_ptr<cache_accessor> cache_accessor)
     : object_io_executor_{std::move(object_io_executor)},
       cache_accessor_{std::move(cache_accessor)},

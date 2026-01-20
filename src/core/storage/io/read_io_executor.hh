@@ -6,7 +6,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'object_io_executor.hh'
+// 'read_io_executor.hh'
 // Author: jcjuarez
 // Description:
 //      Executes an object IO task against the engine.
@@ -25,14 +25,14 @@ namespace storage
 
 class storage_engine_interface;
 
-class object_io_executor
+class read_io_executor
 {
 public:
 
     //
     // Constructor.
     //
-    object_io_executor(
+    read_io_executor(
         std::shared_ptr<storage_engine_interface> storage_engine);
 
     //

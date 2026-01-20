@@ -14,7 +14,7 @@
 //      synchronizes the cache if needed.
 // ****************************************************
 
-#include "object_io_executor.hh"
+#include "read_io_executor.hh"
 #include "write_batch_aggregator.hh"
 #include "../cache/cache_accessor.hh"
 
@@ -24,7 +24,7 @@ namespace storage
 {
 
 write_batch_aggregator::write_batch_aggregator(
-    std::shared_ptr<object_io_executor> object_io_executor,
+    std::shared_ptr<read_io_executor> object_io_executor,
     std::shared_ptr<cache_accessor> cache_accessor)
     : object_io_executor_{std::move(object_io_executor)},
       cache_accessor_{std::move(cache_accessor)}

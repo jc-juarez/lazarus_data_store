@@ -16,6 +16,7 @@
 
 #include <memory>
 #include <cstdint>
+#include <unistd.h>
 
 namespace lazarus
 {
@@ -52,9 +53,9 @@ private:
     std::unique_ptr<storage_engine> storage_engine_;
 
     //
-    // Drive collocation index.
+    // Data collocation index.
     //
-    std::uint16_t collocation_index_;
+    const std::uint16_t collocation_index_;
 };
 
 } // namespace storage.

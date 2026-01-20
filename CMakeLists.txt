@@ -10,7 +10,7 @@
 cmake_minimum_required(VERSION 3.28)
 project(lazarus)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_BUILD_TYPE Debug)
 
 find_package(TBB REQUIRED)
@@ -94,25 +94,27 @@ set(SOURCE_FILES
         src/core/storage/management/inflight_operations_tracker.hh
         src/core/storage/cache/cache_accessor.cc
         src/core/storage/cache/cache_accessor.hh
-        src/core/storage/io/object_io_executor.cc
-        src/core/storage/io/object_io_executor.hh
+        src/core/storage/io/read_io_executor.cc
+        src/core/storage/io/read_io_executor.hh
         src/core/storage/models/object_io_task.cc
         src/core/storage/io/threading_context.cc
         src/core/storage/io/threading_context.hh
         src/core/storage/io/data_partition.cc
         src/core/storage/io/data_partition.hh
-        src/core/storage/management/task_router.cc
-        src/core/storage/management/task_router.hh
+        src/core/storage/io/collocation_resolver.cc
+        src/core/storage/io/collocation_resolver.hh
         src/core/startup/data_topology_orchestrator.cc
         src/core/startup/data_topology_orchestrator.hh
-        src/core/storage/io/collocation_provider.cc
-        src/core/storage/io/collocation_provider.hh
         src/core/storage/io/threading_context_provider.cc
         src/core/storage/io/threading_context_provider.hh
         src/core/storage/io/data_partition_table.cc
         src/core/storage/io/data_partition_table.hh
-        src/core/storage/io/threading_context_table.cc
-        src/core/storage/io/threading_context_table.hh
+        src/core/storage/io/threading_context_index.cc
+        src/core/storage/io/threading_context_index.hh
+        src/core/storage/io/data_partition_provider.cc
+        src/core/storage/io/data_partition_provider.hh
+        src/core/storage/io/write_io_executor.cc
+        src/core/storage/io/write_io_executor.hh
 )
 
 # Lazarus core library.

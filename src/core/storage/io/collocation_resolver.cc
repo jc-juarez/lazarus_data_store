@@ -6,27 +6,27 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'task_router.cc'
+// 'collocation_resolver.cc'
 // Author: jcjuarez
 // Description:
 //      Routes object keys to the corresponding
 //      collocation index to be used by providers.
 // ****************************************************
 
-#include "task_router.hh"
+#include "collocation_resolver.hh"
 
 namespace lazarus
 {
 namespace storage
 {
 
-task_router::task_router(
+collocation_resolver::collocation_resolver(
     const std::uint16_t number_data_collocations)
     : number_data_collocations_{number_data_collocations}
 {}
 
 std::uint16_t
-task_router::get_collocation_index_for_key(
+collocation_resolver::get_collocation_index_for_key(
     const std::string& object_key)
 {
     return hasher_(object_key) % number_data_collocations_;

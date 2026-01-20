@@ -41,7 +41,7 @@ class io_dispatcher_interface;
 class storage_engine_interface;
 class object_management_service;
 class container_management_service;
-class object_io_executor;
+class read_io_executor;
 class cache_accessor;
 }
 
@@ -178,7 +178,7 @@ private:
     //
     // Object IO executor handle.
     //
-    std::shared_ptr<storage::object_io_executor> object_io_executor_;
+    std::shared_ptr<storage::read_io_executor> object_io_executor_;
 
     //
     // Cache accessor handle.
