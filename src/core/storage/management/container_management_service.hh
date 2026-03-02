@@ -57,7 +57,7 @@ public:
     //
     status::status_code
     populate_container_index(
-        std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping);
+        std::unordered_map<std::string, storage_engine_reference_handle*> storage_engine_references_mapping);
 
     //
     // Orchestrates possible update operations to the object container index.

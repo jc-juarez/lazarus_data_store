@@ -40,199 +40,67 @@
 #include "../network/server/request-handlers/container/create_container_request_handler.hh"
 #include "../network/server/request-handlers/container/remove_container_request_handler.hh"
 
+#include "../storage/io/data_partition.hh"
+#include "../storage/io/data_partition_provider.hh"
+
 namespace lazarus
 {
 
 lazarus_data_store::lazarus_data_store(
     const boost::uuids::uuid session_id,
-    const network::server_configuration& server_config,
-    const storage::storage_configuration& storage_configuration)
+    std::shared_ptr<storage::collocation_resolver> collocation_resolver,
+    std::shared_ptr<storage::data_partition_provider> data_partition_provider,
+    std::shared_ptr<storage::threading_context> threading_context_provider,
+    std::shared_ptr<network::server> server,
+    std::shared_ptr<storage::container_management_service> container_management_service,
+    std::shared_ptr<storage::object_management_service> object_management_service,
+    std::unique_ptr<storage::garbage_collector> garbage_collector,
+    std::shared_ptr<storage::container_index> container_index,
+    std::shared_ptr<storage::io_dispatcher_interface> write_io_task_dispatcher,
+    std::shared_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher,
+    std::shared_ptr<storage::frontline_cache> frontline_cache,
+    std::shared_ptr<storage::read_io_executor> object_io_executor,
+    std::shared_ptr<storage::cache_accessor> cache_accessor)
     : session_id_{session_id}
-{
-    //
-    // Storage engine component allocation.
-    //
-    storage_engine_ = std::make_shared<storage::storage_engine>(
-    storage_configuration);
-
-    //
-    // Object container index component allocation.
-    //
-    container_index_ = std::make_shared<storage::container_index>(
-    storage_configuration.container_index_number_buckets_,
-    storage_engine_);
-
-    //
-    // Orphaned container scavenger component allocation.
-    //
-    auto orphaned_container_scavenger = std::make_unique<storage::orphaned_container_scavenger>(
-    storage_engine_,
-    container_index_);
-
-    //
-    // Garbage collector component allocation.
-    //
-    garbage_collector_ = std::make_unique<storage::garbage_collector>(
-    storage_configuration,
-    container_index_,
-    std::move(orphaned_container_scavenger));
-
-    //
-    // Object container operation serializer component allocation.
-    //
-    auto container_operation_serializer = std::make_unique<storage::container_operation_serializer>(
-    storage_engine_,
-    container_index_);
-
-    //
-    // Object container management service component allocation.
-    //
-    container_management_service_ = std::make_shared<storage::container_management_service>(
-    storage_configuration,
-    storage_engine_,
-    container_index_,
-    std::move(container_operation_serializer));
-
-    //
-    // Frontline cache component allocation.
-    //
-    frontline_cache_ = std::make_shared<storage::frontline_cache>(
-    storage_configuration.number_frontline_cache_shards_,
-    storage_configuration.max_frontline_cache_shard_size_mib_ * 1'024 * 1'024,
-    storage_configuration.max_frontline_cache_shard_object_size_bytes,
-    container_index_);
-
-    //
-    // Frontline cache accessor component allocation.
-    //
-    cache_accessor_ = std::make_shared<storage::cache_accessor>(
-    frontline_cache_);
-
-    //
-    // Object IO executor component allocation.
-    //
-    object_io_executor_ = std::make_shared<storage::read_io_executor>(
-    storage_engine_);
-
-    //
-    // Write batch aggregator component allocation.
-    //
-    auto write_batch_aggregator = std::make_unique<storage::write_batch_aggregator>(
-    object_io_executor_,
-    cache_accessor_);
-
-    //
-    // Write request dispatcher component allocation.
-    //
-    write_io_task_dispatcher_ = std::make_shared<storage::write_io_dispatcher>(
-    std::move(write_batch_aggregator));
-
-    //
-    // Read request dispatcher component allocation.
-    //
-    read_io_task_dispatcher_ = std::make_shared<storage::read_io_dispatcher>(
-    storage_configuration.number_read_io_threads_,
-    object_io_executor_,
-    cache_accessor_);
-
-    //
-    // Object management service component allocation.
-    //
-    object_management_service_ = std::make_shared<storage::object_management_service>(
-    storage_configuration,
-    container_index_,
-    write_io_task_dispatcher_,
-    read_io_task_dispatcher_,
-    frontline_cache_);
-
-    //
-    // Create container request handler allocation.
-    //
-    auto create_container_request_handler = std::make_unique<network::create_container_request_handler>(
-    container_management_service_);
-
-    //
-    // Remove container request handler allocation.
-    //
-    auto remove_container_request_handler = std::make_unique<network::remove_container_request_handler>(
-    container_management_service_);
-
-    //
-    // Insert object request handler allocation
-    //
-    auto insert_object_request_handler = std::make_unique<network::insert_object_request_handler>(
-    object_management_service_);
-
-    //
-    // Get object request handler allocation
-    //
-    auto get_object_request_handler = std::make_unique<network::get_object_request_handler>(
-    object_management_service_);
-
-    //
-    // Remove object request handler allocation
-    //
-    auto remove_object_request_handler = std::make_unique<network::remove_object_request_handler>(
-    object_management_service_);
-
-    //
-    // Server component allocation.
-    //
-    server_ = std::make_shared<network::server>(
-    server_config,
-    std::move(create_container_request_handler),
-    std::move(remove_container_request_handler),
-    std::move(insert_object_request_handler),
-    std::move(get_object_request_handler),
-    std::move(remove_object_request_handler));
-}
+    , collocation_resolver_{collocation_resolver}
+    , data_partition_provider_{data_partition_provider}
+    , threading_context_provider_{threading_context_provider}
+    , server_{server}
+    , container_management_service_{container_management_service}
+    , object_management_service_{object_management_service}
+    , garbage_collector_{std::move(garbage_collector)}
+    , container_index_{container_index}
+    , write_io_task_dispatcher_{write_io_task_dispatcher}
+    , read_io_task_dispatcher_{read_io_task_dispatcher}
+    , frontline_cache_{frontline_cache}
+    , object_io_executor_{object_io_executor}
+    , cache_accessor_{cache_accessor}
+{}
 
 status::status_code
-lazarus_data_store::start_data_store() const
+lazarus_data_store::start_data_store()
 {
     //
-    // Before starting the server, fetch all persistent object containers from the 
-    // filesystem. These are needed for starting the storage engine so that it can
-    // later associate an object container name to its respective column family reference.
-    // This is a static invocation being executed before the storage engine is started.
+    // Before starting the server, boot up all data partitions
+    // This will make sure the underlying storage engines are ready for data access.
     //
-    std::vector<std::string> containers_names;
-    status::status_code status = storage_engine_->fetch_containers_from_disk(
-        &containers_names);
+    auto boot_result = boot_data_partitions();
 
-    if (status::failed(status))
+    if (!boot_result)
     {
-        spdlog::critical("Failed to fetch the initial object containers from disk during the system startup. "
+        spdlog::critical("Failed to boot data partitions during the system startup. "
             "Status={}.",
-            status);
+            boot_result.error());
 
-        return status;
-    }
-
-    //
-    // Start the storage engine. On success, it will associate the object
-    // containers names to their respective column family reference.
-    //
-    std::unordered_map<std::string, storage::storage_engine_reference_handle*> storage_engine_references_mapping;
-    status = storage_engine_->start(
-        containers_names,
-        &storage_engine_references_mapping);
-
-    if (status::failed(status))
-    {
-        spdlog::critical("Failed to start the storage engine during the system startup. "
-            "Status={}.",
-            status);
-
-        return status;
+        return boot_result.error();
     }
 
     //
     // Populate the in-memory object container index with the
     // references obtained when the storage engine was started.
     //
-    container_management_service_->populate_container_index(
-        &storage_engine_references_mapping);
+    status::status_code status = container_management_service_->populate_container_index(
+        boot_result.value());
 
     if (status::failed(status))
     {
@@ -255,6 +123,80 @@ lazarus_data_store::start_data_store() const
     // This will block the main thread.
     //
     server_->start();
+
+    return status::success;
+}
+
+std::expected<
+    std::unordered_map<std::string, storage::storage_engine_reference_handle*>,
+    status::status_code>
+lazarus_data_store::boot_data_partitions()
+{
+    std::unordered_map<std::string, storage::storage_engine_reference_handle*> storage_engine_references_mapping;
+
+    const std::vector<std::shared_ptr<storage::data_partition>> data_partitions =
+        data_partition_provider_->get_all_partitions();
+
+    for (auto& data_partition : data_partitions)
+    {
+        status::status_code status = start_storage_engine(
+            data_partition->get_storage_engine(),
+            storage_engine_references_mapping);
+
+        if (status::failed(status))
+        {
+            spdlog::critical("Failed to start storage engine for data partition on CollocationIndex={}. "
+                "Status={}.",
+                data_partition->get_collocation_index(),
+                status);
+
+            return std::unexpected(status);
+        }
+    }
+
+    return storage_engine_references_mapping;
+}
+
+status::status_code
+lazarus_data_store::start_storage_engine(
+    storage::storage_engine_interface& storage_engine,
+    std::unordered_map<std::string, storage::storage_engine_reference_handle*>& references_mapping)
+{
+    //
+    // Fetch all persistent object containers from the filesystem.
+    // These are needed for starting the storage engine so that it can
+    // later associate an object container name to its respective column family reference.
+    // This is a static invocation being executed before the storage engine is started.
+    //
+    std::vector<std::string> containers_names;
+    status::status_code status = storage_engine.fetch_containers_from_disk(
+        &containers_names);
+
+    if (status::failed(status))
+    {
+        spdlog::critical("Failed to fetch the initial object containers from disk during the system startup. "
+            "Status={}.",
+            status);
+
+        return status;
+    }
+
+    //
+    // Start the storage engine. On success, it will associate the object
+    // containers names to their respective column family reference.
+    //
+    status = storage_engine.start(
+        containers_names,
+        &references_mapping);
+
+    if (status::failed(status))
+    {
+        spdlog::critical("Failed to start the storage engine during the system startup. "
+            "Status={}.",
+            status);
+
+        return status;
+    }
 
     return status::success;
 }

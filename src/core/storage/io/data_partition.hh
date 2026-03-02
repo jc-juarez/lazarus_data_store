@@ -43,6 +43,12 @@ public:
     storage_engine_interface&
     get_storage_engine();
 
+    //
+    // Gets the corresponding collocation index.
+    //
+    std::uint16_t
+    get_collocation_index() const;
+
 private:
 
     //
@@ -50,7 +56,7 @@ private:
     // Access to the engine should be done while always
     // owning a valid reference to the data partition.
     //
-    std::shared_ptr<storage::storage_engine_interface> storage_engine_;
+    std::unique_ptr<storage::storage_engine_interface> storage_engine_;
 
     //
     // Corresponding data collocation index.

@@ -40,7 +40,7 @@ container_management_service::container_management_service(
 
 status::status_code
 container_management_service::populate_container_index(
-    std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping)
+    std::unordered_map<std::string, storage_engine_reference_handle*> storage_engine_references_mapping)
 {
     //
     // Keep track of the internal metadata object containers.
@@ -48,14 +48,14 @@ container_management_service::populate_container_index(
     // family references mapping only has 1 entry (kDefaultColumnFamilyName), which
     // implies that the data store is starting up for the first time.
     //
-    if (storage_engine_references_mapping->size() == 1u)
+    if (storage_engine_references_mapping.size() == 1u)
     {
         //
         // This means this is the first ever startup for the data store,
         // or that it simply does not need a previous metadata state for working.
         // Create all required internal metadata root object containers.
         //
-        create_internal_metadata_column_families(storage_engine_references_mapping);
+        create_internal_metadata_column_families(&storage_engine_references_mapping);
     }
 
     //
@@ -63,8 +63,8 @@ container_management_service::populate_container_index(
     // startup. Ensure that all internal metadata object containers are present; if not,
     // this is a critical error as the data store cannot function without them.
     //
-    if (storage_engine_references_mapping->find(container_index::containers_internal_metadata_name) ==
-        storage_engine_references_mapping->end())
+    if (storage_engine_references_mapping.find(container_index::containers_internal_metadata_name) ==
+        storage_engine_references_mapping.end())
     {
         //
         // This is a critical error as one or some of the core internal
@@ -77,7 +77,7 @@ container_management_service::populate_container_index(
     }
 
     storage_engine_reference_handle* containers_internal_metadata_storage_engine_reference =
-        storage_engine_references_mapping->at(container_index::containers_internal_metadata_name);
+        storage_engine_references_mapping.at(container_index::containers_internal_metadata_name);
 
     //
     // Finally, get all known object containers to the system
@@ -97,7 +97,7 @@ container_management_service::populate_container_index(
         return status;
     }
 
-    for (const auto& storage_engine_references_pair : *storage_engine_references_mapping)
+    for (const auto& storage_engine_references_pair : storage_engine_references_mapping)
     {
         std::string container_name = storage_engine_references_pair.first;
         storage_engine_reference_handle* container_storage_engine_reference = storage_engine_references_pair.second;

@@ -174,92 +174,103 @@ start_system(
     std::shared_ptr<storage::data_partition_provider> data_partition_provider;
     std::shared_ptr<storage::threading_context_provider> threading_context_provider;
     std::tie(collocation_resolver, data_partition_provider, threading_context_provider) =
-    collocation_builder.generate_collocation_topology(system_config.storage_configuration_);
+        collocation_builder.generate_collocation_topology(system_config.storage_configuration_);
 
     auto container_index = std::make_shared<storage::container_index>(
-    system_config.storage_configuration_.container_index_number_buckets_,
-    data_partition_provider);
+        system_config.storage_configuration_.container_index_number_buckets_,
+        data_partition_provider);
 
     auto orphaned_container_scavenger = std::make_unique<storage::orphaned_container_scavenger>(
-    data_partition_provider,
-    container_index);
+        data_partition_provider,
+        container_index);
 
-    garbage_collector_ = std::make_unique<storage::garbage_collector>(
-    storage_configuration,
-    container_index_,
-    std::move(orphaned_container_scavenger));
+    auto garbage_collector = std::make_unique<storage::garbage_collector>(
+        system_config.storage_configuration_,
+        container_index,
+        std::move(orphaned_container_scavenger));
 
     auto container_operation_serializer = std::make_unique<storage::container_operation_serializer>(
-    storage_engine_,
-    container_index_);
+        data_partition_provider,
+        container_index);
 
-    container_management_service_ = std::make_shared<storage::container_management_service>(
-    storage_configuration,
-    storage_engine_,
-    container_index_,
-    std::move(container_operation_serializer));
+    auto container_management_service = std::make_shared<storage::container_management_service>(
+        system_config.storage_configuration_,
+        data_partition_provider,
+        container_index,
+        std::move(container_operation_serializer));
 
-    frontline_cache_ = std::make_shared<storage::frontline_cache>(
-    storage_configuration.number_frontline_cache_shards_,
-    storage_configuration.max_frontline_cache_shard_size_mib_ * 1'024 * 1'024,
-    storage_configuration.max_frontline_cache_shard_object_size_bytes,
-    container_index_);
+    auto frontline_cache = std::make_shared<storage::frontline_cache>(
+        system_config.storage_configuration_.number_frontline_cache_shards_,
+        system_config.storage_configuration_.max_frontline_cache_shard_size_mib_ * 1'024 * 1'024,
+        system_config.storage_configuration_.max_frontline_cache_shard_object_size_bytes,
+        container_index);
 
-    cache_accessor_ = std::make_shared<storage::cache_accessor>(
-    frontline_cache_);
+    auto cache_accessor = std::make_shared<storage::cache_accessor>(
+        frontline_cache);
 
-    object_io_executor_ = std::make_shared<storage::read_io_executor>(
-    storage_engine_);
+    auto object_io_executor = std::make_shared<storage::read_io_executor>(
+        data_partition_provider);
 
     auto write_batch_aggregator = std::make_unique<storage::write_batch_aggregator>(
-    object_io_executor_,
-    cache_accessor_);
+        object_io_executor,
+        cache_accessor);
 
-    write_io_task_dispatcher_ = std::make_shared<storage::write_io_dispatcher>(
-    std::move(write_batch_aggregator));
+    auto write_io_task_dispatcher = std::make_shared<storage::write_io_dispatcher>(
+        std::move(write_batch_aggregator));
 
-    read_io_task_dispatcher_ = std::make_shared<storage::read_io_dispatcher>(
-    storage_configuration.number_read_io_threads_,
-    object_io_executor_,
-    cache_accessor_);
+    auto read_io_task_dispatcher = std::make_shared<storage::read_io_dispatcher>(
+        system_config.storage_configuration_.number_read_io_threads_,
+        object_io_executor,
+        cache_accessor);
 
-    object_management_service_ = std::make_shared<storage::object_management_service>(
-    storage_configuration,
-    container_index_,
-    write_io_task_dispatcher_,
-    read_io_task_dispatcher_,
-    frontline_cache_);
+    auto object_management_service = std::make_shared<storage::object_management_service>(
+        system_config.storage_configuration_,
+        container_index,
+        write_io_task_dispatcher,
+        read_io_task_dispatcher,
+        frontline_cache);
 
     auto create_container_request_handler = std::make_unique<network::create_container_request_handler>(
-    container_management_service_);
+        container_management_service);
 
     auto remove_container_request_handler = std::make_unique<network::remove_container_request_handler>(
-    container_management_service_);
+        container_management_service);
 
     auto insert_object_request_handler = std::make_unique<network::insert_object_request_handler>(
-    object_management_service_);
+        object_management_service);
 
     auto get_object_request_handler = std::make_unique<network::get_object_request_handler>(
-    object_management_service_);
+        object_management_service);
 
     auto remove_object_request_handler = std::make_unique<network::remove_object_request_handler>(
-    object_management_service_);
+        object_management_service);
 
-    server_ = std::make_shared<network::server>(
-    server_config,
-    std::move(create_container_request_handler),
-    std::move(remove_container_request_handler),
-    std::move(insert_object_request_handler),
-    std::move(get_object_request_handler),
-    std::move(remove_object_request_handler));
+    auto server = std::make_shared<network::server>(
+        system_config.server_configuration_,
+        std::move(create_container_request_handler),
+        std::move(remove_container_request_handler),
+        std::move(insert_object_request_handler),
+        std::move(get_object_request_handler),
+        std::move(remove_object_request_handler));
 
     //
     // Initialize all core dependencies of the data store.
     //
     lazarus::lazarus_data_store lazarus_ds{
         session_id,
-        system_config.server_configuration_,
-        system_config.storage_configuration_};
+        collocation_resolver,
+        data_partition_provider,
+        threading_context_provider,
+        server,
+        container_management_service,
+        object_management_service,
+        std::move(garbage_collector),
+        container_index,
+        write_io_task_dispatcher,
+        read_io_task_dispatcher,
+        frontline_cache,
+        object_io_executor,
+        cache_accessor};
 
     //
     // Start the data store system. This will start the core

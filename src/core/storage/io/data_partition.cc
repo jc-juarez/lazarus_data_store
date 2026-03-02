@@ -33,5 +33,11 @@ data_partition::get_storage_engine()
     return *(storage_engine_.get());
 }
 
+std::uint16_t
+data_partition::get_collocation_index() const
+{
+    return collocation_index_;
+}
+
 } // namespace storage.
 } // namespace lazarus.

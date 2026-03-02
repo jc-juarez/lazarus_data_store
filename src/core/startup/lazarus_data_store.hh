@@ -15,6 +15,7 @@
 #pragma once
 
 #include <memory>
+#include <expected>
 #include <stop_token>
 #include "../status/status.hh"
 #include "../common/aliases.hh"
@@ -61,16 +62,45 @@ public:
     //
     lazarus_data_store(
         const boost::uuids::uuid session_id,
-        const network::server_configuration& server_config,
-        const storage::storage_configuration& storage_configuration);
+        std::shared_ptr<storage::collocation_resolver> collocation_resolver,
+        std::shared_ptr<storage::data_partition_provider> data_partition_provider,
+        std::shared_ptr<storage::threading_context> threading_context_provider,
+        std::shared_ptr<network::server> server,
+        std::shared_ptr<storage::container_management_service> container_management_service,
+        std::shared_ptr<storage::object_management_service> object_management_service,
+        std::unique_ptr<storage::garbage_collector> garbage_collector,
+        std::shared_ptr<storage::container_index> container_index,
+        std::shared_ptr<storage::io_dispatcher_interface> write_io_task_dispatcher,
+        std::shared_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher,
+        std::shared_ptr<storage::frontline_cache> frontline_cache,
+        std::shared_ptr<storage::read_io_executor> object_io_executor,
+        std::shared_ptr<storage::cache_accessor> cache_accessor);
 
     //
     // Start the lazarus data store system.
     //
     status::status_code
-    start_data_store() const;
+    start_data_store();
 
 private:
+
+    //
+    // Initializes the data partitions and their respective storage engines.
+    // Upon success, the complete list of all storage engine references in the system is returned back.
+    //
+    std::expected<
+        std::unordered_map<std::string, storage::storage_engine_reference_handle*>,
+        status::status_code>
+    boot_data_partitions();
+
+    //
+    // Handles the startup for a given storage engine.
+    // Upon success, the storage engine references for such engine is returned back.
+    //
+    status::status_code
+    start_storage_engine(
+        storage::storage_engine_interface& storage_engine,
+        std::unordered_map<std::string, storage::storage_engine_reference_handle*>& references_mapping);
 
     //
     // Session identifier.
@@ -78,19 +108,24 @@ private:
     boost::uuids::uuid session_id_;
 
     //
-    // Logger configurations.
+    // Collocation resolver handle.
     //
-    const logger::logger_configuration logger_config_;
+    std::shared_ptr<storage::collocation_resolver> collocation_resolver_;
+
+    //
+    // Data partition provider handle.
+    //
+    std::shared_ptr<storage::data_partition_provider> data_partition_provider_;
+
+    //
+    // Threading context provider handle.
+    //
+    std::shared_ptr<storage::threading_context> threading_context_provider_;
 
     //
     // HTTP server handle.
     //
     std::shared_ptr<network::server> server_;
-
-    //
-    // Storage engine handle.
-    //
-    std::shared_ptr<storage::storage_engine_interface> storage_engine_;
 
     //
     // Object container management service handle.
@@ -136,21 +171,6 @@ private:
     // Cache accessor handle.
     //
     std::shared_ptr<storage::cache_accessor> cache_accessor_;
-
-    //
-    // Collocation resolver handle.
-    //
-    std::shared_ptr<storage::collocation_resolver> collocation_resolver_;
-
-    //
-    // Data partition provider handle.
-    //
-    std::shared_ptr<storage::data_partition_provider> data_partition_provider_;
-
-    //
-    // Threading context provider handle.
-    //
-    std::shared_ptr<storage::threading_context> threading_context_provider_;
 };
 
 } // namespace lazarus.
