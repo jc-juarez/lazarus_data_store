@@ -27,7 +27,7 @@ namespace lazarus
 //
 // Stop source for handling graceful terminations.
 //
-std::stop_source stop_source;
+inline std::stop_source stop_source;
 
 //
 // Entry point for the data store.

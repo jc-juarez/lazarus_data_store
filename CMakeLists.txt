@@ -117,6 +117,7 @@ set(SOURCE_FILES
         src/core/storage/io/write_io_executor.hh
         src/core/startup/system_init.hh
         src/core/startup/system_init.cc
+        src/core/common/args_validations.cc
 )
 
 # Lazarus core library.
