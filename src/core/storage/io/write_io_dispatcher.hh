@@ -18,7 +18,7 @@
 
 #include "io_dispatcher_interface.hh"
 #include "../models/object_io_task.hh"
-#include <moodycamel/concurrentqueue.h>
+//#include <moodycamel/concurrentqueue.h>
 #include "../../common/startable_interface.hh"
 
 namespace lazarus::storage
@@ -75,7 +75,7 @@ private:
     //
     // Lock-free and non-blocking queue for processing write IO operations.
     //
-    moodycamel::ConcurrentQueue<object_io_task> write_io_tasks_queue_;
+    //moodycamel::ConcurrentQueue<object_io_task> write_io_tasks_queue_;
 
     //
     // Write batch aggregator handle.

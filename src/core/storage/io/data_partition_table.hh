@@ -39,6 +39,7 @@ public:
     //
     void
     append_partition(
+        const std::uint16_t collocation_index,
         std::unique_ptr<storage_engine> storage_engine);
 
     //
@@ -48,6 +49,12 @@ public:
     std::shared_ptr<data_partition>
     get_partition(
         const std::uint16_t collocation_index);
+
+    //
+    // Returns a list with all data partitions in the system.
+    //
+    std::vector<std::shared_ptr<data_partition>>
+    get_all_partitions();
 
 private:
 

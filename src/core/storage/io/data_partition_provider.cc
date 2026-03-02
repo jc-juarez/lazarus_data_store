@@ -50,5 +50,11 @@ data_partition_provider::get_partition_by_collocation(
     return partitions_table_->get_partition(collocation_index);
 }
 
+std::vector<std::shared_ptr<data_partition>>
+data_partition_provider::get_all_partitions()
+{
+    return partitions_table_->get_all_partitions();
+}
+
 } // namespace storage.
 } // namespace lazarus.

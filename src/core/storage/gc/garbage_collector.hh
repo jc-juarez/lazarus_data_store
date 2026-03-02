@@ -19,6 +19,7 @@
 #include <memory>
 #include <stop_token>
 #include "../storage_configuration.hh"
+#include "orphaned_container_scavenger.hh"
 #include "../../common/alertable_sleeper.hh"
 
 namespace lazarus

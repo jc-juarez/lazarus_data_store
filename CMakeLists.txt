@@ -103,18 +103,20 @@ set(SOURCE_FILES
         src/core/storage/io/data_partition.hh
         src/core/storage/io/collocation_resolver.cc
         src/core/storage/io/collocation_resolver.hh
-        src/core/startup/data_topology_orchestrator.cc
-        src/core/startup/data_topology_orchestrator.hh
+        src/core/startup/collocation_builder.cc
+        src/core/startup/collocation_builder.hh
         src/core/storage/io/threading_context_provider.cc
         src/core/storage/io/threading_context_provider.hh
         src/core/storage/io/data_partition_table.cc
         src/core/storage/io/data_partition_table.hh
-        src/core/storage/io/threading_context_index.cc
-        src/core/storage/io/threading_context_index.hh
+        src/core/storage/io/threading_context_table.cc
+        src/core/storage/io/threading_context_table.hh
         src/core/storage/io/data_partition_provider.cc
         src/core/storage/io/data_partition_provider.hh
         src/core/storage/io/write_io_executor.cc
         src/core/storage/io/write_io_executor.hh
+        src/core/startup/system_init.hh
+        src/core/startup/system_init.cc
 )
 
 # Lazarus core library.

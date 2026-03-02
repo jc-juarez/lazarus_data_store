@@ -1,0 +1,61 @@
+// ****************************************************
+// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Licensed under the Business Source License 1.1
+// See the LICENSE file in the
+// project root for license terms.
+// ****************************************************
+// Lazarus Data Store
+// Storage
+// 'threading_context_table.hh'
+// Author: jcjuarez
+// Description:
+//      Contains all threading contexts in the system.
+// ****************************************************
+
+#pragma once
+
+#include <vector>
+#include <memory>
+
+namespace lazarus
+{
+namespace storage
+{
+
+class threading_context;
+
+class threading_context_table
+{
+public:
+
+    //
+    // Constructor.
+    //
+    threading_context_table();
+
+    //
+    // Appends a new threading context instance to the table.
+    //
+    void
+    append_threading_context(
+        const std::uint16_t collocation_index);
+
+    //
+    // Returns a reference to a threading context.
+    // This API is meant to be only be consumed by the threading context provider.
+    //
+    std::shared_ptr<threading_context>
+    get_threading_context(
+        const std::uint16_t collocation_index);
+
+private:
+
+    //
+    // Table for holding all threading contexts in an owning model.
+    // References to be provided should be owning.
+    //
+    std::vector<std::shared_ptr<threading_context>> threading_contexts_;
+};
+
+} // namespace storage.
+} // namespace lazarus.

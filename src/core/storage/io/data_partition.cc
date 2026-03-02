@@ -22,12 +22,12 @@ namespace storage
 
 data_partition::data_partition(
     const std::uint16_t collocation_index,
-    std::unique_ptr<storage_engine> storage_engine)
+    std::unique_ptr<storage_engine_interface> storage_engine)
     : collocation_index_{collocation_index},
       storage_engine_{std::move(storage_engine)}
 {}
 
-storage_engine&
+storage_engine_interface&
 data_partition::get_storage_engine()
 {
     return *(storage_engine_.get());

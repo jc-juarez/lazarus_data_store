@@ -30,6 +30,7 @@ write_batch_aggregator::write_batch_aggregator(
       cache_accessor_{std::move(cache_accessor)}
 {}
 
+/*
 void
 write_batch_aggregator::aggregate_and_commit_write_batch(
     moodycamel::ConcurrentQueue<object_io_task>& write_io_tasks_queue)
@@ -59,7 +60,7 @@ write_batch_aggregator::aggregate_and_commit_write_batch(
 
         // Example: add the CF/key/value into the batch
         write_batch.Put(
-        rocksdb::ColumnFamilyHandle* /*replace with your CF handle*/,
+        rocksdb::ColumnFamilyHandle*
         task.key,
         task.value);
 
@@ -76,10 +77,11 @@ write_batch_aggregator::aggregate_and_commit_write_batch(
         const auto& task = buffer[i];
         if (task.response_callback)
         {
-            task.response_callback(/* success response */);
+            task.response_callback();
         }
     }
 }
+*/
 
 } // namespace storage.
 } // namespace lazarus.

@@ -17,7 +17,7 @@
 #include <spdlog/spdlog.h>
 #include "write_io_dispatcher.hh"
 #include "write_batch_aggregator.hh"
-#include "../../startup/lazarus_data_store.hh"
+#include "../../startup/system_init.hh"
 
 namespace lazarus::storage
 {
@@ -35,7 +35,7 @@ write_io_dispatcher::start()
     write_dispatcher_master_thread_ = std::jthread(
         &write_io_dispatcher::dispatch_write_io_tasks,
         this,
-        lazarus_data_store::get_stop_source_token());
+        get_stop_source_token());
 }
 
 void
@@ -45,7 +45,7 @@ write_io_dispatcher::enqueue_io_task(
     //
     // This is a lock-free operation.
     //
-    write_io_tasks_queue_.enqueue(std::move(write_io_task));
+    // write_io_tasks_queue_.enqueue(std::move(write_io_task));
 }
 
 void
@@ -67,8 +67,8 @@ write_io_dispatcher::dispatch_write_io_tasks(
     //
     while (!stop_token.stop_requested())
     {
-        write_batch_aggregator_->aggregate_and_commit_write_batch(
-            write_io_tasks_queue_);
+        //write_batch_aggregator_->aggregate_and_commit_write_batch(
+        //    write_io_tasks_queue_);
     }
 
     spdlog::info("Stopping lazarus data store write IO dispatcher thread.");

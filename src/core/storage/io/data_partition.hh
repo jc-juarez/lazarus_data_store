@@ -23,7 +23,7 @@ namespace lazarus
 namespace storage
 {
 
-class storage_engine;
+class storage_engine_interface;
 
 class data_partition
 {
@@ -35,12 +35,12 @@ public:
     //
     data_partition(
         const std::uint16_t collocation_index,
-        std::unique_ptr<storage_engine> storage_engine);
+        std::unique_ptr<storage_engine_interface> storage_engine);
 
     //
     // Provides access to the underlying storage engine.
     //
-    storage_engine&
+    storage_engine_interface&
     get_storage_engine();
 
 private:
@@ -50,10 +50,10 @@ private:
     // Access to the engine should be done while always
     // owning a valid reference to the data partition.
     //
-    std::unique_ptr<storage_engine> storage_engine_;
+    std::shared_ptr<storage::storage_engine_interface> storage_engine_;
 
     //
-    // Data collocation index.
+    // Corresponding data collocation index.
     //
     const std::uint16_t collocation_index_;
 };

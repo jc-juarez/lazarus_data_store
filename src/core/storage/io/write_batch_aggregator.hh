@@ -19,7 +19,7 @@
 #include "../../status/status.hh"
 #include "../../common/aliases.hh"
 #include "../models/object_io_task.hh"
-#include <moodycamel/concurrentqueue.h>
+// #include <moodycamel/concurrentqueue.h>
 
 namespace lazarus
 {
@@ -37,7 +37,7 @@ public:
     // Constructor.
     //
     write_batch_aggregator(
-        std::shared_ptr<object_io_executor> object_io_executor,
+        std::shared_ptr<read_io_executor> object_io_executor,
         std::shared_ptr<cache_accessor> cache_accessor);
 
     //
@@ -45,9 +45,9 @@ public:
     // commits a write batch operation against the storage engine.
     // Also executes a cache synchronization if needed.
     //
-    void
-    aggregate_and_commit_write_batch(
-        moodycamel::ConcurrentQueue<object_io_task>& write_io_tasks_queue);
+    //void
+    //aggregate_and_commit_write_batch(
+    //    moodycamel::ConcurrentQueue<object_io_task>& write_io_tasks_queue);
 
 private:
 

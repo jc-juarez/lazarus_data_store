@@ -27,10 +27,10 @@
 ┗━┛┗━╸╹ ╹┗━╸╹┗╸╹ ╹┗━╸   ╹  ┗━┛╹┗╸╹  ┗━┛┗━┛┗━╸   ╹ ╹╹┗━┛╹ ╹   ╹  ┗━╸╹┗╸╹  ┗━┛╹┗╸╹ ╹╹ ╹╹ ╹┗━╸┗━╸   ╺┻┛╹ ╹ ╹ ╹ ╹   ┗━┛ ╹ ┗━┛╹┗╸┗━╸   ┗━┛┗━╸╹┗╸┗┛ ┗━╸╹┗╸
 */
 
-#include "../core/startup/lazarus_data_store.hh"
+#include "../core/startup/system_init.hh"
 
 int main(int argc, char** argv)
 {
    const std::vector<std::string> args(argv, argv + argc);
-   return lazarus::lazarus_data_store::run(args);
+   return lazarus::init_system(args);
 }

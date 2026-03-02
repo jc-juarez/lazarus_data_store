@@ -15,10 +15,10 @@
 
 #include <chrono>
 #include <spdlog/spdlog.h>
-#include "../io/storage_engine.hh"
 #include "garbage_collector.hh"
+#include "../io/storage_engine.hh"
 #include "../index/container_index.hh"
-#include "../../startup/lazarus_data_store.hh"
+#include "../../startup/system_init.hh"
 #include "orphaned_container_scavenger.hh"
 
 namespace lazarus
@@ -44,7 +44,7 @@ garbage_collector::start()
     garbage_collector_thread_ = std::jthread(
         &garbage_collector::execute_garbage_collection,
         this,
-        lazarus_data_store::get_stop_source_token());
+        get_stop_source_token());
 }
 
 void

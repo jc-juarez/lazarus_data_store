@@ -20,6 +20,7 @@
 #include "../common/aliases.hh"
 #include "../common/uuid_utilities.hh"
 #include "../logger/logger_configuration.hh"
+#include "../storage/gc/garbage_collector.hh"
 #include "../storage/storage_configuration.hh"
 #include "../network/server/server_configuration.hh"
 
@@ -43,6 +44,9 @@ class object_management_service;
 class container_management_service;
 class read_io_executor;
 class cache_accessor;
+class collocation_resolver;
+class data_partition_provider;
+class threading_context;
 }
 
 //
@@ -61,64 +65,12 @@ public:
         const storage::storage_configuration& storage_configuration);
 
     //
-    // Entry point for the data store.
-    //
-    static
-    exit_code
-    run(
-        const std::vector<std::string>& args);
-
-    //
-    // Gets the stop source token for listening to termination requests.
-    //
-    static
-    std::stop_token
-    get_stop_source_token();
-
-private:
-
-    //
-    // Constructs the dependency tree and injects
-    // the required dependencies across components.
-    //
-    void
-    construct_dependency_tree(
-        const network::server_configuration& server_config,
-        const storage::storage_configuration& storage_configuration);
-
-    //
     // Start the lazarus data store system.
     //
     status::status_code
     start_data_store() const;
 
-    //
-    // Initializes the global logger to be used by the system.
-    //
-    static
-    void
-    initialize_logger(
-        const boost::uuids::uuid session_id,
-        const logger::logger_configuration logger_config);
-
-    //
-    // Registers the signals to listen to for termination.
-    //
-    static
-    void
-    register_signals();
-
-    //
-    // Signals termination requests from the OS through the stop source.
-    //
-    static
-    void
-    signal_handler(std::int32_t signal);
-
-    //
-    // Stop source for handling graceful terminations.
-    //
-    static std::stop_source stop_source_;
+private:
 
     //
     // Session identifier.
@@ -184,6 +136,21 @@ private:
     // Cache accessor handle.
     //
     std::shared_ptr<storage::cache_accessor> cache_accessor_;
+
+    //
+    // Collocation resolver handle.
+    //
+    std::shared_ptr<storage::collocation_resolver> collocation_resolver_;
+
+    //
+    // Data partition provider handle.
+    //
+    std::shared_ptr<storage::data_partition_provider> data_partition_provider_;
+
+    //
+    // Threading context provider handle.
+    //
+    std::shared_ptr<storage::threading_context> threading_context_provider_;
 };
 
 } // namespace lazarus.

@@ -35,7 +35,7 @@ public:
     //
     read_io_dispatcher(
         const std::uint32_t number_read_io_threads,
-        std::shared_ptr<object_io_executor> object_io_executor,
+        std::shared_ptr<read_io_executor> object_io_executor,
         std::shared_ptr<cache_accessor> cache_accessor);
 
     //

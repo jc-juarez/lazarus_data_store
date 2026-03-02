@@ -50,6 +50,12 @@ public:
     get_partition_by_collocation(
         const std::uint16_t collocation_index);
 
+    //
+    // Returns a list with all data partitions in the system.
+    //
+    std::vector<std::shared_ptr<data_partition>>
+    get_all_partitions();
+
 private:
 
     //
