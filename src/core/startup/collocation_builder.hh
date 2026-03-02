@@ -24,6 +24,7 @@ namespace lazarus
 namespace storage
 {
 
+class collocation_resolver;
 class data_partition_provider;
 class threading_context_provider;
 
@@ -41,7 +42,10 @@ public:
     // and threading contexts to be used in the system within a fixed-topology set.
     //
     static
-    std::tuple<std::unique_ptr<data_partition_provider>, std::unique_ptr<threading_context_provider>>
+    std::tuple<
+        std::shared_ptr<collocation_resolver>,
+        std::shared_ptr<data_partition_provider>,
+        std::shared_ptr<threading_context_provider>>
     generate_collocation_topology(
         const storage_configuration& storage_configuration);
 

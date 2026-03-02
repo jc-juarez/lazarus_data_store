@@ -53,6 +53,14 @@ init_logger(
     const logger::logger_configuration logger_config);
 
 //
+// Wires-up all dependencies and starts the system.
+//
+status::status_code
+start_system(
+    const boost::uuids::uuid session_id,
+    const common::system_configuration& system_config);
+
+//
 // Generates the system configs to be used.
 //
 common::system_configuration

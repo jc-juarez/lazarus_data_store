@@ -25,7 +25,7 @@ namespace common
 
 void
 validate_process_args(
-const std::vector<std::string>& args)
+    const std::vector<std::string>& args)
 {
     const std::size_t args_count = args.size();
 
