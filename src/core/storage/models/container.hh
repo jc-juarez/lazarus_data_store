@@ -93,6 +93,12 @@ public:
     std::string
     to_string() const;
 
+    //
+    // Returns a copy of all container instances metadata.
+    //
+    std::vector<container_partition_metadata>
+    get_container_instances();
+
 private:
 
     //

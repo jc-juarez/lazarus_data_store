@@ -17,6 +17,7 @@
 
 #include <vector>
 #include <memory>
+#include "../models/container_partition_metadata.hh"
 
 namespace lazarus::storage
 {
@@ -33,7 +34,7 @@ public:
     // Constructor.
     //
     orphaned_container_scavenger(
-        std::shared_ptr<storage_engine_interface> storage_engine,
+        std::shared_ptr<data_partition_provider> data_partition_provider,
         std::shared_ptr<container_index> container_index);
 
     //
@@ -48,9 +49,16 @@ public:
 private:
 
     //
-    // Handle for the storage engine.
+    // Deletes the container instances.
     //
-    std::shared_ptr<storage_engine_interface> storage_engine_;
+    status::status_code
+    delete_container_instances_from_data_partitions(
+        std::vector<container_partition_metadata> container_instances);
+
+    //
+    // Reference for the data partition provider.
+    //
+    std::shared_ptr<data_partition_provider> data_partition_provider_;
 
     //
     // Handle for the object container index.

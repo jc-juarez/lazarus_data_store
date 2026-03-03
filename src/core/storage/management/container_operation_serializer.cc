@@ -125,26 +125,24 @@ container_operation_serializer::handle_container_creation(
     //
     // Object container does not exist at this point.
     // Given the storage engine does not support atomic object container creations,
-    // create first the object container and then register the new metadata for it.
-    // In case the data store crashes in between, the object container will be orphaned
-    // and the garbage collector will be in charge to clean it up.
+    // create first the object container across all data partitions and then register
+    // the new metadata for it. In case the data store crashes in between, the object
+    // container will be orphaned and the garbage collector will be in charge to clean it up.
     //
-    storage_engine_reference_handle* container_storage_engine_reference;
-    status = storage_engine_->create_container(
-        container_request.get_name().c_str(),
-        &container_storage_engine_reference);
+    auto container_instances_creation_result = create_container_instances_on_data_partitions(
+        container_request.get_name());
 
-    if (status::failed(status))
+    if (!container_instances_creation_result)
     {
-        spdlog::error("Storage engine failed to create the new object container. "
+        spdlog::error("Object container creation across data partitions failed. "
             "Optype={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
             static_cast<std::uint8_t>(container_request.get_optype()),
             container_request.get_name(),
-            status);
+            container_instances_creation_result.error());
 
-        return status;
+        return container_instances_creation_result.error();
     }
 
     //

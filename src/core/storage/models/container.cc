@@ -105,13 +105,45 @@ std::string
 container::to_string() const
 {
     std::shared_lock<std::shared_mutex> lock {lock_};
+
+    auto generate_instances_string = [this]()
+    {
+        std::stringstream ss;
+        ss << "{";
+
+        for (auto& container_instance : this->container_instances_)
+        {
+            ss
+            << "{CollocationIndex="
+            << container_instance.collocation_index_
+            << ",StorageEngineReference="
+            << container_instance.storage_engine_reference_
+            << "}";
+        }
+
+        ss << "}";
+        return ss.str();
+    };
+
+    //
+    // The instances metadata does not change for the lifetime of the session,
+    // so we can cache such metadata globally.
+    //
+    static const std::string instances_string = generate_instances_string();
+
     return std::format(
         "{{Name={}, "
-        "StorageEngineReference={}, "
+        "InstancesMetadata={}, "
         "IsDeleted={}}}",
         container_persistent_metadata_.name(),
-        static_cast<void*>(storage_engine_reference_),
+        instances_string,
         is_deleted_);
+}
+
+std::vector<container_partition_metadata>
+container::get_container_instances()
+{
+    return container_instances_;
 }
 
 } // namespace storage.

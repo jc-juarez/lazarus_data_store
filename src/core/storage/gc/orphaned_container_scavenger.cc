@@ -14,8 +14,8 @@
 // ****************************************************
 
 #include <spdlog/spdlog.h>
-#include "../io/storage_engine.hh"
 #include "../models/container.hh"
+#include "../io/storage_engine.hh"
 #include "../index/container_index.hh"
 #include "orphaned_container_scavenger.hh"
 
@@ -23,9 +23,9 @@ namespace lazarus::storage
 {
 
 orphaned_container_scavenger::orphaned_container_scavenger(
-    std::shared_ptr<storage_engine_interface> storage_engine,
+    std::shared_ptr<data_partition_provider> data_partition_provider,
     std::shared_ptr<container_index> container_index)
-    : storage_engine_{std::move(storage_engine)},
+    : data_partition_provider_{std::move(data_partition_provider)},
       container_index_{std::move(container_index)}
 {}
 
@@ -81,15 +81,15 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
                 container_bucket_index,
                 garbage_collector_iteration_count);
 
-            status::status_code status = storage_engine_->remove_container(
-                container->get_storage_engine_reference());
+            status::status_code status = delete_container_instances_from_data_partitions(
+                container->get_container_instances());
 
             if (status::failed(status))
             {
                 //
                 // Object container deletion failed in the storage engine; skip entry.
                 //
-                spdlog::error("Failed to remove object container from the storage engine. "
+                spdlog::error("Failed to remove object container from the data partitions. "
                     "ObjectContainerMetadata={}, "
                     "ContainerBucketIndexBeingTraversed={}, "
                     "GarbageCollectorCurrentIteration={}, "
@@ -155,6 +155,30 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
             container_bucket_index,
             garbage_collector_iteration_count);
     }
+}
+
+status::status_code
+orphaned_container_scavenger::delete_container_instances_from_data_partitions(
+    std::vector<container_partition_metadata> container_instances)
+{
+    for (auto& container_instance : container_instances)
+    {
+        status::status_code status = container_instance.storage_engine_.remove_container(
+            container_instance.storage_engine_reference_);
+
+        if (status::failed(status))
+        {
+            spdlog::error("Failed to remove object container from the data partition. "
+                "DataPartitionCollocationIndex={}, "
+                "StorageEngineReference={}.",
+                container_instance.collocation_index_,
+                static_cast<void*>(container_instance.storage_engine_reference_));
+
+            return status;
+        }
+    }
+
+    return status::success;
 }
 
 } // namespace lazarus::storage.
