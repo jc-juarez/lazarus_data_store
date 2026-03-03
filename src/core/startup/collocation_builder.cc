@@ -14,6 +14,7 @@
 
 #include "collocation_builder.hh"
 #include "../storage/io/storage_engine.hh"
+#include "../storage/io/data_partition.hh"
 #include "../storage/io/collocation_resolver.hh"
 #include "../storage/io/data_partition_table.hh"
 #include "../storage/io/threading_context_table.hh"
@@ -28,6 +29,7 @@ namespace storage
 collocation_builder::collocation_builder() = default;
 
 std::tuple<
+    std::shared_ptr<data_partition>,
     std::shared_ptr<collocation_resolver>,
     std::shared_ptr<data_partition_provider>,
     std::shared_ptr<threading_context_provider>>
@@ -38,6 +40,10 @@ collocation_builder::generate_collocation_topology(
     // The system should create the same number of topology subtypes.
     // This is crucial as to maintain IO requirements for the storage engine.
     //
+    auto container_metadata_partition = std::make_shared<storage::data_partition>(
+        k_number_collocations, /* The index for the containers metadata corresponds to the Kth collocation. */
+        storage_configuration,
+        std::make_unique<storage::storage_engine>());
     auto collocation_resolver = std::make_shared<storage::collocation_resolver>(
         k_number_collocations);
     auto dp_table = std::make_unique<data_partition_table>();
@@ -51,10 +57,12 @@ collocation_builder::generate_collocation_topology(
     {
         dp_table->append_partition(
             collocation_index,
-            std::make_unique<storage::storage_engine>(storage_configuration));
+            storage_configuration,
+            std::make_unique<storage::storage_engine>());
     }
 
     return std::make_tuple(
+        container_metadata_partition,
         collocation_resolver,
         dp_provider,
         tc_provider);

@@ -36,18 +36,16 @@ public:
     //
     // Constructor for the storage engine.
     //
-    storage_engine(
-        const storage_configuration& storage_configuration);
+    storage_engine();
 
     //
-    // Starts the storage engine.
-    // Requires a list of all object containers present on disk
-    // and returns a list in respective order with all column family references.
+    // Sets the underlying persistent store backend to be used.
+    // For now, only the RocksDB engine is supported.
     //
-    status::status_code
-    start(
-        const std::vector<std::string>& containers_names,
-        std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping) override;
+    void
+    set_persistent_store(
+        const std::uint16_t collocation_index,
+        std::unique_ptr<rocksdb::DB> persistent_store) override;
 
     //
     // Inserts a single object into the data store.
@@ -87,18 +85,6 @@ public:
         std::unordered_map<std::string, byte_stream>* objects) override;
 
     //
-    // Fetches the existing object containers in the data store.
-    // In case of a system crash, the underlying core engine ensures
-    // that all operations are written into the WAL entries, thus lazarus
-    // only acknowledges object container references that were successfully
-    // recorded into the storage engine WAL.
-    // This should be invoked before starting the storage engine.
-    //
-    status::status_code
-    fetch_containers_from_disk(
-        std::vector<std::string>* containers_names) override;
-
-    //
     // Closes the in-memory object container storage engine reference.
     //
     status::status_code
@@ -130,20 +116,14 @@ public:
 private:
 
     //
-    // Gets the configurations to be used by the engine.
+    // Main handle for the underlying storage backend key-value persistent store.
     //
-    rocksdb::Options
-    get_engine_configurations() const;
+    std::unique_ptr<rocksdb::DB> persistent_store_;
 
     //
-    // Main handle for the underlying storage backend key-value store.
+    // Corresponding collocation index.
     //
-    std::unique_ptr<rocksdb::DB> kv_store_;
-
-    //
-    // Configurations for the storage subsystem.
-    //
-    const storage_configuration storage_configuration_;
+    std::uint16_t collocation_index_;
 };
 
 } // namespace storage.

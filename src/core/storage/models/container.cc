@@ -27,10 +27,11 @@ namespace storage
 container::container(
     std::shared_ptr<storage_engine_interface> storage_engine_handle,
     storage_engine_reference_handle* storage_engine_reference,
-    const schemas::container_persistent_interface& container_persistent_metadata)
+    const schemas::container_persistent_interface& container_persistent_metadata,
+    const std::vector<container_partition_metadata>& container_instances)
     : storage_engine_{std::move(storage_engine_handle)},
-      storage_engine_reference_{storage_engine_reference},
       container_persistent_metadata_{container_persistent_metadata},
+      container_instances_{container_instances},
       is_deleted_{false}
 {}
 
@@ -40,8 +41,22 @@ container::~container()
         "ObjectContainerMetadata={}.",
         to_string());
 
-    storage_engine_->close_container_storage_engine_reference(
-        storage_engine_reference_);
+    for (auto& container_instance : container_instances_)
+    {
+        status::status_code status = container_instance.storage_engine_.close_container_storage_engine_reference(
+            container_instance.storage_engine_reference_);
+
+        if (status::failed(status))
+        {
+            spdlog::warn("Failed to close container storage engine reference. "
+                "ObjectContainerMetadata={}, "
+                "DataPartitionCollocationIndex={}, "
+                "StorageEngineReference={}.",
+                to_string(),
+                container_instance.collocation_index_,
+                static_cast<void*>(container_instance.storage_engine_reference_));
+        }
+    }
 }
 
 schemas::container_persistent_interface

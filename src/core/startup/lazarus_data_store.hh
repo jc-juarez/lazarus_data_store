@@ -48,6 +48,7 @@ class cache_accessor;
 class collocation_resolver;
 class data_partition_provider;
 class threading_context;
+class data_partition;
 }
 
 //
@@ -62,6 +63,7 @@ public:
     //
     lazarus_data_store(
         const boost::uuids::uuid session_id,
+        std::shared_ptr<storage::data_partition> containers_metadata_partition,
         std::shared_ptr<storage::collocation_resolver> collocation_resolver,
         std::shared_ptr<storage::data_partition_provider> data_partition_provider,
         std::shared_ptr<storage::threading_context> threading_context_provider,
@@ -94,18 +96,23 @@ private:
     boot_data_partitions();
 
     //
-    // Handles the startup for a given storage engine.
+    // Handles the boot process for a given data partition.
     // Upon success, the storage engine references for such engine is returned back.
     //
     status::status_code
-    start_storage_engine(
-        storage::storage_engine_interface& storage_engine,
+    boot_data_partition(
+        std::shared_ptr<storage::data_partition> data_partition,
         std::unordered_map<std::string, storage::storage_engine_reference_handle*>& references_mapping);
 
     //
     // Session identifier.
     //
     boost::uuids::uuid session_id_;
+
+    //
+    // Containers metadata partition handle.
+    //
+    std::shared_ptr<storage::data_partition> containers_metadata_partition_;
 
     //
     // Collocation resolver handle.

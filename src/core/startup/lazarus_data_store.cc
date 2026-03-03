@@ -48,6 +48,7 @@ namespace lazarus
 
 lazarus_data_store::lazarus_data_store(
     const boost::uuids::uuid session_id,
+    std::shared_ptr<storage::data_partition> containers_metadata_partition,
     std::shared_ptr<storage::collocation_resolver> collocation_resolver,
     std::shared_ptr<storage::data_partition_provider> data_partition_provider,
     std::shared_ptr<storage::threading_context> threading_context_provider,
@@ -62,6 +63,7 @@ lazarus_data_store::lazarus_data_store(
     std::shared_ptr<storage::read_io_executor> object_io_executor,
     std::shared_ptr<storage::cache_accessor> cache_accessor)
     : session_id_{session_id}
+    , containers_metadata_partition_{containers_metadata_partition}
     , collocation_resolver_{collocation_resolver}
     , data_partition_provider_{data_partition_provider}
     , threading_context_provider_{threading_context_provider}
@@ -139,8 +141,8 @@ lazarus_data_store::boot_data_partitions()
 
     for (auto& data_partition : data_partitions)
     {
-        status::status_code status = start_storage_engine(
-            data_partition->get_storage_engine(),
+        status::status_code status = boot_data_partition(
+            data_partition,
             storage_engine_references_mapping);
 
         if (status::failed(status))
@@ -158,8 +160,8 @@ lazarus_data_store::boot_data_partitions()
 }
 
 status::status_code
-lazarus_data_store::start_storage_engine(
-    storage::storage_engine_interface& storage_engine,
+lazarus_data_store::boot_data_partition(
+    std::shared_ptr<storage::data_partition> data_partition,
     std::unordered_map<std::string, storage::storage_engine_reference_handle*>& references_mapping)
 {
     //
@@ -169,8 +171,8 @@ lazarus_data_store::start_storage_engine(
     // This is a static invocation being executed before the storage engine is started.
     //
     std::vector<std::string> containers_names;
-    status::status_code status = storage_engine.fetch_containers_from_disk(
-        &containers_names);
+    status::status_code status = data_partition->fetch_containers_from_disk(
+        containers_names);
 
     if (status::failed(status))
     {
@@ -182,12 +184,12 @@ lazarus_data_store::start_storage_engine(
     }
 
     //
-    // Start the storage engine. On success, it will associate the object
+    // Boot the partition. On success, it will associate the object
     // containers names to their respective column family reference.
     //
-    status = storage_engine.start(
+    status = data_partition->boot(
         containers_names,
-        &references_mapping);
+        references_mapping);
 
     if (status::failed(status))
     {

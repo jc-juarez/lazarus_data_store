@@ -24,6 +24,7 @@ namespace lazarus
 namespace storage
 {
 
+class data_partition;
 class collocation_resolver;
 class data_partition_provider;
 class threading_context_provider;
@@ -40,9 +41,15 @@ public:
     //
     // Generates and returns the list of data partitions
     // and threading contexts to be used in the system within a fixed-topology set.
+    // Returns:
+    // 1. The data partition for the internal container metadata. This is considered as the last partition.
+    // 2. The collocation resolver for routing object keys to their respective partition.
+    // 3. The data partition provider for accessing all partitions.
+    // 4. The threading context provider for accessing all IO concurrency contexts.
     //
     static
     std::tuple<
+        std::shared_ptr<data_partition>,
         std::shared_ptr<collocation_resolver>,
         std::shared_ptr<data_partition_provider>,
         std::shared_ptr<threading_context_provider>>

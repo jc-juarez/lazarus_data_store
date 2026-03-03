@@ -118,6 +118,7 @@ set(SOURCE_FILES
         src/core/startup/system_init.hh
         src/core/startup/system_init.cc
         src/core/common/args_validations.cc
+        src/core/storage/models/container_partition_metadata.hh
 )
 
 # Lazarus core library.

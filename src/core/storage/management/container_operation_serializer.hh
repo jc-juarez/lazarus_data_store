@@ -16,9 +16,11 @@
 #pragma once
 
 #include <memory>
+#include <expected>
 #include "../../status/status.hh"
 #include "../../network/server/server.hh"
 #include "../../common/task_serializer.hh"
+#include "../models/container_partition_metadata.hh"
 #include "../../schemas/request-interfaces/container_request.hh"
 
 namespace lazarus
@@ -27,6 +29,7 @@ namespace storage
 {
 
 class container_index;
+class data_partition_provider;
 class storage_engine_interface;
 
 //
@@ -40,7 +43,7 @@ public:
     // Constructor for the object operation serializer.
     //
     container_operation_serializer(
-        std::shared_ptr<storage_engine_interface> storage_engine_handle,
+        std::shared_ptr<storage_engine_interface> container_metadata_storage_engine,
         std::shared_ptr<container_index> container_index);
 
     //
@@ -78,19 +81,35 @@ private:
         const schemas::container_request& container_request);
 
     //
+    // Handles the creation of the container instances
+    // across all data partitions.
+    // Upon success, the list of container instances is returned.
+    //
+    std::expected<
+        std::vector<container_partition_metadata>,
+        status::status_code>
+    create_container_instances_on_data_partitions(
+        const std::string& container_name);
+
+    //
     // Serializer task queue for executing object container operations serially.
     //
     common::task_serializer container_operations_serializer_;
 
     //
-    // Reference for the storage engine component.
+    // Reference for the data partition provider.
     //
-    std::shared_ptr<storage_engine_interface> storage_engine_;
+    std::shared_ptr<data_partition_provider> data_partition_provider_;
 
     //
     // Reference for the object container index component.
     //
     std::shared_ptr<container_index> container_index_;
+
+    //
+    // Reference to the storage engine metadata responsible for the container metadata.
+    //
+    std::shared_ptr<storage_engine_interface> container_metadata_storage_engine_;
 };
 
 } // namespace storage.

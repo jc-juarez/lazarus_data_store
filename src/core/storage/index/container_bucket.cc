@@ -22,8 +22,8 @@ namespace lazarus::storage
 using index_table_type = tbb::concurrent_hash_map<std::string, std::shared_ptr<container>>;
 
 container_bucket::container_bucket(
-    std::shared_ptr<storage_engine_interface> storage_engine)
-    : storage_engine_{std::move(storage_engine)},
+    std::shared_ptr<storage::data_partition_provider> data_partition_provider)
+    : data_partition_provider_{std::move(data_partition_provider)},
       index_{0u}
 {}
 
@@ -44,6 +44,10 @@ container_bucket::insert_container(
     // reference has a valid hashable identifier to be used as index key.
     // Also, it is guaranteed that no other thread will try to insert the same key.
     //
+    // Likewise, the container should hold a reference to its respective storage
+    // engine for closing its reference upon destruction.
+    //
+
     if (container_bucket_map_.emplace(
         container_persistent_metadata.name(),
         std::make_unique<container>(

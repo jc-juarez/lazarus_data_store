@@ -31,13 +31,14 @@ class storage_engine_interface : public common::interface
 public:
 
     //
-    // Starts the storage engine.
+    // Sets the underlying persistent store backend to be used.
+    // For now, only the RocksDB engine is supported.
     //
     virtual
-    status::status_code
-    start(
-        const std::vector<std::string>& containers_names,
-        std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping) = 0;
+    void
+    set_persistent_store(
+        const std::uint16_t collocation_index,
+        std::unique_ptr<rocksdb::DB> persistent_store) = 0;
 
     //
     // Inserts a single object into the data store.
@@ -79,14 +80,6 @@ public:
     get_all_objects_from_container(
         storage_engine_reference_handle* container_storage_engine_reference,
         std::unordered_map<std::string, byte_stream>* objects) = 0;
-
-    //
-    // Fetches the existing object containers in the data store.
-    //
-    virtual
-    status::status_code
-    fetch_containers_from_disk(
-        std::vector<std::string>* containers_names) = 0;
 
     //
     // Closes the in-memory object container storage engine reference.

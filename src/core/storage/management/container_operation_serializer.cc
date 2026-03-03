@@ -15,9 +15,11 @@
 
 #include <spdlog/spdlog.h>
 #include "../io/storage_engine.hh"
+#include "../io/data_partition.hh"
 #include "../index/container_index.hh"
 #include "../../network/server/server.hh"
 #include "../../common/uuid_utilities.hh"
+#include "../io/data_partition_provider.hh"
 #include "container_operation_serializer.hh"
 
 namespace lazarus
@@ -26,9 +28,9 @@ namespace storage
 {
 
 container_operation_serializer::container_operation_serializer(
-    std::shared_ptr<storage_engine_interface> storage_engine_handle,
+    std::shared_ptr<storage_engine_interface> container_metadata_storage_engine,
     std::shared_ptr<container_index> container_index)
-    : storage_engine_{std::move(storage_engine_handle)},
+    : container_metadata_storage_engine_{std::move(container_metadata_storage_engine)},
       container_index_{std::move(container_index)}
 {}
 
@@ -288,6 +290,46 @@ container_operation_serializer::handle_container_removal(
         container_request.get_name());
 
     return status::success;
+}
+
+std::expected<
+    std::vector<container_partition_metadata>,
+    status::status_code>
+container_operation_serializer::create_container_instances_on_data_partitions(
+    const std::string& container_name)
+{
+    std::vector<container_partition_metadata> container_instances;
+
+    std::vector<std::shared_ptr<data_partition>> data_partitions =
+        data_partition_provider_->get_all_partitions();
+
+    for (auto& data_partition : data_partitions)
+    {
+        storage_engine_reference_handle* container_storage_engine_reference;
+
+        status::status_code status = data_partition->get_storage_engine().create_container(
+            container_name.c_str(),
+            &container_storage_engine_reference);
+
+        if (status::failed(status))
+        {
+            spdlog::error("Failed to create container on DataPartitionCollocationIndex={}. "
+                "ObjectContainerName={}, "
+                "Status={:#x}.",
+                data_partition->get_collocation_index(),
+                container_name,
+                status);
+
+            return std::unexpected(status);
+        }
+
+        container_instances.emplace_back(
+            data_partition->get_collocation_index(),
+            data_partition->get_storage_engine(),
+            container_storage_engine_reference);
+    }
+
+    return container_instances;
 }
 
 } // namespace storage.

@@ -24,6 +24,7 @@
 #include "../storage/io/collocation_resolver.hh"
 
 // Remove duplicates.
+#include "../storage/io/data_partition.hh"
 #include <csignal>
 #include <spdlog/async.h>
 #include <spdlog/spdlog.h>
@@ -169,12 +170,16 @@ start_system(
     //
     // Construct all the dependencies for the system.
     //
-    storage::collocation_builder collocation_builder;
+    std::shared_ptr<storage::data_partition> containers_metadata_partition;
     std::shared_ptr<storage::collocation_resolver> collocation_resolver;
     std::shared_ptr<storage::data_partition_provider> data_partition_provider;
     std::shared_ptr<storage::threading_context_provider> threading_context_provider;
-    std::tie(collocation_resolver, data_partition_provider, threading_context_provider) =
-        collocation_builder.generate_collocation_topology(system_config.storage_configuration_);
+    std::tie(
+        containers_metadata_partition,
+        collocation_resolver,
+        data_partition_provider,
+        threading_context_provider) =
+            storage::collocation_builder::generate_collocation_topology(system_config.storage_configuration_);
 
     auto container_index = std::make_shared<storage::container_index>(
         system_config.storage_configuration_.container_index_number_buckets_,
@@ -256,8 +261,9 @@ start_system(
     //
     // Initialize all core dependencies of the data store.
     //
-    lazarus::lazarus_data_store lazarus_ds{
+    lazarus_data_store lazarus_ds{
         session_id,
+        containers_metadata_partition,
         collocation_resolver,
         data_partition_provider,
         threading_context_provider,

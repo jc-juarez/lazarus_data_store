@@ -27,11 +27,13 @@ data_partition_table::data_partition_table()
 void
 data_partition_table::append_partition(
     const std::uint16_t collocation_index,
+    const storage_configuration& storage_configuration,
     std::unique_ptr<storage_engine> storage_engine)
 {
     partitions_.emplace_back(
         std::make_shared<data_partition>(
             collocation_index,
+            storage_configuration,
             std::move(storage_engine)));
 }
 

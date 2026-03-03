@@ -40,6 +40,7 @@ public:
     void
     append_partition(
         const std::uint16_t collocation_index,
+        const storage_configuration& storage_configuration,
         std::unique_ptr<storage_engine> storage_engine);
 
     //

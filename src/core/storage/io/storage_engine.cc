@@ -12,8 +12,6 @@
 //      Core storage engine for handling IO operations. 
 // ****************************************************
 
-#include <thread>
-#include "rocksdb/table.h"
 #include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 
@@ -22,73 +20,17 @@ namespace lazarus
 namespace storage
 {
 
-storage_engine::storage_engine(
-    const storage_configuration& storage_configuration)
-    : storage_configuration_{storage_configuration},
-      kv_store_{nullptr}
+storage_engine::storage_engine()
+    : persistent_store_{nullptr} /* Intentional. Any non-initialized use should result in a segfault. */
 {}
 
-status::status_code
-storage_engine::start(
-    const std::vector<std::string>& containers_names,
-    std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping)
+void
+storage_engine::set_persistent_store(
+    const std::uint16_t collocation_index,
+    std::unique_ptr<rocksdb::DB> persistent_store)
 {
-    std::vector<rocksdb::ColumnFamilyDescriptor> column_family_descriptors;
-    
-    //
-    // Append all mappings for the core key-value store initialization.
-    //
-    for (const auto& container_name : containers_names)
-    {
-        column_family_descriptors.emplace_back(
-            container_name,
-            rocksdb::ColumnFamilyOptions());
-    }
-
-    rocksdb::DB* kv_store_handle;
-    const rocksdb::Options options = get_engine_configurations();
-    std::vector<storage_engine_reference_handle*> storage_engine_references;
-
-    //
-    // Start the engine. At this point the system will start
-    // spinning up all internal resources for handling IO operations.
-    //
-    const rocksdb::Status status = rocksdb::DB::Open(
-        options,
-        storage_configuration_.kv_store_path_,
-        column_family_descriptors,
-        &storage_engine_references,
-        &kv_store_handle);
-
-    if (!status.ok())
-    {
-        spdlog::critical("An error occurred while trying to start the storage engine. "
-            "NumberObjectContainersOnDisk={}, "
-            "StorageEngineCode={}, "
-            "StorageEngineSubCode={}.",
-            containers_names.size(),
-            static_cast<std::uint32_t>(status.code()),
-            static_cast<std::uint32_t>(status.subcode()));
-        
-        return status::storage_engine_startup_failed;
-    }
-
-    //
-    // At this point, the storage engine has been successfully started,
-    // so assign the core key-value store handle.
-    //
-    kv_store_.reset(kv_store_handle);
-
-    //
-    // Map the object container names to their respective column family references.
-    //
-    auto& mapping = *storage_engine_references_mapping;
-    for (size_t index = 0; index < containers_names.size(); ++index)
-    {
-        mapping[containers_names[index]] = storage_engine_references[index];
-    }
-
-    return status::success;
+    collocation_index_ = collocation_index;
+    persistent_store_ = std::move(persistent_store);
 }
 
 status::status_code
@@ -97,7 +39,7 @@ storage_engine::insert_object(
     const char* object_id,
     const byte_stream& object_data)
 {
-    const rocksdb::Status status = kv_store_->Put(
+    const rocksdb::Status status = persistent_store_->Put(
         rocksdb::WriteOptions(),
         container_storage_engine_reference,
         object_id,
@@ -127,7 +69,7 @@ storage_engine::get_object(
     const char* object_id,
     byte_stream* object_data)
 {
-    const rocksdb::Status status = kv_store_->Get(
+    const rocksdb::Status status = persistent_store_->Get(
         rocksdb::ReadOptions(),
         container_storage_engine_reference,
         object_id,
@@ -156,7 +98,7 @@ storage_engine::create_container(
     const char* container_name,
     storage_engine_reference_handle** container_storage_engine_reference)
 {
-    const rocksdb::Status status = kv_store_->CreateColumnFamily(
+    const rocksdb::Status status = persistent_store_->CreateColumnFamily(
         rocksdb::ColumnFamilyOptions(),
         container_name,
         container_storage_engine_reference);
@@ -188,7 +130,7 @@ storage_engine::get_all_objects_from_container(
     std::unordered_map<std::string, byte_stream>* objects)
 {
     rocksdb::ReadOptions read_options;
-    std::unique_ptr<rocksdb::Iterator> it(kv_store_->NewIterator(
+    std::unique_ptr<rocksdb::Iterator> it(persistent_store_->NewIterator(
         read_options,
         container_storage_engine_reference));
 
@@ -226,48 +168,10 @@ storage_engine::get_all_objects_from_container(
 }
 
 status::status_code
-storage_engine::fetch_containers_from_disk(
-    std::vector<std::string>* containers_names)
-{
-    const rocksdb::Status status = rocksdb::DB::ListColumnFamilies(
-        rocksdb::DBOptions(),
-        storage_configuration_.kv_store_path_,
-        containers_names);
-
-    //
-    // rocksdb::Status::kPathNotFound is a valid error code
-    // in case this is the first-time startup for the data store.
-    //
-    if (!status.ok() &&
-        status.subcode() != rocksdb::Status::kPathNotFound)
-    {
-        spdlog::critical("Failed to retrieve initial object containers from disk. "
-            "StorageEngineCode={}, "
-            "StorageEngineSubCode={}.",
-            static_cast<std::uint32_t>(status.code()),
-            static_cast<std::uint32_t>(status.subcode()));
-
-        return status::fetch_containers_from_disk_failed;
-    }
-
-    if (containers_names->empty())
-    {
-        //
-        // In case there are no initial object containers, this is
-        // a first-time or fresh startup for the data store, so the
-        // default column family needs to be added to the core key-value store initialization.
-        //
-        containers_names->push_back(rocksdb::kDefaultColumnFamilyName);
-    }
-
-    return status::success;
-}
-
-status::status_code
 storage_engine::close_container_storage_engine_reference(
     storage_engine_reference_handle* container_storage_engine_reference)
 {
-    const rocksdb::Status status = kv_store_->DestroyColumnFamilyHandle(
+    const rocksdb::Status status = persistent_store_->DestroyColumnFamilyHandle(
         container_storage_engine_reference);
 
     if (!status.ok())
@@ -291,7 +195,7 @@ storage_engine::remove_object(
     storage_engine_reference_handle* container_storage_engine_reference,
     const char* object_id)
 {
-    const rocksdb::Status status = kv_store_->Delete(
+    const rocksdb::Status status = persistent_store_->Delete(
         rocksdb::WriteOptions(),
         container_storage_engine_reference,
         object_id);
@@ -318,7 +222,7 @@ status::status_code
 storage_engine::remove_container(
     storage_engine_reference_handle* container_storage_engine_reference)
 {
-    const rocksdb::Status status = kv_store_->DropColumnFamily(
+    const rocksdb::Status status = persistent_store_->DropColumnFamily(
         container_storage_engine_reference);
 
     if (!status.ok())
@@ -341,7 +245,7 @@ status::status_code
 storage_engine::execute_objects_write_batch(
     storage_engine_write_batch& write_batch)
 {
-    const rocksdb::Status status = kv_store_->Write(
+    const rocksdb::Status status = persistent_store_->Write(
         rocksdb::WriteOptions(),
         &write_batch);
 
@@ -357,36 +261,6 @@ storage_engine::execute_objects_write_batch(
     }
 
     return status::success;
-}
-
-rocksdb::Options
-storage_engine::get_engine_configurations() const
-{
-    rocksdb::Options options;
-    options.create_if_missing = true;
-
-    //
-    // Increase the number of flushing threads to the
-    // same as the number of logical cores on the system.
-    //
-    options.IncreaseParallelism(
-        static_cast<std::int32_t>(std::thread::hardware_concurrency()));
-
-    //
-    // Optimize the compaction for
-    // avoiding write stalls under heavy load.
-    //
-    options.OptimizeLevelStyleCompaction();
-
-    //
-    // The engine will start with a block cache with an LRU-backed policy.
-    //
-    rocksdb::BlockBasedTableOptions table_options;
-    table_options.block_cache = rocksdb::NewLRUCache(
-        storage_configuration_.storage_engine_block_cache_size_mib_ * 1024u * 1024u);
-    options.table_factory.reset(NewBlockBasedTableFactory(table_options));
-
-    return options;
 }
 
 } // namespace storage.

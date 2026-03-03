@@ -15,9 +15,9 @@
 
 #include <cassert>
 #include <spdlog/spdlog.h>
-#include "../io/storage_engine.hh"
 #include "container_index.hh"
 #include "../../common/uuid_utilities.hh"
+#include "../io/data_partition_provider.hh.hh"
 
 namespace lazarus
 {
@@ -26,7 +26,7 @@ namespace storage
 
 container_index::container_index(
     const std::uint16_t number_container_buckets,
-    std::shared_ptr<storage_engine_interface> storage_engine)
+    std::shared_ptr<storage::data_partition_provider> data_partition_provider)
     : container_index_table_{number_container_buckets, container_bucket{std::move(storage_engine)}},
       number_container_buckets_{number_container_buckets},
       number_containers_{0u}

@@ -19,6 +19,7 @@
 #include <string>
 #include <shared_mutex>
 #include "../../common/aliases.hh"
+#include "container_partition_metadata.hh"
 #include "container_persistent_interface.pb.h"
 
 namespace lazarus
@@ -43,7 +44,8 @@ public:
     container(
         std::shared_ptr<storage_engine_interface> storage_engine_handle,
         storage_engine_reference_handle* storage_engine_reference,
-        const schemas::container_persistent_interface& container_persistent_metadata);
+        const schemas::container_persistent_interface& container_persistent_metadata,
+        const std::vector<container_partition_metadata>& container_instances);
 
     //
     // Destructor for the object container.
@@ -104,10 +106,9 @@ private:
     schemas::container_persistent_interface container_persistent_metadata_;
 
     //
-    // Pointer to the associated column family for the object container.
-    // This only concerns the storage engine. In-memory only.
+    // List of the container instances and their data partition metadata.
     //
-    storage_engine_reference_handle* const storage_engine_reference_;
+    std::vector<container_partition_metadata> container_instances_;
 
     //
     // Flag indicating whether this object container reference has been

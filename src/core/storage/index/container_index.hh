@@ -29,6 +29,7 @@ namespace lazarus
 namespace storage
 {
 
+class data_partition_provider;
 class storage_engine_interface;
 
 //
@@ -43,7 +44,7 @@ public:
     //
     container_index(
         const std::uint16_t number_container_buckets,
-        std::shared_ptr<storage_engine_interface> storage_engine);
+        std::shared_ptr<storage::data_partition_provider> data_partition_provider);
 
     //
     // Internal column family name for persisting
