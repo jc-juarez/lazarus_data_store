@@ -97,8 +97,8 @@ lazarus_data_store::start_data_store()
     if (!boot_result)
     {
         spdlog::critical("Failed to boot structured data partitions during the system startup. "
-                         "Status={}.",
-                         boot_result.error());
+            "Status={}.",
+            boot_result.error());
 
         return boot_result.error();
     }

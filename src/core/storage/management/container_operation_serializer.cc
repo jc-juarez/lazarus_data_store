@@ -28,9 +28,11 @@ namespace storage
 {
 
 container_operation_serializer::container_operation_serializer(
+    std::shared_ptr<data_partition> container_metadata_partition,
     std::shared_ptr<storage::data_partition_provider> data_partition_provider,
     std::shared_ptr<container_index> container_index)
-    : data_partition_provider_{std::move(data_partition_provider)},
+    : container_metadata_partition_{std::move(container_metadata_partition)},
+      data_partition_provider_{std::move(data_partition_provider)},
       container_index_{std::move(container_index)}
 {}
 
@@ -152,8 +154,8 @@ container_operation_serializer::handle_container_creation(
         container::create_container_persistent_metadata(container_request.get_name().c_str());
     byte_stream serialized_container_persistent_metadata;
     container_persistent_metadata.SerializeToString(&serialized_container_persistent_metadata);
-    status = storage_engine_->insert_object(
-        container_index_->get_containers_internal_metadata_storage_engine_reference(),
+    status = container_metadata_partition_->get_storage_engine().insert_object(
+        container_index_->get_container_metadata_engine_reference(),
         container_request.get_name().c_str(),
         serialized_container_persistent_metadata);
 
@@ -174,8 +176,8 @@ container_operation_serializer::handle_container_creation(
     // Index the new object container to the internal metadata table.
     //
     status = container_index_->insert_container(
-        container_storage_engine_reference,
-        container_persistent_metadata);
+        container_persistent_metadata,
+        container_instances_creation_result.value());
 
     if (status::failed(status))
     {
@@ -231,8 +233,8 @@ container_operation_serializer::handle_container_removal(
     // object container will be broken, and only the in-memory object container reference
     // will remain active for the rest of this session and be cleaned up by the garbage collector.
     //
-    status = storage_engine_->remove_object(
-        container_index_->get_containers_internal_metadata_storage_engine_reference(),
+    status = container_metadata_partition_->get_storage_engine().remove_object(
+        container_index_->get_container_metadata_engine_reference(),
         container_request.get_name().c_str());
 
     if (status::failed(status))

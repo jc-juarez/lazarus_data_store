@@ -199,6 +199,7 @@ start_system(
         std::move(orphaned_container_scavenger));
 
     auto container_operation_serializer = std::make_unique<storage::container_operation_serializer>(
+        container_metadata_partition,
         data_partition_provider,
         container_index);
 

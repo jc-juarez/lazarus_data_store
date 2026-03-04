@@ -43,6 +43,7 @@ public:
     // Constructor for the object operation serializer.
     //
     container_operation_serializer(
+        std::shared_ptr<data_partition> container_metadata_partition,
         std::shared_ptr<storage::data_partition_provider> data_partition_provider,
         std::shared_ptr<container_index> container_index);
 
@@ -114,9 +115,8 @@ private:
     std::shared_ptr<container_index> container_index_;
 
     //
-    // Reference to the storage engine metadata responsible for the container metadata.
-    // We need to pass this.
-    // std::shared_ptr<storage_engine_interface> container_metadata_storage_engine_;
+    // Reference container metadata partition component.
+    std::shared_ptr<data_partition> container_metadata_partition_;
 };
 
 } // namespace storage.
