@@ -37,7 +37,7 @@ public:
     // Appends a new threading context instance to the table.
     //
     void
-    append_threading_context(
+    append_context(
         const std::uint16_t collocation_index);
 
     //
@@ -47,6 +47,12 @@ public:
     std::shared_ptr<threading_context>
     get_threading_context(
         const std::uint16_t collocation_index);
+
+    //
+    // Returns a list with all threading contexts in the system.
+    //
+    std::vector<std::shared_ptr<threading_context>>
+    get_all_contexts();
 
 private:
 

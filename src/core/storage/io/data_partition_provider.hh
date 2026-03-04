@@ -33,15 +33,7 @@ public:
     // Constructor.
     //
     data_partition_provider(
-        std::unique_ptr<data_partition_table> data_partition_table,
-        std::shared_ptr<collocation_resolver> collocation_resolver);
-
-    //
-    // Provides access to a specific data partition by object key lookup.
-    //
-    std::shared_ptr<data_partition>
-    get_partition_by_key(
-        const std::string& object_key);
+        std::unique_ptr<data_partition_table> data_partition_table);
 
     //
     // Provides access to a specific data partition by collocation index lookup.
@@ -62,11 +54,6 @@ private:
     // Table containing all data partitions in the system.
     //
     std::unique_ptr<data_partition_table> partitions_table_;
-
-    //
-    // Collocation resolver for provided object keys.
-    //
-    std::shared_ptr<collocation_resolver> collocation_resolver_;
 };
 
 } // namespace storage.

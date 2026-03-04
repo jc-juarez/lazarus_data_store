@@ -34,7 +34,6 @@ public:
     // Constructor.
     //
     orphaned_container_scavenger(
-        std::shared_ptr<data_partition_provider> data_partition_provider,
         std::shared_ptr<container_index> container_index);
 
     //

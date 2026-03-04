@@ -15,7 +15,6 @@
 
 #include <spdlog/spdlog.h>
 #include "../models/container.hh"
-#include "../io/storage_engine.hh"
 #include "../index/container_index.hh"
 #include "orphaned_container_scavenger.hh"
 
@@ -23,10 +22,8 @@ namespace lazarus::storage
 {
 
 orphaned_container_scavenger::orphaned_container_scavenger(
-    std::shared_ptr<data_partition_provider> data_partition_provider,
     std::shared_ptr<container_index> container_index)
-    : data_partition_provider_{std::move(data_partition_provider)},
-      container_index_{std::move(container_index)}
+    : container_index_{std::move(container_index)}
 {}
 
 void

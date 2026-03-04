@@ -44,28 +44,47 @@ collocation_builder::generate_collocation_topology(
         k_number_collocations, /* The index for the containers metadata corresponds to the Kth collocation. */
         storage_configuration,
         std::make_unique<storage::storage_engine>());
+
+    //
+    // Collocation resolver.
+    // This routes all object keys to their respective data partitions or threading contexts.
+    //
     auto collocation_resolver = std::make_shared<storage::collocation_resolver>(
         k_number_collocations);
-    auto dp_table = std::make_unique<data_partition_table>();
-    auto tc_table = std::make_unique<threading_context_table>();
-    auto dp_provider = std::make_shared<data_partition_provider>(
-        std::move(dp_table),
-        collocation_resolver);
-    auto tc_provider = std::make_shared<threading_context_provider>();
 
+    //
+    // Tables for data partitions and threading contexts.
+    //
+    auto data_partitions_table = std::make_unique<data_partition_table>();
+    auto threading_contexts_table = std::make_unique<threading_context_table>();
+
+    //
+    // Providers for data partitions and threading contexts.
+    //
+    auto data_partitions_provider = std::make_shared<data_partition_provider>(
+        std::move(data_partitions_table));
+    auto threading_contexts_provider = std::make_shared<threading_context_provider>(
+        std::move(threading_contexts_table));
+
+    //
+    // Populate data partitions and threading contexts tables.
+    //
     for (std::uint16_t collocation_index = 0u; collocation_index < k_number_collocations; ++collocation_index)
     {
-        dp_table->append_partition(
+        data_partitions_table->append_partition(
             collocation_index,
             storage_configuration,
             std::make_unique<storage::storage_engine>());
+
+        threading_contexts_table->append_context(
+            collocation_index);
     }
 
     return std::make_tuple(
         container_metadata_partition,
         collocation_resolver,
-        dp_provider,
-        tc_provider);
+        data_partitions_provider,
+        threading_contexts_provider);
 }
 
 } // namespace storage.
