@@ -60,6 +60,13 @@ private:
     // Table for holding all threading contexts in an owning model.
     // References to be provided should be owning.
     //
+    // The table functions as a direct mapping given a collocation index:
+    // --------------------------------------------------------------
+    // | Offset_0 | Offset_1 | Offset_2 | Offset_3 | ... | Offset_N |
+    // --------------------------------------------------------------
+    // |   TC_0   |   TC_1   |   TC_2   |   TC_3   | ... |   TC_N   |
+    // --------------------------------------------------------------
+    //
     std::vector<std::shared_ptr<threading_context>> threading_contexts_;
 };
 

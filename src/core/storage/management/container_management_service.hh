@@ -31,8 +31,8 @@ namespace lazarus
 namespace storage
 {
 
+class data_partition;
 class container_index;
-class storage_engine_interface;
 class container_operation_serializer;
 
 //
@@ -47,7 +47,7 @@ public:
     //
     container_management_service(
         const storage_configuration& storage_configuration,
-        std::shared_ptr<storage_engine_interface> storage_engine_handle,
+        std::shared_ptr<data_partition> container_metadata_partition,
         std::shared_ptr<container_index> container_index_handle,
         std::unique_ptr<container_operation_serializer> container_operation_serializer_handle);
 
@@ -57,7 +57,8 @@ public:
     //
     status::status_code
     populate_container_index(
-        std::unordered_map<std::string, storage_engine_reference_handle*> storage_engine_references_mapping);
+        std::unordered_map<std::string, storage_engine_reference_handle*> container_metadata_partition_references,
+        std::unordered_map<std::string, storage_engine_reference_handle*> structured_partitions_references);
 
     //
     // Orchestrates possible update operations to the object container index.
@@ -108,9 +109,9 @@ private:
     const storage_configuration storage_configuration_;
 
     //
-    // Handle for the storage engine.
+    // Handle for the container metadata partition.
     //
-    std::shared_ptr<storage_engine_interface> storage_engine_;
+    std::shared_ptr<data_partition> container_metadata_partition_;
 
     //
     // Handle for the object container index component.

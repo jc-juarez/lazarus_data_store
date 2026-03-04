@@ -14,13 +14,13 @@
 // ****************************************************
 
 #include <spdlog/spdlog.h>
-#include "../io/storage_engine.hh"
+#include "../io/data_partition.hh"
 #include "../gc/garbage_collector.hh"
 #include "../index/container_index.hh"
-#include "../../common/request_validations.hh"
 #include "container_management_service.hh"
 #include "container_operation_serializer.hh"
 #include "container_persistent_interface.pb.h"
+#include "../../common/request_validations.hh"
 
 namespace lazarus
 {
@@ -29,19 +29,20 @@ namespace storage
 
 container_management_service::container_management_service(
     const storage_configuration& storage_configuration,
-    std::shared_ptr<storage_engine_interface> storage_engine_handle,
+    std::shared_ptr<data_partition> container_metadata_partition,
     std::shared_ptr<container_index> container_index_handle,
     std::unique_ptr<container_operation_serializer> container_operation_serializer_handle)
     : storage_configuration_{storage_configuration},
-      storage_engine_(std::move(storage_engine_handle)),
+      container_metadata_partition_{std::move(container_metadata_partition)},
       container_index_{std::move(container_index_handle)},
       container_operation_serializer_{std::move(container_operation_serializer_handle)}
 {}
 
 status::status_code
 container_management_service::populate_container_index(
-    std::unordered_map<std::string, storage_engine_reference_handle*> storage_engine_references_mapping)
-{
+    std::unordered_map<std::string, storage_engine_reference_handle*> container_metadata_partition_references,
+    std::unordered_map<std::string, storage_engine_reference_handle*> structured_partitions_references)
+{ /*
     //
     // Keep track of the internal metadata object containers.
     // The only case when it is valid for them to be absent is when the column
@@ -71,7 +72,7 @@ container_management_service::populate_container_index(
         // metadata column families were not found. Fail the system startup.
         //
         spdlog::critical("Failed to find find the storage engine reference for the '{}' internal metadata.",
-                         container_index::containers_internal_metadata_name);
+            container_index::containers_internal_metadata_name);
 
         return status::containers_internal_metadata_lookup_failed;
     }
@@ -84,7 +85,7 @@ container_management_service::populate_container_index(
     // from the storage engine and populate the rest of the object container index.
     //
     std::unordered_map<std::string, byte_stream> objects;
-    status::status_code status = storage_engine_->get_all_objects_from_container(
+    status::status_code status = container_metadata_partition_->get_storage_engine().get_all_objects_from_container(
         containers_internal_metadata_storage_engine_reference,
         &objects);
 
@@ -194,7 +195,7 @@ container_management_service::populate_container_index(
             }
         }
     }
-
+*/
     return status::success;
 }
 
@@ -206,14 +207,14 @@ container_management_service::create_internal_metadata_column_families(
     // Create the object containers column family on the storage engine.
     //
     storage_engine_reference_handle* containers_internal_metadata_storage_engine_reference;
-    status::status_code status = storage_engine_->create_container(
-        container_index::containers_internal_metadata_name,
+    status::status_code status = container_metadata_partition_->get_storage_engine().create_container(
+        container_index::k_container_metadata_name,
         &containers_internal_metadata_storage_engine_reference);
 
     if (status::failed(status))
     {
         spdlog::critical("Failed to create internal metadata column family '{}'.",
-                         container_index::containers_internal_metadata_name);
+            container_index::k_container_metadata_name);
 
         return status;
     }
@@ -222,7 +223,7 @@ container_management_service::create_internal_metadata_column_families(
     // Append to the storage references mapping.
     //
     storage_engine_references_mapping->emplace(
-        container_index::containers_internal_metadata_name,
+        container_index::k_container_metadata_name,
         containers_internal_metadata_storage_engine_reference);
 
     return status::success;

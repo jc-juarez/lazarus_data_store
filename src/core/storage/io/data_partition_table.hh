@@ -39,6 +39,7 @@ public:
     //
     void
     append_partition(
+        const std::string& partition_prefix,
         const std::uint16_t collocation_index,
         const storage_configuration& storage_configuration,
         std::unique_ptr<storage_engine> storage_engine);
@@ -62,6 +63,12 @@ private:
     //
     // Table for holding all data partitions in an owning model.
     // References to be provided should be owning.
+    // The table functions as a direct mapping given a collocation index:
+    // --------------------------------------------------------------
+    // | Offset_0 | Offset_1 | Offset_2 | Offset_3 | ... | Offset_N |
+    // --------------------------------------------------------------
+    // |   DP_0   |   DP_1   |   DP_2   |   DP_3   | ... |   DP_N   |
+    // --------------------------------------------------------------
     //
     std::vector<std::shared_ptr<data_partition>> partitions_;
 };

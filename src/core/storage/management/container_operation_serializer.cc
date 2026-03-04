@@ -28,9 +28,9 @@ namespace storage
 {
 
 container_operation_serializer::container_operation_serializer(
-    std::shared_ptr<storage_engine_interface> container_metadata_storage_engine,
+    std::shared_ptr<storage::data_partition_provider> data_partition_provider,
     std::shared_ptr<container_index> container_index)
-    : container_metadata_storage_engine_{std::move(container_metadata_storage_engine)},
+    : data_partition_provider_{std::move(data_partition_provider)},
       container_index_{std::move(container_index)}
 {}
 

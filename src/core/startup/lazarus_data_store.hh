@@ -87,13 +87,13 @@ public:
 private:
 
     //
-    // Initializes the data partitions and their respective storage engines.
+    // Initializes the structured data partitions and their respective storage engines.
     // Upon success, the complete list of all storage engine references in the system is returned back.
     //
     std::expected<
         std::unordered_map<std::string, storage::storage_engine_reference_handle*>,
         status::status_code>
-    boot_data_partitions();
+    boot_structured_data_partitions();
 
     //
     // Handles the boot process for a given data partition.

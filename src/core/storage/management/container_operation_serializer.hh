@@ -43,7 +43,7 @@ public:
     // Constructor for the object operation serializer.
     //
     container_operation_serializer(
-        std::shared_ptr<storage_engine_interface> container_metadata_storage_engine,
+        std::shared_ptr<storage::data_partition_provider> data_partition_provider,
         std::shared_ptr<container_index> container_index);
 
     //
@@ -84,6 +84,13 @@ private:
     // Handles the creation of the container instances
     // across all data partitions.
     // Upon success, the list of container instances is returned.
+    // The resulting vector is guaranteed to contain all partition metadata
+    // in order with respective to its collocation index:
+    // --------------------------------------------------------------
+    // | Offset_0 | Offset_1 | Offset_2 | Offset_3 | ... | Offset_N |
+    // --------------------------------------------------------------
+    // |  Meta_0  |  Meta_1  |  Meta_2  |  Meta_3  | ... |  Meta_N  |
+    // --------------------------------------------------------------
     //
     std::expected<
         std::vector<container_partition_metadata>,
@@ -108,8 +115,8 @@ private:
 
     //
     // Reference to the storage engine metadata responsible for the container metadata.
-    //
-    std::shared_ptr<storage_engine_interface> container_metadata_storage_engine_;
+    // We need to pass this.
+    // std::shared_ptr<storage_engine_interface> container_metadata_storage_engine_;
 };
 
 } // namespace storage.

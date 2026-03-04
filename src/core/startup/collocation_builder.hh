@@ -65,6 +65,16 @@ private:
     // data corruption and the inability to locate keys on data partitions.
     //
     static constexpr std::uint16_t k_number_collocations = 8u;
+
+    //
+    // Partition prefix to use for structured data partitions (SDPs).
+    //
+    static constexpr const char* k_structured_partition_prefix = "dp";
+
+    //
+    // Partition prefix to use for the container metadata partition.
+    //
+    static constexpr const char* k_container_metadata_partition_prefix = "meta";
 };
 
 } // namespace storage.

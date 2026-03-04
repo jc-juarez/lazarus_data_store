@@ -25,12 +25,9 @@ namespace storage
 {
 
 container::container(
-    std::shared_ptr<storage_engine_interface> storage_engine_handle,
-    storage_engine_reference_handle* storage_engine_reference,
     const schemas::container_persistent_interface& container_persistent_metadata,
     const std::vector<container_partition_metadata>& container_instances)
-    : storage_engine_{std::move(storage_engine_handle)},
-      container_persistent_metadata_{container_persistent_metadata},
+    : container_persistent_metadata_{container_persistent_metadata},
       container_instances_{container_instances},
       is_deleted_{false}
 {}
@@ -71,13 +68,6 @@ container::create_container_persistent_metadata(
     container_persistent_metadata.set_name(container_name);
 
     return container_persistent_metadata;
-}
-
-storage_engine_reference_handle*
-container::get_storage_engine_reference() const
-{
-    std::shared_lock<std::shared_mutex> lock {lock_};
-    return storage_engine_reference_;
 }
 
 std::string
@@ -140,9 +130,22 @@ container::to_string() const
         is_deleted_);
 }
 
+storage_engine_reference_handle*
+container::get_engine_reference(
+    const std::uint16_t collocation_index)
+{
+    std::shared_lock<std::shared_mutex> lock {lock_};
+
+    //
+    // The container instances vector is already indexed by the collocation index.
+    //
+    return container_instances_.at(collocation_index).storage_engine_reference_;
+}
+
 std::vector<container_partition_metadata>
 container::get_container_instances()
 {
+    std::shared_lock<std::shared_mutex> lock {lock_};
     return container_instances_;
 }
 

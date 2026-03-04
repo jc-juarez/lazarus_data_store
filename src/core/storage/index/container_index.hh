@@ -29,9 +29,6 @@ namespace lazarus
 namespace storage
 {
 
-class data_partition_provider;
-class storage_engine_interface;
-
 //
 // Core object container indexing system.
 //
@@ -43,16 +40,14 @@ public:
     // Constructor for the object container index.
     //
     container_index(
-        const std::uint16_t number_container_buckets,
-        std::shared_ptr<storage::data_partition_provider> data_partition_provider);
+        const std::uint16_t number_container_buckets);
 
     //
     // Internal column family name for persisting
     // user-created object containers and their metadata.
     // This name is reserved for the data store use.
     //
-    static constexpr const char* containers_internal_metadata_name =
-        "_internal_metadata_:containers";
+    static constexpr const char* k_container_metadata_name = "containers";
 
     //
     // Checks if an object container is part of the internal metadata.
@@ -70,14 +65,15 @@ public:
     //
     status::status_code
     insert_container(
-        storage_engine_reference_handle* storage_engine_reference,
-        const schemas::container_persistent_interface& container_persistent_metadata);
+        const schemas::container_persistent_interface& container_persistent_metadata,
+        const std::vector<container_partition_metadata>& container_instances);
 
     //
-    // Gets the storage engine reference of the object containers internal metadata column family.
+    // Gets the storage engine reference of the
+    // object containers internal metadata column family.
     //
     storage_engine_reference_handle*
-    get_containers_internal_metadata_storage_engine_reference() const;
+    get_container_metadata_engine_reference() const;
 
     //
     // Checks if the object container exists in the index internal metadata.

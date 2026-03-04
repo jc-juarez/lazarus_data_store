@@ -37,6 +37,7 @@ public:
     // A valid storage engine instance must be provided.
     //
     data_partition(
+        const std::string& partition_prefix,
         const std::uint16_t collocation_index,
         const storage_configuration& storage_configuration,
         std::unique_ptr<storage_engine_interface> storage_engine);
@@ -83,6 +84,7 @@ private:
     static
     std::string
     generate_partition_path(
+        const std::string& prefix,
         const std::uint16_t collocation_index,
         const std::string& data_partitions_path);
 

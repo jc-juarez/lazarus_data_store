@@ -21,8 +21,6 @@
 namespace lazarus::storage
 {
 
-class data_partition_provider;
-
 class container_bucket
 {
 public:
@@ -30,8 +28,7 @@ public:
     //
     // Constructor.
     //
-    container_bucket(
-        std::shared_ptr<storage::data_partition_provider> data_partition_provider);
+    container_bucket();
 
     //
     // Sets the container bucket index identifier.
@@ -47,8 +44,8 @@ public:
     //
     status::status_code
     insert_container(
-        storage_engine_reference_handle* storage_engine_reference,
-        const schemas::container_persistent_interface& container_persistent_metadata);
+        const schemas::container_persistent_interface& container_persistent_metadata,
+        const std::vector<container_partition_metadata>& container_instances);
 
     //
     // Gets a reference of an object container.
@@ -93,11 +90,6 @@ private:
     // respective object container memory reference.
     //
     tbb::concurrent_hash_map<std::string, std::shared_ptr<container>> container_bucket_map_;
-
-    //
-    // Handle for the data partition provider.
-    //
-    std::shared_ptr<storage::data_partition_provider> data_partition_provider_;
 };
 
 } // namespace lazarus::storage.

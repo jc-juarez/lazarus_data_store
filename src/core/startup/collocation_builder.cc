@@ -41,6 +41,7 @@ collocation_builder::generate_collocation_topology(
     // This is crucial as to maintain IO requirements for the storage engine.
     //
     auto container_metadata_partition = std::make_shared<storage::data_partition>(
+        k_container_metadata_partition_prefix,
         k_number_collocations, /* The index for the containers metadata corresponds to the Kth collocation. */
         storage_configuration,
         std::make_unique<storage::storage_engine>());
@@ -68,10 +69,18 @@ collocation_builder::generate_collocation_topology(
 
     //
     // Populate data partitions and threading contexts tables.
+    // The append actions for the tables are done in exact correlation
+    // relative to the respective correlation to the collocation indices:
+    // --------------------------------------------------------------
+    // | Offset_0 | Offset_1 | Offset_2 | Offset_3 | ... | Offset_N |
+    // --------------------------------------------------------------
+    // |  DP/TC_0 |  DP/TC_1 |  DP/TC_2  | DP/TC_3 | ... |  DP/TC_N |
+    // --------------------------------------------------------------
     //
     for (std::uint16_t collocation_index = 0u; collocation_index < k_number_collocations; ++collocation_index)
     {
         data_partitions_table->append_partition(
+            k_structured_partition_prefix,
             collocation_index,
             storage_configuration,
             std::make_unique<storage::storage_engine>());

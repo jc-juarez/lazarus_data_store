@@ -16,8 +16,6 @@
 #include <cassert>
 #include <spdlog/spdlog.h>
 #include "container_index.hh"
-#include "../../common/uuid_utilities.hh"
-#include "../io/data_partition_provider.hh.hh"
 
 namespace lazarus
 {
@@ -25,9 +23,8 @@ namespace storage
 {
 
 container_index::container_index(
-    const std::uint16_t number_container_buckets,
-    std::shared_ptr<storage::data_partition_provider> data_partition_provider)
-    : container_index_table_{number_container_buckets, container_bucket{std::move(storage_engine)}},
+    const std::uint16_t number_container_buckets)
+    : container_index_table_{number_container_buckets, container_bucket{}},
       number_container_buckets_{number_container_buckets},
       number_containers_{0u}
 {
@@ -45,20 +42,20 @@ container_index::is_internal_metadata_container(
     const std::string& container_name)
 {
     return container_name == rocksdb::kDefaultColumnFamilyName ||
-        container_name == containers_internal_metadata_name;
+           container_name == k_container_metadata_name;
 }
 
 status::status_code
 container_index::insert_container(
-    storage_engine_reference_handle* storage_engine_reference,
-    const schemas::container_persistent_interface& container_persistent_metadata)
+    const schemas::container_persistent_interface& container_persistent_metadata,
+    const std::vector<container_partition_metadata>& container_instances)
 {
     const std::uint16_t bucket_index = get_associated_bucket_index(
         container_persistent_metadata.name());
 
     status::status_code status = container_index_table_.at(bucket_index).insert_container(
-        storage_engine_reference,
-        container_persistent_metadata);
+        container_persistent_metadata,
+        container_instances);
 
     if (status::succeeded(status))
     {
@@ -72,12 +69,24 @@ container_index::insert_container(
 }
 
 storage_engine_reference_handle*
-container_index::get_containers_internal_metadata_storage_engine_reference() const
+container_index::get_container_metadata_engine_reference() const
 {
     const std::shared_ptr<container> container =
-        get_container(containers_internal_metadata_name);
+        get_container(k_container_metadata_name);
 
-    return container->get_storage_engine_reference();
+    //
+    // The container metadata column family handle is a special case
+    // because it is not associated with the structured data partitions.
+    // Instead, it lives inside the free-ranging container metadata data partition,
+    // which means there is only one instance for the container, so we need to
+    // dereference the first element in its respective instances list.
+    //
+    // For this special case, passing collocation_index=0 does
+    // not mean that it lives on partition 0th, but instead we are
+    // just trying to get the first and only element in the instances list.
+    //
+    return container->get_engine_reference(
+        0u /* collocation_index */);
 }
 
 status::status_code

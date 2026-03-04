@@ -23,13 +23,17 @@ namespace storage
 {
 
 data_partition::data_partition(
+    const std::string& partition_prefix,
     const std::uint16_t collocation_index,
     const storage_configuration& storage_configuration,
     std::unique_ptr<storage_engine_interface> storage_engine)
     : collocation_index_{collocation_index},
       storage_engine_{std::move(storage_engine)},
       storage_configuration_{storage_configuration},
-      partition_path_{generate_partition_path(collocation_index, storage_configuration.kv_store_path_)}
+      partition_path_{generate_partition_path(
+        partition_prefix,
+        collocation_index,
+        storage_configuration.kv_store_path_)}
 {}
 
 status::status_code
@@ -166,10 +170,11 @@ data_partition::get_collocation_index() const
 
 std::string
 data_partition::generate_partition_path(
+    const std::string& prefix,
     const std::uint16_t collocation_index,
     const std::string& data_partitions_path)
 {
-    return data_partitions_path + "/dp-" + std::to_string(collocation_index);
+    return data_partitions_path + "/" + prefix + std::to_string(collocation_index);
 }
 
 rocksdb::Options

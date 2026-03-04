@@ -24,7 +24,6 @@ namespace lazarus::storage
 
 class container;
 class container_index;
-class storage_engine_interface;
 
 class orphaned_container_scavenger
 {
@@ -53,11 +52,6 @@ private:
     status::status_code
     delete_container_instances_from_data_partitions(
         std::vector<container_partition_metadata> container_instances);
-
-    //
-    // Reference for the data partition provider.
-    //
-    std::shared_ptr<data_partition_provider> data_partition_provider_;
 
     //
     // Handle for the object container index.

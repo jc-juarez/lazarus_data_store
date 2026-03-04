@@ -42,8 +42,6 @@ public:
     // Constructor for the object container.
     //
     container(
-        std::shared_ptr<storage_engine_interface> storage_engine_handle,
-        storage_engine_reference_handle* storage_engine_reference,
         const schemas::container_persistent_interface& container_persistent_metadata,
         const std::vector<container_partition_metadata>& container_instances);
 
@@ -62,12 +60,6 @@ public:
     schemas::container_persistent_interface
     create_container_persistent_metadata(
         const char* container_name);
-
-    //
-    // Gets the associated storage engine reference for the object container.
-    //
-    storage_engine_reference_handle*
-    get_storage_engine_reference() const;
 
     //
     // Gets the name of the object container.
@@ -92,6 +84,14 @@ public:
     //
     std::string
     to_string() const;
+
+    //
+    // Returns the corresponding storage engine reference for
+    // a specific container instance given a collocation index lookup.
+    //
+    storage_engine_reference_handle*
+    get_engine_reference(
+        const std::uint16_t collocation_index);
 
     //
     // Returns a copy of all container instances metadata.

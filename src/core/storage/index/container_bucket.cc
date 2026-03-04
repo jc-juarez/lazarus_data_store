@@ -13,7 +13,6 @@
 // ****************************************************
 
 #include <spdlog/spdlog.h>
-#include "../io/storage_engine.hh"
 #include "container_bucket.hh"
 
 namespace lazarus::storage
@@ -21,10 +20,8 @@ namespace lazarus::storage
 
 using index_table_type = tbb::concurrent_hash_map<std::string, std::shared_ptr<container>>;
 
-container_bucket::container_bucket(
-    std::shared_ptr<storage::data_partition_provider> data_partition_provider)
-    : data_partition_provider_{std::move(data_partition_provider)},
-      index_{0u}
+container_bucket::container_bucket()
+    : index_{0u}
 {}
 
 void
@@ -36,24 +33,22 @@ container_bucket::set_index(
 
 status::status_code
 container_bucket::insert_container(
-    storage_engine_reference_handle* storage_engine_reference,
-    const schemas::container_persistent_interface& container_persistent_metadata)
+    const schemas::container_persistent_interface& container_persistent_metadata,
+    const std::vector<container_partition_metadata>& container_instances)
 {
     //
     // At this point, it is guaranteed that the object container
     // reference has a valid hashable identifier to be used as index key.
     // Also, it is guaranteed that no other thread will try to insert the same key.
     //
-    // Likewise, the container should hold a reference to its respective storage
-    // engine for closing its reference upon destruction.
+    // Likewise, the container should hold a reference to the list of its respective storage
+    // engines for closing its references upon destruction.
     //
-
     if (container_bucket_map_.emplace(
         container_persistent_metadata.name(),
         std::make_unique<container>(
-            storage_engine_,
-            storage_engine_reference,
-            container_persistent_metadata)))
+            container_persistent_metadata,
+            container_instances)))
     {
         //
         // Key did not exist and metadata register was successful.

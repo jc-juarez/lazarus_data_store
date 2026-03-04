@@ -13,8 +13,8 @@
 // ****************************************************
 
 #include <spdlog/spdlog.h>
-#include "storage_engine.hh"
 #include "read_io_executor.hh"
+#include "data_partition_provider.hh"
 
 namespace lazarus
 {
@@ -22,8 +22,8 @@ namespace storage
 {
 
 read_io_executor::read_io_executor(
-    std::shared_ptr<storage_engine_interface> storage_engine)
-    : storage_engine_{std::move(storage_engine)}
+    std::shared_ptr<storage::data_partition_provider> data_partition_provider)
+    : data_partition_provider_{std::move(data_partition_provider)}
 {}
 
 status::status_code
@@ -32,10 +32,11 @@ read_io_executor::execute_get_operation(
     const schemas::object_request& object_request,
     byte_stream& object_data)
 {
-    status::status_code status = storage_engine_->get_object(
+    status::status_code status = status::success;
+        /* storage_engine_->get_object(
         container_storage_engine_reference,
         object_request.get_object_id().c_str(),
-        &object_data);
+        &object_data); */
 
     if (status::succeeded(status))
     {
@@ -67,8 +68,9 @@ status::status_code
 read_io_executor::execute_write_batch_operation(
     storage_engine_write_batch& write_batch)
 {
-    status::status_code status = storage_engine_->execute_objects_write_batch(
-        write_batch);
+    status::status_code status = status::success;
+    /* storage_engine_->execute_objects_write_batch(
+        write_batch); */
 
     if (status::succeeded(status))
     {

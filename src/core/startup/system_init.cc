@@ -98,6 +98,12 @@ init_system(
             exception.what());
     }
 
+    //
+    // Before exiting the process,
+    // flush the logger to have all context on logs.
+    //
+    spdlog::shutdown();
+
     return status::succeeded(status) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
@@ -170,23 +176,21 @@ start_system(
     //
     // Construct all the dependencies for the system.
     //
-    std::shared_ptr<storage::data_partition> containers_metadata_partition;
+    std::shared_ptr<storage::data_partition> container_metadata_partition;
     std::shared_ptr<storage::collocation_resolver> collocation_resolver;
     std::shared_ptr<storage::data_partition_provider> data_partition_provider;
     std::shared_ptr<storage::threading_context_provider> threading_context_provider;
     std::tie(
-        containers_metadata_partition,
+        container_metadata_partition,
         collocation_resolver,
         data_partition_provider,
         threading_context_provider) =
             storage::collocation_builder::generate_collocation_topology(system_config.storage_configuration_);
 
     auto container_index = std::make_shared<storage::container_index>(
-        system_config.storage_configuration_.container_index_number_buckets_,
-        data_partition_provider);
+        system_config.storage_configuration_.container_index_number_buckets_);
 
     auto orphaned_container_scavenger = std::make_unique<storage::orphaned_container_scavenger>(
-        data_partition_provider,
         container_index);
 
     auto garbage_collector = std::make_unique<storage::garbage_collector>(
@@ -200,7 +204,7 @@ start_system(
 
     auto container_management_service = std::make_shared<storage::container_management_service>(
         system_config.storage_configuration_,
-        data_partition_provider,
+        container_metadata_partition,
         container_index,
         std::move(container_operation_serializer));
 
@@ -263,7 +267,7 @@ start_system(
     //
     lazarus_data_store lazarus_ds{
         session_id,
-        containers_metadata_partition,
+        container_metadata_partition,
         collocation_resolver,
         data_partition_provider,
         threading_context_provider,

@@ -23,7 +23,7 @@ namespace lazarus
 namespace storage
 {
 
-class storage_engine_interface;
+class data_partition_provider;
 
 class read_io_executor
 {
@@ -33,7 +33,7 @@ public:
     // Constructor.
     //
     read_io_executor(
-        std::shared_ptr<storage_engine_interface> storage_engine);
+        std::shared_ptr<storage::data_partition_provider> data_partition_provider);
 
     //
     // Executes a get operation with the storage engine.
@@ -54,9 +54,9 @@ public:
 private:
 
     //
-    // Reference for the storage engine component.
+    // Reference for the data partition provider.
     //
-    std::shared_ptr<storage_engine_interface> storage_engine_;
+    std::shared_ptr<storage::data_partition_provider> data_partition_provider_;
 };
 
 } // namespace storage.
