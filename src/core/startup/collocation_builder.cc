@@ -60,14 +60,6 @@ collocation_builder::generate_collocation_topology(
     auto threading_contexts_table = std::make_unique<threading_context_table>();
 
     //
-    // Providers for data partitions and threading contexts.
-    //
-    auto data_partitions_provider = std::make_shared<data_partition_provider>(
-        std::move(data_partitions_table));
-    auto threading_contexts_provider = std::make_shared<threading_context_provider>(
-        std::move(threading_contexts_table));
-
-    //
     // Populate data partitions and threading contexts tables.
     // The append actions for the tables are done in exact correlation
     // relative to the respective correlation to the collocation indices:
@@ -88,6 +80,14 @@ collocation_builder::generate_collocation_topology(
         threading_contexts_table->append_context(
             collocation_index);
     }
+
+    //
+    // Providers for data partitions and threading contexts.
+    //
+    auto data_partitions_provider = std::make_shared<data_partition_provider>(
+        std::move(data_partitions_table));
+    auto threading_contexts_provider = std::make_shared<threading_context_provider>(
+        std::move(threading_contexts_table));
 
     return std::make_tuple(
         container_metadata_partition,

@@ -174,7 +174,7 @@ data_partition::generate_partition_path(
     const std::uint16_t collocation_index,
     const std::string& data_partitions_path)
 {
-    return data_partitions_path + "/" + prefix + std::to_string(collocation_index);
+    return data_partitions_path + "/" + prefix + "-" + std::to_string(collocation_index);
 }
 
 rocksdb::Options
