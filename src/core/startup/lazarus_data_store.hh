@@ -47,7 +47,7 @@ class read_io_executor;
 class cache_accessor;
 class collocation_resolver;
 class data_partition_provider;
-class threading_context;
+class threading_context_provider;
 class data_partition;
 }
 
@@ -66,7 +66,7 @@ public:
         std::shared_ptr<storage::data_partition> containers_metadata_partition,
         std::shared_ptr<storage::collocation_resolver> collocation_resolver,
         std::shared_ptr<storage::data_partition_provider> data_partition_provider,
-        std::shared_ptr<storage::threading_context> threading_context_provider,
+        std::shared_ptr<storage::threading_context_provider> threading_context_provider,
         std::shared_ptr<network::server> server,
         std::shared_ptr<storage::container_management_service> container_management_service,
         std::shared_ptr<storage::object_management_service> object_management_service,
@@ -127,7 +127,7 @@ private:
     //
     // Threading context provider handle.
     //
-    std::shared_ptr<storage::threading_context> threading_context_provider_;
+    std::shared_ptr<storage::threading_context_provider> threading_context_provider_;
 
     //
     // HTTP server handle.

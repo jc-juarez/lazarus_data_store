@@ -25,6 +25,7 @@
 #include "../storage/cache/frontline_cache.hh"
 #include "../storage/io/read_io_dispatcher.hh"
 #include "../storage/io/data_partition_provider.hh"
+#include "../storage/io/threading_context_provider.hh"
 #include "../storage/management/object_management_service.hh"
 #include "../storage/management/container_management_service.hh"
 #include "../storage/management/container_operation_serializer.hh"
@@ -37,7 +38,7 @@ lazarus_data_store::lazarus_data_store(
     std::shared_ptr<storage::data_partition> containers_metadata_partition,
     std::shared_ptr<storage::collocation_resolver> collocation_resolver,
     std::shared_ptr<storage::data_partition_provider> data_partition_provider,
-    std::shared_ptr<storage::threading_context> threading_context_provider,
+    std::shared_ptr<storage::threading_context_provider> threading_context_provider,
     std::shared_ptr<network::server> server,
     std::shared_ptr<storage::container_management_service> container_management_service,
     std::shared_ptr<storage::object_management_service> object_management_service,
