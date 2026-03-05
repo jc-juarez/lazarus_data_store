@@ -207,7 +207,8 @@ start_system(
         system_config.storage_configuration_,
         container_metadata_partition,
         container_index,
-        std::move(container_operation_serializer));
+        std::move(container_operation_serializer),
+        data_partition_provider);
 
     auto frontline_cache = std::make_shared<storage::frontline_cache>(
         system_config.storage_configuration_.number_frontline_cache_shards_,

@@ -75,6 +75,7 @@ lazarus_data_store::start_data_store()
     // Before starting the server, boot the container
     // metadata partition to load the persistent metadata state.
     //
+    //
     references_mapping container_metadata_partition_references;
     status::status_code status = boot_data_partition(
         containers_metadata_partition_,
@@ -87,6 +88,20 @@ lazarus_data_store::start_data_store()
             status);
 
         return status;
+    }
+
+    if (container_metadata_partition_references.size() == 0u ||
+        container_metadata_partition_references.size() > k_max_container_metadata_partition_containers)
+    {
+        //
+        // The container metadata partition should either the default container
+        // or the default container plus the container metadata container.
+        //
+        spdlog::critical("Unexpected number of containers found for the container metadata partition. "
+            "MaxNumContainers={}, "
+            "NumContainersFound={}.");
+
+        return status::unexpected_container_metadata_partition_number_containers;
     }
 
     //
@@ -104,7 +119,21 @@ lazarus_data_store::start_data_store()
         return boot_result.error();
     }
 
+    //
+    // Perform an integrity validation on the containers found inside the structured
+    // data partitions. Startup should be stopped on inconsistencies or corruption.
+    //
     storage::container_reference_registry structured_partitions_registry = boot_result.value();
+    status = structured_partitions_registry.execute_integrity_validation();
+
+    if (status::failed(status))
+    {
+        spdlog::critical("Integrity validation for the structured data partitions containers failed. "
+            "Status={}.",
+            status);
+
+        return status;
+    }
 
     //
     // Populate the in-memory object container index with the

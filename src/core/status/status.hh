@@ -237,5 +237,17 @@ status_code_definition(
     0x8000001f,
     static_cast<drogon::HttpStatusCode>(500));
 
+// Unexpected number of containers for the container metadata partition.
+status_code_definition(
+    unexpected_container_metadata_partition_number_containers,
+    0x80000020,
+    static_cast<drogon::HttpStatusCode>(500));
+
+// Expected container missing from the structured data partitions on the filesystem.
+status_code_definition(
+    missing_container_on_data_partitions,
+    0x80000021,
+    static_cast<drogon::HttpStatusCode>(500));
+
 } // namespace status.
 } // namespace lazarus.

@@ -36,6 +36,14 @@ public:
     container_reference_registry();
 
     //
+    // Iterators for range traversal support.
+    //
+    auto begin() { return references_map_.begin(); }
+    auto end() { return references_map_.end(); }
+    auto begin() const { return references_map_.begin(); }
+    auto end() const { return references_map_.end(); }
+
+    //
     // Registers a container reference entry to its respective references list.
     // Every new registered reference is assumed to corresponds to its respective collocation index.
     //

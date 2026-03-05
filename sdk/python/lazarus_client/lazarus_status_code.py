@@ -110,6 +110,12 @@ class LazarusStatusCode(Enum):
     # Container has duplicate storage engine references.
     duplicate_engine_references = 0x8000001f
 
+    # Unexpected number of containers for the container metadata partition.
+    unexpected_container_metadata_partition_number_containers = 0x80000020
+
+    # Expected container missing from the structured data partitions on the filesystem.
+    missing_container_on_data_partitions = 0x80000021
+
     @classmethod
     def from_code(cls, code: int):
         for s in cls:

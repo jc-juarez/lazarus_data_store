@@ -106,6 +106,12 @@ private:
         std::unordered_map<std::string, storage::storage_engine_reference_handle*>& references_mapping);
 
     //
+    // Max number of expected containers for the container metadata partition.
+    // This should correspond to the default container and the containers metadata container.
+    //
+    static constexpr std::uint8_t k_max_container_metadata_partition_containers = 2u;
+
+    //
     // Session identifier.
     //
     boost::uuids::uuid session_id_;

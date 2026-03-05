@@ -25,6 +25,7 @@
 #include "../storage_configuration.hh"
 #include "../../network/server/server.hh"
 #include "../index/container_reference_registry.hh"
+#include "../models/container_partition_metadata.hh"
 #include "../../schemas/request-interfaces/container_request.hh"
 
 namespace lazarus
@@ -34,6 +35,7 @@ namespace storage
 
 class data_partition;
 class container_index;
+class data_partition_provider;
 class container_operation_serializer;
 
 //
@@ -50,7 +52,8 @@ public:
         const storage_configuration& storage_configuration,
         std::shared_ptr<data_partition> container_metadata_partition,
         std::shared_ptr<container_index> container_index_handle,
-        std::unique_ptr<container_operation_serializer> container_operation_serializer_handle);
+        std::unique_ptr<container_operation_serializer> container_operation_serializer_handle,
+        std::shared_ptr<storage::data_partition_provider> data_partition_provider);
 
     //
     // Populates the in-memory contents of the object container
@@ -58,8 +61,8 @@ public:
     //
     status::status_code
     populate_container_index(
-        std::unordered_map<std::string, storage_engine_reference_handle*> container_metadata_partition_references,
-        const container_reference_registry& structured_partitions_registry);
+        std::unordered_map<std::string, storage_engine_reference_handle*>& container_metadata_partition_references,
+        container_reference_registry& structured_partitions_registry);
 
     //
     // Orchestrates possible update operations to the object container index.
@@ -82,12 +85,12 @@ public:
 private:
 
     //
-    // Creates the root metadata column
+    // Creates the root container metadata column
     // families for the system if not present already.
     // On first-time startup, the data store will create them.
     //
     status::status_code
-    create_internal_metadata_column_families(
+    create_container_metadata_column_family(
         std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping);
 
     //
@@ -103,6 +106,37 @@ private:
     status::status_code
     validate_container_remove_request(
         const schemas::container_request& container_request);
+
+    //
+    // Indexes the container metadata partition containers.
+    //
+    status::status_code
+    index_containers_from_container_metadata_partition(
+        std::unordered_map<std::string, storage_engine_reference_handle*>& container_metadata_partition_references);
+
+    //
+    // Indexes the structured data partition containers known to the persistent container metadata.
+    //
+    status::status_code
+    index_structured_partition_containers(
+        container_reference_registry& structured_partitions_registry,
+        std::unordered_map<std::string, byte_stream>& containers_present_on_metadata);
+
+    //
+    // Scans for orphaned containers and index them for garbage collection if found.
+    //
+    status::status_code
+    scan_and_index_orphaned_containers(
+        container_reference_registry& structured_partitions_registry,
+        std::unordered_map<std::string, byte_stream>& containers_present_on_metadata);
+
+    //
+    // Converts a given list of ordered storage engine references by collocation index
+    // into a list of container metadata instances.
+    //
+    std::vector<container_partition_metadata>
+        convert_ordered_engine_references_to_container_instances(
+        const std::vector<storage_engine_reference_handle*> storage_engine_references);
 
     //
     // Configurations for the storage subsystem.
@@ -123,6 +157,11 @@ private:
     // Handle for the object container operation serializer component.
     //
     std::unique_ptr<container_operation_serializer> container_operation_serializer_;
+
+    //
+    // Handle for the data partition provdider component.
+    //
+    std::shared_ptr<storage::data_partition_provider> data_partition_provider_;
 };
 
 } // namespace storage.

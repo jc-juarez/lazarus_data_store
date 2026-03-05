@@ -18,6 +18,7 @@
 #include "../gc/garbage_collector.hh"
 #include "../index/container_index.hh"
 #include "container_management_service.hh"
+#include "../io/data_partition_provider.hh"
 #include "container_operation_serializer.hh"
 #include "container_persistent_interface.pb.h"
 #include "../../common/request_validations.hh"
@@ -31,185 +32,122 @@ container_management_service::container_management_service(
     const storage_configuration& storage_configuration,
     std::shared_ptr<data_partition> container_metadata_partition,
     std::shared_ptr<container_index> container_index_handle,
-    std::unique_ptr<container_operation_serializer> container_operation_serializer_handle)
+    std::unique_ptr<container_operation_serializer> container_operation_serializer_handle,
+    std::shared_ptr<storage::data_partition_provider> data_partition_provider)
     : storage_configuration_{storage_configuration},
       container_metadata_partition_{std::move(container_metadata_partition)},
       container_index_{std::move(container_index_handle)},
-      container_operation_serializer_{std::move(container_operation_serializer_handle)}
+      container_operation_serializer_{std::move(container_operation_serializer_handle)},
+      data_partition_provider_{std::move(data_partition_provider)}
 {}
 
 status::status_code
 container_management_service::populate_container_index(
-    std::unordered_map<std::string, storage_engine_reference_handle*> container_metadata_partition_references,
-    const container_reference_registry& structured_partitions_registry)
-{ /*
+    std::unordered_map<std::string, storage_engine_reference_handle*>& container_metadata_partition_references,
+    container_reference_registry& structured_partitions_registry)
+{
     //
     // Keep track of the internal metadata object containers.
     // The only case when it is valid for them to be absent is when the column
     // family references mapping only has 1 entry (kDefaultColumnFamilyName), which
     // implies that the data store is starting up for the first time.
     //
-    if (storage_engine_references_mapping.size() == 1u)
+    if (container_metadata_partition_references.size() == 1u)
     {
         //
         // This means this is the first ever startup for the data store,
         // or that it simply does not need a previous metadata state for working.
         // Create all required internal metadata root object containers.
         //
-        create_internal_metadata_column_families(&storage_engine_references_mapping);
+        create_container_metadata_column_family(&container_metadata_partition_references);
     }
 
     //
-    // This forcefully means that this is not the first time data store
-    // startup. Ensure that all internal metadata object containers are present; if not,
-    // this is a critical error as the data store cannot function without them.
+    // Ensure the container metadata container is present; if not, this is a
+    // critical error as the data store cannot function without this critical metadata.
     //
-    if (storage_engine_references_mapping.find(container_index::containers_internal_metadata_name) ==
-        storage_engine_references_mapping.end())
+    if (container_metadata_partition_references.find(container_index::k_container_metadata_name) ==
+        container_metadata_partition_references.end())
     {
         //
-        // This is a critical error as one or some of the core internal
-        // metadata column families were not found. Fail the system startup.
+        // This is a critical error as the persistent container metadata to discover
+        // previously existing containers is not present. Fail the system startup.
         //
         spdlog::critical("Failed to find find the storage engine reference for the '{}' internal metadata.",
-            container_index::containers_internal_metadata_name);
+            container_index::k_container_metadata_name);
 
         return status::containers_internal_metadata_lookup_failed;
     }
 
-    storage_engine_reference_handle* containers_internal_metadata_storage_engine_reference =
-        storage_engine_references_mapping.at(container_index::containers_internal_metadata_name);
+    storage_engine_reference_handle* container_metadata_engine_reference =
+        container_metadata_partition_references.at(container_index::k_container_metadata_name);
 
     //
-    // Finally, get all known object containers to the system
-    // from the storage engine and populate the rest of the object container index.
+    // Get all known object containers to the system  from the
+    // persistent container metadata and populate the rest of the object container index.
     //
-    std::unordered_map<std::string, byte_stream> objects;
+    std::unordered_map<std::string, byte_stream> containers_present_on_metadata;
     status::status_code status = container_metadata_partition_->get_storage_engine().get_all_objects_from_container(
-        containers_internal_metadata_storage_engine_reference,
-        &objects);
+        container_metadata_engine_reference,
+        &containers_present_on_metadata);
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to get all object containers from the object containers internal metadata. "
+        spdlog::critical("Failed to get all container names from the container metadata partition. "
             "Status={:#x}.",
             status);
 
         return status;
     }
 
-    for (const auto& storage_engine_references_pair : storage_engine_references_mapping)
+    //
+    // Index all containers known to the persistent
+    // container metadata into the container index.
+    //
+    status = index_structured_partition_containers(
+        structured_partitions_registry,
+        containers_present_on_metadata);
+
+    if (status::failed(status))
     {
-        std::string container_name = storage_engine_references_pair.first;
-        storage_engine_reference_handle* container_storage_engine_reference = storage_engine_references_pair.second;
+        spdlog::critical("Failed to index the containers known to the persistent container metadata. "
+            "Status={:#x}.",
+            status);
 
-        if (objects.find(container_name) != objects.end())
-        {
-            //
-            // This implies this is a known object container to the persistent metadata.
-            //
-            byte_stream& object_data = objects.at(container_name);
-            schemas::container_persistent_interface container_persistent_metadata;
-            const bool is_parsing_successful = container_persistent_metadata.ParseFromString(object_data);
-
-            if (!is_parsing_successful)
-            {
-                spdlog::critical("Failed to parse an object container metadata on startup. "
-                    "ObjectContainerName={}.",
-                    container_name);
-
-                return status::parsing_failed;
-            }
-
-            status = container_index_->insert_container(
-                container_storage_engine_reference,
-                container_persistent_metadata);
-
-            if (status::failed(status))
-            {
-                spdlog::critical("Failed to insert container into the container index. "
-                    "ContainerName={}, "
-                    "Status={:#x}.",
-                    container_persistent_metadata.name().c_str(),
-                    status);
-
-                return status;
-            }
-
-            const std::shared_ptr<container> container =
-                container_index_->get_container(container_name);
-
-            spdlog::info("Found object container on startup. Indexing into the object containers metadata table. "
-                "ObjectContainerMetadata={}.",
-                container->to_string());
-        }
-        else
-        {
-            //
-            // This implies this is not a known object container to the persistent metadata.
-            // These could be internal metadata or orphaned object containers.
-            //
-            const schemas::container_persistent_interface container_persistent_metadata =
-                container::create_container_persistent_metadata(container_name.c_str());
-            status = container_index_->insert_container(
-                container_storage_engine_reference,
-                container_persistent_metadata);
-
-            if (status::failed(status))
-            {
-                spdlog::critical("Failed to insert container into the container index. "
-                    "ContainerName={}, "
-                    "Status={:#x}.",
-                    container_persistent_metadata.name().c_str(),
-                    status);
-
-                return status;
-            }
-
-            const bool is_orphaned_container =
-                !container_index::is_internal_metadata_container(container_name);
-
-            if (is_orphaned_container)
-            {
-                //
-                // If this is not part of the internal metadata, it means that this is an
-                // orphaned object container; mark it as deleted for the garbage collector to clean it up later.
-                //
-                spdlog::warn("Found orphaned object container on startup to be cleaned up by the garbage collector. "
-                    "ObjectContainerName={}.",
-                    container_name.c_str());
-                
-                std::shared_ptr<container> container =
-                    container_index_->get_container(container_name);
-
-                if (container == nullptr)
-                {
-                    spdlog::critical("Failed to mark object container as deleted on startup. "
-                        "ObjectContainerName={}.",
-                        container_name.c_str());
-
-                    return status;
-                }
-
-                container->mark_as_deleted();
-            }
-        }
+        return status;
     }
-*/
+
+    //
+    // Look for any containers present on the filesystem
+    // but not known to the persistent container metadata.
+    //
+    status = scan_and_index_orphaned_containers(
+        structured_partitions_registry,
+        containers_present_on_metadata);
+
+    if (status::failed(status))
+    {
+        spdlog::critical("Failed to scan and index orphaned containers during startup. "
+            "Status={:#x}.",
+            status);
+
+        return status;
+    }
+
     return status::success;
 }
 
 status::status_code
-container_management_service::create_internal_metadata_column_families(
-    std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping)
+container_management_service::create_container_metadata_column_family(
+    std::unordered_map<std::string, storage_engine_reference_handle*>* container_metadata_partition_references)
 {
     //
     // Create the object containers column family on the storage engine.
     //
-    storage_engine_reference_handle* containers_internal_metadata_storage_engine_reference;
+    storage_engine_reference_handle* container_metadata_engine_reference;
     status::status_code status = container_metadata_partition_->get_storage_engine().create_container(
         container_index::k_container_metadata_name,
-        &containers_internal_metadata_storage_engine_reference);
+        &container_metadata_engine_reference);
 
     if (status::failed(status))
     {
@@ -220,11 +158,11 @@ container_management_service::create_internal_metadata_column_families(
     }
 
     //
-    // Append to the storage references mapping.
+    // Append to the storage references mapping for the container metadata partition.
     //
-    storage_engine_references_mapping->emplace(
+    container_metadata_partition_references->emplace(
         container_index::k_container_metadata_name,
-        containers_internal_metadata_storage_engine_reference);
+        container_metadata_engine_reference);
 
     return status::success;
 }
@@ -375,6 +313,185 @@ container_management_service::validate_container_remove_request(
     }
 
     return status::success;
+}
+
+status::status_code
+container_management_service::index_containers_from_container_metadata_partition(
+    std::unordered_map<std::string, storage_engine_reference_handle*>& container_metadata_partition_references)
+{
+    for (auto& container_to_index : container_metadata_partition_references)
+    {
+        //
+        // Containers on the metadata partition only live under such partition,
+        // so it is only needed to pass down the respective storage engine reference for such partition.
+        //
+        container_partition_metadata container_metadata {
+            container_metadata_partition_->get_collocation_index(),
+            container_metadata_partition_->get_storage_engine(),
+            container_to_index.second};
+        std::vector<container_partition_metadata> container_instances {container_metadata};
+        const schemas::container_persistent_interface container_persistent_metadata =
+            container::create_container_persistent_metadata(container_to_index.first.c_str());
+        status::status_code status = container_index_->insert_container(
+            container_persistent_metadata,
+            container_instances);
+
+        if (status::failed(status))
+        {
+            spdlog::critical("Failed to insert container from container metadata into the container index. "
+                "ContainerName={}, "
+                "Status={:#x}.",
+                container_persistent_metadata.name().c_str(),
+                status);
+
+            return status;
+        }
+    }
+
+    return status::success;
+}
+
+status::status_code
+container_management_service::index_structured_partition_containers(
+    container_reference_registry& structured_partitions_registry,
+    std::unordered_map<std::string, byte_stream>& containers_present_on_metadata)
+{
+    for (auto& container_present_on_metadata : containers_present_on_metadata)
+    {
+        const std::string& container_name = container_present_on_metadata.first;
+        const byte_stream& container_raw_metadata = container_present_on_metadata.second;
+        const std::optional<std::vector<storage_engine_reference_handle*>> engine_references =
+            structured_partitions_registry.get_references(container_name);
+
+        if (engine_references == std::nullopt)
+        {
+            //
+            // This is a critical inconsistency problem.
+            // This implies that the persistent container metadata has a record of a container
+            // which is not present on the filesystem across the structured data partitions.
+            //
+            spdlog::critical("Failed to locate a container known to the persistent container metadata "
+                "on the filesystem across the structured data partitions. "
+                "ContainerName={}.",
+                container_name);
+
+            return status::missing_container_on_data_partitions;
+        }
+
+        schemas::container_persistent_interface container_persistent_metadata;
+        const bool is_parsing_successful = container_persistent_metadata.ParseFromString(container_raw_metadata);
+        if (!is_parsing_successful)
+        {
+            spdlog::critical("Failed to parse a container raw metadata on startup. "
+                "ContainerName={}.",
+                container_name);
+
+            return status::parsing_failed;
+        }
+
+        std::vector<container_partition_metadata> container_instances =
+            convert_ordered_engine_references_to_container_instances(engine_references.value());
+
+        status::status_code status = container_index_->insert_container(
+            container_persistent_metadata,
+            container_instances);
+
+        if (status::failed(status))
+        {
+            spdlog::critical("Failed to insert container into the container index. "
+                "ContainerName={}, "
+                "Status={:#x}.",
+                container_persistent_metadata.name().c_str(),
+                status);
+
+            return status;
+        }
+
+        const std::shared_ptr<container> container =
+            container_index_->get_container(container_name);
+
+        spdlog::info("Found container on startup and indexed into the object containers metadata table. "
+            "ObjectContainerMetadata={}.",
+            container->to_string());
+    }
+
+    return status::success;
+}
+
+status::status_code
+container_management_service::scan_and_index_orphaned_containers(
+    container_reference_registry& structured_partitions_registry,
+    std::unordered_map<std::string, byte_stream>& containers_present_on_metadata)
+{
+    for (const auto& registry_entry : structured_partitions_registry)
+    {
+        const std::string& container_name = registry_entry.first;
+        const std::vector<storage_engine_reference_handle*>& engine_references = registry_entry.second;
+
+        if (containers_present_on_metadata.find(container_name) == containers_present_on_metadata.end())
+        {
+            //
+            // This implies this is an orphaned container present on the structured data partitions on the
+            // filesystem, but the persistent container metadata is not aware of it. Mark it as deleted for
+            // the garbage collector to clean it up later.
+            //
+            spdlog::warn("Found orphaned object container on startup to be cleaned up by the garbage collector. "
+                "ObjectContainerName={}.",
+                container_name.c_str());
+
+            std::vector<container_partition_metadata> container_instances =
+                convert_ordered_engine_references_to_container_instances(engine_references);
+
+            const schemas::container_persistent_interface container_persistent_metadata =
+                container::create_container_persistent_metadata(container_name.c_str());
+            status::status_code status = container_index_->insert_container(
+                container_persistent_metadata,
+                container_instances);
+
+            if (status::failed(status))
+            {
+                spdlog::critical("Failed to insert orphaned container into the container index. "
+                    "ContainerName={}, "
+                    "Status={:#x}.",
+                    container_persistent_metadata.name().c_str(),
+                    status);
+
+                return status;
+            }
+
+            std::shared_ptr<container> container = container_index_->get_container(container_name);
+
+            if (container == nullptr)
+            {
+                spdlog::critical("Failed to mark orphaned container as deleted on startup. "
+                    "ObjectContainerName={}.",
+                    container_name.c_str());
+
+                return status;
+            }
+
+            container->mark_as_deleted();
+        }
+    }
+
+    return status::success;
+}
+
+std::vector<container_partition_metadata>
+container_management_service::convert_ordered_engine_references_to_container_instances(
+    const std::vector<storage_engine_reference_handle*> storage_engine_references)
+{
+    std::vector<container_partition_metadata> container_instances;
+
+    for (std::uint16_t collocation_index = 0u; collocation_index < storage_engine_references.size(); ++collocation_index)
+    {
+        container_instances.emplace_back(
+            collocation_index,
+            data_partition_provider_->get_partition_by_collocation(collocation_index)->get_storage_engine(),
+            storage_engine_references[collocation_index]);
+    }
+
+    return container_instances;
 }
 
 } // namespace storage.
