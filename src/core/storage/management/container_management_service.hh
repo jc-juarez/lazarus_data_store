@@ -24,6 +24,7 @@
 #include <drogon/HttpController.h>
 #include "../storage_configuration.hh"
 #include "../../network/server/server.hh"
+#include "../index/container_reference_registry.hh"
 #include "../../schemas/request-interfaces/container_request.hh"
 
 namespace lazarus
@@ -58,7 +59,7 @@ public:
     status::status_code
     populate_container_index(
         std::unordered_map<std::string, storage_engine_reference_handle*> container_metadata_partition_references,
-        std::unordered_map<std::string, storage_engine_reference_handle*> structured_partitions_references);
+        const container_reference_registry& structured_partitions_registry);
 
     //
     // Orchestrates possible update operations to the object container index.

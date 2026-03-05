@@ -24,6 +24,7 @@
 #include "../storage/gc/garbage_collector.hh"
 #include "../storage/storage_configuration.hh"
 #include "../network/server/server_configuration.hh"
+#include "../storage/index/container_reference_registry.hh"
 
 namespace lazarus
 {
@@ -91,7 +92,7 @@ private:
     // Upon success, the complete list of all storage engine references in the system is returned back.
     //
     std::expected<
-        std::unordered_map<std::string, storage::storage_engine_reference_handle*>,
+        storage::container_reference_registry,
         status::status_code>
     boot_structured_data_partitions();
 

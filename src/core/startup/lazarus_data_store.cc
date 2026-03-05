@@ -104,7 +104,7 @@ lazarus_data_store::start_data_store()
         return boot_result.error();
     }
 
-    references_mapping structured_partitions_references = boot_result.value();
+    storage::container_reference_registry structured_partitions_registry = boot_result.value();
 
     //
     // Populate the in-memory object container index with the
@@ -112,7 +112,7 @@ lazarus_data_store::start_data_store()
     //
     status = container_management_service_->populate_container_index(
         container_metadata_partition_references,
-        structured_partitions_references);
+        structured_partitions_registry);
 
     if (status::failed(status))
     {
@@ -140,22 +140,30 @@ lazarus_data_store::start_data_store()
 }
 
 std::expected<
-    std::unordered_map<std::string, storage::storage_engine_reference_handle*>,
+    storage::container_reference_registry,
     status::status_code>
 lazarus_data_store::boot_structured_data_partitions()
 {
     //
     // Keep track of all container names and their respective
     // engine references present on the structured data partitions:
-    // [{ContainerX:0x11223344},{ContainerY:0x22334455},{ContainerZ:0x33445566},...]
+    // ----------------------------------------------
+    // | ContainerX | ContainerY | ContainerZ | ... |
+    // ----------------------------------------------
+    // | 0x11223344 | 0x22334455 | 0x33445566 | ... |
+    // | 0x44556677 | 0x55667788 | 0x66778899 | ... |
+    // |    ...     |     ...    |     ...    | ... |
+    // ----------------------------------------------
     //
-    std::unordered_map<std::string, storage::storage_engine_reference_handle*> structured_partitions_references;
+    storage::container_reference_registry container_registry;
 
     const std::vector<std::shared_ptr<storage::data_partition>> data_partitions =
         data_partition_provider_->get_all_partitions();
 
     for (auto& data_partition : data_partitions)
     {
+        std::unordered_map<std::string, storage::storage_engine_reference_handle*> structured_partitions_references;
+
         status::status_code status = boot_data_partition(
             data_partition,
             structured_partitions_references);
@@ -169,9 +177,19 @@ lazarus_data_store::boot_structured_data_partitions()
 
             return std::unexpected(status);
         }
+
+        //
+        // Every registration into the registry will correspond to the respective collocation.
+        //
+        for (auto& reference_entry : structured_partitions_references)
+        {
+            container_registry.register_container_reference(
+                reference_entry.first,
+                reference_entry.second);
+        }
     }
 
-    return structured_partitions_references;
+    return container_registry;
 }
 
 status::status_code

@@ -35,7 +35,7 @@ container_reference_registry::register_container_reference(
 }
 
 status::status_code
-container_reference_registry::execute_integrity_validation()
+container_reference_registry::execute_integrity_validation() const
 {
     //
     // Ensure every container has all data partition instances
@@ -81,7 +81,7 @@ container_reference_registry::execute_integrity_validation()
 
 std::optional<std::vector<storage_engine_reference_handle*>>
 container_reference_registry::get_references(
-    const std::string& container_name)
+    const std::string& container_name) const
 {
     if (references_map_.find(container_name) != references_map_.end())
     {

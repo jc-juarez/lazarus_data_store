@@ -48,14 +48,14 @@ public:
     // Validates the required integrity checks for the registered references.
     //
     status::status_code
-    execute_integrity_validation();
+    execute_integrity_validation() const;
 
     //
     // Gets the list of container references for a given container.
     //
     std::optional<std::vector<storage_engine_reference_handle*>>
     get_references(
-        const std::string& container_name);
+        const std::string& container_name) const;
 
 private:
 

@@ -41,7 +41,7 @@ container_management_service::container_management_service(
 status::status_code
 container_management_service::populate_container_index(
     std::unordered_map<std::string, storage_engine_reference_handle*> container_metadata_partition_references,
-    std::unordered_map<std::string, storage_engine_reference_handle*> structured_partitions_references)
+    const container_reference_registry& structured_partitions_registry)
 { /*
     //
     // Keep track of the internal metadata object containers.
