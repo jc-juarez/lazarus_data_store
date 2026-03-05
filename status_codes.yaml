@@ -160,3 +160,13 @@ codes:
     internal: "0x8000001d"
     http: 500
     desc: Objects write batch operation failed.
+
+  - name: invalid_number_engine_references
+    internal: "0x8000001e"
+    http: 500
+    desc: Invalid number of storage engine references for a container.
+
+  - name: duplicate_engine_references
+    internal: "0x8000001f"
+    http: 500
+    desc: Container has duplicate storage engine references.

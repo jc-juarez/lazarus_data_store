@@ -56,8 +56,6 @@ public:
     generate_collocation_topology(
         const storage_configuration& storage_configuration);
 
-private:
-
     //
     // Core invariant of the system.
     // This should always remain the same.
@@ -65,6 +63,8 @@ private:
     // data corruption and the inability to locate keys on data partitions.
     //
     static constexpr std::uint16_t k_number_collocations = 8u;
+
+private:
 
     //
     // Partition prefix to use for structured data partitions (SDPs).

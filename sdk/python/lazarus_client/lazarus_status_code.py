@@ -104,6 +104,12 @@ class LazarusStatusCode(Enum):
     # Objects write batch operation failed.
     object_write_batch_failed = 0x8000001d
 
+    # Invalid number of storage engine references for a container.
+    invalid_number_engine_references = 0x8000001e
+
+    # Container has duplicate storage engine references.
+    duplicate_engine_references = 0x8000001f
+
     @classmethod
     def from_code(cls, code: int):
         for s in cls:

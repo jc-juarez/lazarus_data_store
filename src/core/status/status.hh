@@ -225,5 +225,17 @@ status_code_definition(
     0x8000001d,
     static_cast<drogon::HttpStatusCode>(500));
 
+// Invalid number of storage engine references for a container.
+status_code_definition(
+    invalid_number_engine_references,
+    0x8000001e,
+    static_cast<drogon::HttpStatusCode>(500));
+
+// Container has duplicate storage engine references.
+status_code_definition(
+    duplicate_engine_references,
+    0x8000001f,
+    static_cast<drogon::HttpStatusCode>(500));
+
 } // namespace status.
 } // namespace lazarus.

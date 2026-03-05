@@ -119,6 +119,8 @@ set(SOURCE_FILES
         src/core/startup/system_init.cc
         src/core/common/args_validations.cc
         src/core/storage/models/container_partition_metadata.hh
+        src/core/storage/index/container_reference_registry.cc
+        src/core/storage/index/container_reference_registry.hh
 )
 
 # Lazarus core library.
