@@ -472,7 +472,7 @@ container_management_service::index_structured_partition_containers(
         const std::shared_ptr<container> container =
             container_index_->get_container(container_name);
 
-        spdlog::info("Found container on structured data partitions on startup and indexed into "
+        spdlog::info("Found container on structured data partitions during startup and indexed into "
             "the object containers metadata table. "
             "ContainerMetadata={}.",
             container->to_string());

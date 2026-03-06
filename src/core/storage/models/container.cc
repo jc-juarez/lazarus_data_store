@@ -117,11 +117,11 @@ container::to_string() const
 
     return std::format(
         "{{Name={}, "
-        "InstancesMetadata={}, "
-        "IsDeleted={}}}",
+        "IsDeleted={}, "
+        "InstancesMetadata={}}}",
         container_persistent_metadata_.name(),
-        generate_instances_string(),
-        is_deleted_);
+        is_deleted_,
+        generate_instances_string());
 }
 
 storage_engine_reference_handle*
