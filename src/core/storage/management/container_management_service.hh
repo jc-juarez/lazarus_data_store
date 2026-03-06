@@ -141,7 +141,7 @@ private:
     //
     // Name for the default container for the container metadata data partitions.
     //
-    static constexpr const char* k_default_container_name_metadata_partition = "ContainerMetadataDefault";
+    static constexpr const char* k_default_container_name_metadata_partition = "metadata_default";
 
     //
     // Configurations for the storage subsystem.
