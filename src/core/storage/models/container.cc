@@ -15,9 +15,9 @@
 // ****************************************************
 
 #include <format>
+#include "container.hh"
 #include <spdlog/spdlog.h>
 #include "../io/storage_engine.hh"
-#include "container.hh"
 
 namespace lazarus
 {
@@ -115,18 +115,12 @@ container::to_string() const
         return ss.str();
     };
 
-    //
-    // The instances metadata does not change for the lifetime of the session,
-    // so we can cache such metadata globally.
-    //
-    static const std::string instances_string = generate_instances_string();
-
     return std::format(
         "{{Name={}, "
         "InstancesMetadata={}, "
         "IsDeleted={}}}",
         container_persistent_metadata_.name(),
-        instances_string,
+        generate_instances_string(),
         is_deleted_);
 }
 

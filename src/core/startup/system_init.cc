@@ -98,12 +98,6 @@ init_system(
             exception.what());
     }
 
-    //
-    // Before exiting the process,
-    // flush the logger to have all context on logs.
-    //
-    spdlog::shutdown();
-
     return status::succeeded(status) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

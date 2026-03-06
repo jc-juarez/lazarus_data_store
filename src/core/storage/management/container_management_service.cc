@@ -13,6 +13,7 @@
 //      operations.
 // ****************************************************
 
+#include <rocksdb/db.h>
 #include <spdlog/spdlog.h>
 #include "../io/data_partition.hh"
 #include "../gc/garbage_collector.hh"
@@ -83,7 +84,7 @@ container_management_service::populate_container_index(
         container_metadata_partition_references.at(container_index::k_container_metadata_name);
 
     //
-    // Get all known object containers to the system  from the
+    // Get all known object containers to the system from the
     // persistent container metadata and populate the rest of the object container index.
     //
     std::unordered_map<std::string, byte_stream> containers_present_on_metadata;
@@ -94,6 +95,21 @@ container_management_service::populate_container_index(
     if (status::failed(status))
     {
         spdlog::critical("Failed to get all container names from the container metadata partition. "
+            "Status={:#x}.",
+            status);
+
+        return status;
+    }
+
+    //
+    // Index all container metadata containers.
+    //
+    status = index_containers_from_container_metadata_partition(
+        container_metadata_partition_references);
+
+    if (status::failed(status))
+    {
+        spdlog::critical("Failed to index the container metadata internal containers. "
             "Status={:#x}.",
             status);
 
@@ -153,6 +169,26 @@ container_management_service::create_container_metadata_column_family(
     {
         spdlog::critical("Failed to create internal metadata column family '{}'.",
             container_index::k_container_metadata_name);
+
+        return status;
+    }
+
+    //
+    // All structured data partitions which thus container tracks will always spin up
+    // the default column family, so it should be registered inside this container.
+    //
+    const schemas::container_persistent_interface container_persistent_metadata =
+        container::create_container_persistent_metadata(rocksdb::kDefaultColumnFamilyName.c_str());
+    byte_stream serialized_container_persistent_metadata;
+    container_persistent_metadata.SerializeToString(&serialized_container_persistent_metadata);
+    status = container_metadata_partition_->get_storage_engine().insert_object(
+        container_metadata_engine_reference,
+        rocksdb::kDefaultColumnFamilyName.c_str(),
+        serialized_container_persistent_metadata);
+
+    if (status::failed(status))
+    {
+        spdlog::critical("Failed to insert default column family for the container metadata container.");
 
         return status;
     }
