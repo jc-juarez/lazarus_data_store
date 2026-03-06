@@ -401,6 +401,13 @@ container_management_service::index_containers_from_container_metadata_partition
 
             return status;
         }
+
+        const std::shared_ptr<container> container =
+            container_index_->get_container(container_name);
+
+        spdlog::info("Indexed internal metadata container on startup. "
+            "ContainerMetadata={}.",
+            container->to_string());
     }
 
     return status::success;
@@ -465,8 +472,9 @@ container_management_service::index_structured_partition_containers(
         const std::shared_ptr<container> container =
             container_index_->get_container(container_name);
 
-        spdlog::info("Found container on startup and indexed into the object containers metadata table. "
-            "ObjectContainerMetadata={}.",
+        spdlog::info("Found container on structured data partitions on startup and indexed into "
+            "the object containers metadata table. "
+            "ContainerMetadata={}.",
             container->to_string());
     }
 
