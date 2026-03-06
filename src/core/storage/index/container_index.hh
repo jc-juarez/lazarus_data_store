@@ -47,7 +47,7 @@ public:
     // user-created object containers and their metadata.
     // This name is reserved for the data store use.
     //
-    static constexpr const char* k_container_metadata_name = "containers";
+    static constexpr const char* k_container_metadata_name = "metadata_containers";
 
     //
     // Checks if an object container is part of the internal metadata.
