@@ -84,7 +84,7 @@ lazarus_data_store::start_data_store()
     if (status::failed(status))
     {
         spdlog::critical("Failed to boot container metadata partition during the system startup. "
-            "Status={}.",
+            "Status={:#x}.",
             status);
 
         return status;
@@ -113,7 +113,7 @@ lazarus_data_store::start_data_store()
     if (!boot_result)
     {
         spdlog::critical("Failed to boot structured data partitions during the system startup. "
-            "Status={}.",
+            "Status={:#x}.",
             boot_result.error());
 
         return boot_result.error();
@@ -129,7 +129,7 @@ lazarus_data_store::start_data_store()
     if (status::failed(status))
     {
         spdlog::critical("Integrity validation for the structured data partitions containers failed. "
-            "Status={}.",
+            "Status={:#x}.",
             status);
 
         return status;
@@ -146,7 +146,7 @@ lazarus_data_store::start_data_store()
     if (status::failed(status))
     {
         spdlog::critical("Failed to populate the object container index during the system startup. "
-            "Status={}.",
+            "Status={:#x}.",
             status);
 
         return status;
@@ -200,7 +200,7 @@ lazarus_data_store::boot_structured_data_partitions()
         if (status::failed(status))
         {
             spdlog::critical("Failed to boot structured data partition on CollocationIndex={}. "
-                "Status={}.",
+                "Status={:#x}.",
                 data_partition->get_collocation_index(),
                 status);
 
@@ -239,7 +239,7 @@ lazarus_data_store::boot_data_partition(
     if (status::failed(status))
     {
         spdlog::critical("Failed to fetch data partition object containers from disk during the system startup. "
-            "Status={}.",
+            "Status={:#x}.",
             status);
 
         return status;
@@ -256,7 +256,7 @@ lazarus_data_store::boot_data_partition(
     if (status::failed(status))
     {
         spdlog::critical("Failed to boot data partition during the system startup. "
-            "Status={}.",
+            "Status={:#x}.",
             status);
 
         return status;

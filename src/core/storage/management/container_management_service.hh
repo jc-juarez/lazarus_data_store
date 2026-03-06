@@ -139,6 +139,11 @@ private:
         const std::vector<storage_engine_reference_handle*> storage_engine_references);
 
     //
+    // Name for the default container for the container metadata data partitions.
+    //
+    static constexpr const char* k_default_container_name_metadata_partition = "ContainerMetadataDefault";
+
+    //
     // Configurations for the storage subsystem.
     //
     const storage_configuration storage_configuration_;

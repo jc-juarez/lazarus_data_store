@@ -366,8 +366,27 @@ container_management_service::index_containers_from_container_metadata_partition
             container_metadata_partition_->get_storage_engine(),
             container_to_index.second};
         std::vector<container_partition_metadata> container_instances {container_metadata};
+
+        //
+        // The default container is a special case in the system given it is present
+        // on all data partitions, in all N structured data partitions as well as in the
+        // container metadata partition. This will create an internal conflict because the system
+        // needs to track to different semantic containers for closing all engine references appropriately:
+        //
+        // ContainerMetadataPartitionDefault = 1 [EngineReference=0x11223344]
+        // StructuredMetadataPartitionDefault = N [EngineReference=0x22334455, EngineReference=0x3345566, ...]
+        //
+        // If both of these semantic containers are left with the same name as "default", there will be a collision
+        // in the name, so we need to have separate names at least at the container index level.
+        //
+        std::string container_name = container_to_index.first;
+        if (container_name == rocksdb::kDefaultColumnFamilyName)
+        {
+            container_name = k_default_container_name_metadata_partition;
+        }
+
         const schemas::container_persistent_interface container_persistent_metadata =
-            container::create_container_persistent_metadata(container_to_index.first.c_str());
+            container::create_container_persistent_metadata(container_name.c_str());
         status::status_code status = container_index_->insert_container(
             container_persistent_metadata,
             container_instances);
