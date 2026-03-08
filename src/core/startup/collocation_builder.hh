@@ -74,7 +74,7 @@ private:
     //
     // Partition prefix to use for the container metadata partition.
     //
-    static constexpr const char* k_container_metadata_partition_prefix = "meta";
+    static constexpr const char* k_metadata_partition_prefix = "meta";
 };
 
 } // namespace storage.

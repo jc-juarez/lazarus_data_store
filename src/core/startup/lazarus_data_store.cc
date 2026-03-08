@@ -79,10 +79,10 @@ lazarus_data_store::start_data_store()
     // Before starting the server, boot the container
     // metadata partition to load the persistent metadata state.
     //
-    references_mapping container_metadata_partition_references;
+    references_mapping metadata_partition_references;
     status::status_code status = boot_data_partition(
         *containers_metadata_partition_,
-        container_metadata_partition_references);
+        metadata_partition_references);
 
     if (status::failed(status))
     {
@@ -130,7 +130,7 @@ lazarus_data_store::start_data_store()
     // This will ensure the filesystem and metadata state are in agreement.
     //
     status = container_loader_->load_container_index(
-        container_metadata_partition_references,
+        metadata_partition_references,
         structured_partitions_registry);
 
     if (status::failed(status))

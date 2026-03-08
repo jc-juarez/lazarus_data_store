@@ -161,12 +161,12 @@ start_system(
     //
     // Construct all the dependencies for the system.
     //
-    std::unique_ptr<storage::data_partition> container_metadata_partition;
+    std::unique_ptr<storage::data_partition> metadata_partition;
     std::unique_ptr<storage::collocation_resolver> collocation_resolver;
     std::unique_ptr<storage::data_partition_provider> data_partition_provider;
     std::unique_ptr<storage::threading_context_provider> threading_context_provider;
     std::tie(
-        container_metadata_partition,
+        metadata_partition,
         collocation_resolver,
         data_partition_provider,
         threading_context_provider) =
@@ -184,13 +184,13 @@ start_system(
         std::move(orphaned_container_scavenger));
 
     auto container_operation_serializer = std::make_unique<storage::container_operation_serializer>(
-        *container_metadata_partition,
+        *metadata_partition,
         *data_partition_provider,
         *container_index);
 
     auto container_management_service = std::make_unique<storage::container_management_service>(
         system_config.storage_configuration_,
-        *container_metadata_partition,
+        *metadata_partition,
         *container_index,
         std::move(container_operation_serializer),
         *data_partition_provider);
@@ -250,7 +250,7 @@ start_system(
         std::move(remove_object_request_handler));
 
     auto container_loader = std::make_unique<storage::container_loader>(
-        *container_metadata_partition,
+        *metadata_partition,
         *container_index,
         *data_partition_provider);
 
@@ -259,7 +259,7 @@ start_system(
     //
     lazarus_data_store lazarus_ds{
         std::move(session_id),
-        std::move(container_metadata_partition),
+        std::move(metadata_partition),
         std::move(collocation_resolver),
         std::move(data_partition_provider),
         std::move(threading_context_provider),

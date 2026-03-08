@@ -112,7 +112,7 @@ container_loader::load_container_index(
     //
     // Index all container metadata containers.
     //
-    status = index_containers_from_container_metadata_partition(
+    status = index_containers_from_metadata_partition(
         metadata_partition_references);
 
     if (status::failed(status))
@@ -212,7 +212,7 @@ container_loader::create_container_metadata_column_family(
 }
 
 status::status_code
-container_loader::index_containers_from_container_metadata_partition(
+container_loader::index_containers_from_metadata_partition(
     std::unordered_map<std::string, storage_engine_reference_handle*>& metadata_partition_references)
 {
     for (auto& container_to_index : metadata_partition_references)

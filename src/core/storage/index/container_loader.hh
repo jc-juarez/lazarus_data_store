@@ -47,7 +47,7 @@ public:
     //
     status::status_code
     load_container_index(
-        std::unordered_map<std::string, storage_engine_reference_handle*>& container_metadata_partition_references,
+        std::unordered_map<std::string, storage_engine_reference_handle*>& metadata_partition_references,
         container_registry& structured_partitions_registry);
 
     //
@@ -75,8 +75,8 @@ private:
     // Indexes the container metadata partition containers.
     //
     status::status_code
-    index_containers_from_container_metadata_partition(
-        std::unordered_map<std::string, storage_engine_reference_handle*>& container_metadata_partition_references);
+    index_containers_from_metadata_partition(
+        std::unordered_map<std::string, storage_engine_reference_handle*>& metadata_partition_references);
 
     //
     // Indexes the structured data partition containers known to the persistent container metadata.

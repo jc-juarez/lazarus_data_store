@@ -40,8 +40,8 @@ collocation_builder::generate_collocation_topology(
     // The system should create the same number of topology subtypes.
     // This is crucial as to maintain IO requirements for the storage engine.
     //
-    auto container_metadata_partition = std::make_unique<storage::data_partition>(
-        k_container_metadata_partition_prefix,
+    auto metadata_partition = std::make_unique<storage::data_partition>(
+        k_metadata_partition_prefix,
         k_number_collocations, /* The index for the containers metadata corresponds to the Kth collocation. */
         storage_configuration,
         std::make_unique<storage::storage_engine>());
@@ -90,7 +90,7 @@ collocation_builder::generate_collocation_topology(
         std::move(threading_contexts_table));
 
     return std::make_tuple(
-        std::move(container_metadata_partition),
+        std::move(metadata_partition),
         std::move(collocation_resolver),
         std::move(data_partitions_provider),
         std::move(threading_contexts_provider));

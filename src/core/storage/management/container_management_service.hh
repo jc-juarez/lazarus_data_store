@@ -50,7 +50,7 @@ public:
     //
     container_management_service(
         const storage_configuration& storage_configuration,
-        data_partition& container_metadata_partition,
+        data_partition& metadata_partition,
         container_index& container_index_handle,
         std::unique_ptr<container_operation_serializer> container_operation_serializer_handle,
         data_partition_provider& data_partition_provider);
@@ -97,7 +97,7 @@ private:
     //
     // Handle for the container metadata partition.
     //
-    data_partition& container_metadata_partition_;
+    data_partition& metadata_partition_;
 
     //
     // Handle for the object container index component.

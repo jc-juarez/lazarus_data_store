@@ -28,10 +28,10 @@ namespace storage
 {
 
 container_operation_serializer::container_operation_serializer(
-    data_partition& container_metadata_partition,
+    data_partition& metadata_partition,
     data_partition_provider& data_partition_provider,
     container_index& container_index)
-    : container_metadata_partition_{container_metadata_partition},
+    : metadata_partition_{metadata_partition},
       data_partition_provider_{data_partition_provider},
       container_index_{container_index}
 {}
@@ -154,7 +154,7 @@ container_operation_serializer::handle_container_creation(
         container::create_container_persistent_metadata(container_request.get_name().c_str());
     byte_stream serialized_container_persistent_metadata;
     container_persistent_metadata.SerializeToString(&serialized_container_persistent_metadata);
-    status = container_metadata_partition_.get_storage_engine().insert_object(
+    status = metadata_partition_.get_storage_engine().insert_object(
         container_index_.get_container_metadata_engine_reference(),
         container_request.get_name().c_str(),
         serialized_container_persistent_metadata);
@@ -233,7 +233,7 @@ container_operation_serializer::handle_container_removal(
     // object container will be broken, and only the in-memory object container reference
     // will remain active for the rest of this session and be cleaned up by the garbage collector.
     //
-    status = container_metadata_partition_.get_storage_engine().remove_object(
+    status = metadata_partition_.get_storage_engine().remove_object(
         container_index_.get_container_metadata_engine_reference(),
         container_request.get_name().c_str());
 

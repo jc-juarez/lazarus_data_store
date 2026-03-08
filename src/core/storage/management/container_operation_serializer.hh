@@ -43,7 +43,7 @@ public:
     // Constructor for the object operation serializer.
     //
     container_operation_serializer(
-        data_partition& container_metadata_partition,
+        data_partition& metadata_partition,
         data_partition_provider& data_partition_provider,
         container_index& container_index);
 
@@ -116,7 +116,7 @@ private:
 
     //
     // Reference container metadata partition component.
-    data_partition& container_metadata_partition_;
+    data_partition& metadata_partition_;
 };
 
 } // namespace storage.

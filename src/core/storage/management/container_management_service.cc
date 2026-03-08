@@ -31,12 +31,12 @@ namespace storage
 
 container_management_service::container_management_service(
     const storage_configuration& storage_configuration,
-    data_partition& container_metadata_partition,
+    data_partition& metadata_partition,
     container_index& container_index_handle,
     std::unique_ptr<container_operation_serializer> container_operation_serializer_handle,
     data_partition_provider& data_partition_provider)
     : storage_configuration_{storage_configuration},
-      container_metadata_partition_{container_metadata_partition},
+      metadata_partition_{metadata_partition},
       container_index_{container_index_handle},
       container_operation_serializer_{std::move(container_operation_serializer_handle)},
       data_partition_provider_{data_partition_provider}
