@@ -53,10 +53,12 @@ public:
         storage_engine_reference_handle* engine_reference);
 
     //
-    // Validates the required integrity checks for the registered references.
+    // Validates the required integrity checks for the registered references on
+    // a particular container.
     //
     status::status_code
-    execute_integrity_validation() const;
+    execute_integrity_validation(
+        const std::string& container_name) const;
 
     //
     // Gets the list of container references for a given container.

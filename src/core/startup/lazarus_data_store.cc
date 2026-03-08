@@ -109,26 +109,11 @@ lazarus_data_store::start_data_store()
     }
 
     //
-    // Perform an integrity validation on the containers found inside the structured
-    // data partitions. Startup should be stopped on inconsistencies or corruption.
-    //
-    storage::container_registry structured_partitions_registry = boot_result.value();
-    status = structured_partitions_registry.execute_integrity_validation();
-
-    if (status::failed(status))
-    {
-        spdlog::critical("Integrity validation for the structured data partitions containers failed. "
-            "Status={:#x}.",
-            status);
-
-        return status;
-    }
-
-    //
     // Populate the in-memory container index with the
     // references obtained when the data partitions were booted.
     // This will ensure the filesystem and metadata state are in agreement.
     //
+    storage::container_registry structured_partitions_registry = boot_result.value();
     status = container_loader_->load_container_index(
         metadata_partition_references,
         structured_partitions_registry);

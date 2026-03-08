@@ -82,7 +82,7 @@ private:
     // Indexes the structured data partition containers known to the persistent container metadata.
     //
     status::status_code
-    index_structured_partition_containers(
+    index_containers_from_structured_data_partitions(
         container_registry& structured_partitions_registry,
         std::unordered_map<std::string, byte_stream>& containers_present_on_metadata);
 

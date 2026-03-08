@@ -128,7 +128,7 @@ container_loader::load_container_index(
     // Index all containers known to the persistent
     // container metadata into the container index.
     //
-    status = index_structured_partition_containers(
+    status = index_containers_from_structured_data_partitions(
         structured_partitions_registry,
         containers_present_on_metadata);
 
@@ -274,7 +274,7 @@ container_loader::index_containers_from_metadata_partition(
 }
 
 status::status_code
-container_loader::index_structured_partition_containers(
+container_loader::index_containers_from_structured_data_partitions(
     container_registry& structured_partitions_registry,
     std::unordered_map<std::string, byte_stream>& containers_present_on_metadata)
 {
@@ -283,7 +283,7 @@ container_loader::index_structured_partition_containers(
         const std::string& container_name = container_present_on_metadata.first;
         const byte_stream& container_raw_metadata = container_present_on_metadata.second;
         const std::optional<std::vector<storage_engine_reference_handle*>> engine_references =
-        structured_partitions_registry.get_references(container_name);
+            structured_partitions_registry.get_references(container_name);
 
         if (engine_references == std::nullopt)
         {
@@ -300,6 +300,30 @@ container_loader::index_structured_partition_containers(
             return status::missing_container_on_data_partitions;
         }
 
+        //
+        // Perform an integrity validation for this container found inside the structured
+        // data partitions. Startup should be stopped on inconsistencies or corruption.
+        // Given this container is present on the metadata after a WDT (Well Defined Transaction),
+        // the data integrity for this container is crucial for system startup.
+        // This integrity validation is only needed for those containers known to the persistent metadata.
+        // All other containers not present on the metadata are considered as dirty filesystem state,
+        // so their integrity is irrelevant for system startup.
+        //
+        status::status_code status = structured_partitions_registry.execute_integrity_validation(
+            container_name);
+
+        if (status::failed(status))
+        {
+            spdlog::critical("Integrity validation for the container name on the "
+                "structured data partitions containers failed. "
+                "ContainerName={}, "
+                "Status={:#x}.",
+                container_name,
+                status);
+
+            return status;
+        }
+
         schemas::container_persistent_interface container_persistent_metadata;
         const bool is_parsing_successful = container_persistent_metadata.ParseFromString(container_raw_metadata);
         if (!is_parsing_successful)
@@ -314,7 +338,7 @@ container_loader::index_structured_partition_containers(
         std::vector<container_instance> container_instances =
             convert_ordered_engine_references_to_container_instances(engine_references.value());
 
-        status::status_code status = container_index_.insert_container(
+        status = container_index_.insert_container(
             container_persistent_metadata,
             container_instances);
 
