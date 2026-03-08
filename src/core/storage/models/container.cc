@@ -26,7 +26,7 @@ namespace storage
 
 container::container(
     const schemas::container_persistent_interface& container_persistent_metadata,
-    const std::vector<container_partition_metadata>& container_instances)
+    const std::vector<container_instance>& container_instances)
     : container_persistent_metadata_{container_persistent_metadata},
       container_instances_{container_instances},
       is_deleted_{false}
@@ -136,7 +136,7 @@ container::get_engine_reference(
     return container_instances_.at(collocation_index).storage_engine_reference_;
 }
 
-std::vector<container_partition_metadata>
+std::vector<container_instance>
 container::get_container_instances()
 {
     std::shared_lock<std::shared_mutex> lock {lock_};

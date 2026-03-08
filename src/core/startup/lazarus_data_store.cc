@@ -24,6 +24,7 @@
 #include "../storage/index/container_index.hh"
 #include "../storage/cache/frontline_cache.hh"
 #include "../storage/io/read_io_dispatcher.hh"
+#include "../storage/index/container_loader.hh"
 #include "../storage/io/collocation_resolver.hh"
 #include "../storage/io/data_partition_provider.hh"
 #include "../storage/io/threading_context_provider.hh"
@@ -49,7 +50,8 @@ lazarus_data_store::lazarus_data_store(
     std::unique_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher,
     std::unique_ptr<storage::frontline_cache> frontline_cache,
     std::unique_ptr<storage::read_io_executor> object_io_executor,
-    std::unique_ptr<storage::cache_accessor> cache_accessor)
+    std::unique_ptr<storage::cache_accessor> cache_accessor,
+    std::unique_ptr<storage::container_loader> container_loader)
     : session_id_{session_id}
     , containers_metadata_partition_{std::move(containers_metadata_partition)}
     , collocation_resolver_{std::move(collocation_resolver)}
@@ -65,6 +67,7 @@ lazarus_data_store::lazarus_data_store(
     , frontline_cache_{std::move(frontline_cache)}
     , object_io_executor_{std::move(object_io_executor)}
     , cache_accessor_{std::move(cache_accessor)}
+    , container_loader_{std::move(container_loader)}
 {}
 
 status::status_code
@@ -90,20 +93,6 @@ lazarus_data_store::start_data_store()
         return status;
     }
 
-    if (container_metadata_partition_references.size() == 0u ||
-        container_metadata_partition_references.size() > k_max_container_metadata_partition_containers)
-    {
-        //
-        // The container metadata partition should either the default container
-        // or the default container plus the container metadata container.
-        //
-        spdlog::critical("Unexpected number of containers found for the container metadata partition. "
-            "MaxNumContainers={}, "
-            "NumContainersFound={}.");
-
-        return status::unexpected_container_metadata_partition_number_containers;
-    }
-
     //
     // Boot up all structured data partitions which hold the master data.
     // This will make sure the underlying storage engines are ready for core data access.
@@ -123,7 +112,7 @@ lazarus_data_store::start_data_store()
     // Perform an integrity validation on the containers found inside the structured
     // data partitions. Startup should be stopped on inconsistencies or corruption.
     //
-    storage::container_reference_registry structured_partitions_registry = boot_result.value();
+    storage::container_registry structured_partitions_registry = boot_result.value();
     status = structured_partitions_registry.execute_integrity_validation();
 
     if (status::failed(status))
@@ -136,16 +125,17 @@ lazarus_data_store::start_data_store()
     }
 
     //
-    // Populate the in-memory object container index with the
-    // references obtained when the storage engine was started.
+    // Populate the in-memory container index with the
+    // references obtained when the data partitions were booted.
+    // This will ensure the filesystem and metadata state are in agreement.
     //
-    status = container_management_service_->populate_container_index(
+    status = container_loader_->load_container_index(
         container_metadata_partition_references,
         structured_partitions_registry);
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to populate the object container index during the system startup. "
+        spdlog::critical("Failed to load and populate the container index during the system startup. "
             "Status={:#x}.",
             status);
 
@@ -169,7 +159,7 @@ lazarus_data_store::start_data_store()
 }
 
 std::expected<
-    storage::container_reference_registry,
+    storage::container_registry,
     status::status_code>
 lazarus_data_store::boot_structured_data_partitions()
 {
@@ -184,7 +174,7 @@ lazarus_data_store::boot_structured_data_partitions()
     // |    ...     |     ...    |     ...    | ... |
     // ----------------------------------------------
     //
-    storage::container_reference_registry container_registry;
+    storage::container_registry container_registry;
 
     const std::span<storage::data_partition> data_partitions =
         data_partition_provider_->get_all_partitions();

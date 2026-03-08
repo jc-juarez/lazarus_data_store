@@ -156,7 +156,7 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
 
 status::status_code
 orphaned_container_scavenger::delete_container_instances_from_data_partitions(
-    std::vector<container_partition_metadata> container_instances)
+    std::vector<container_instance> container_instances)
 {
     for (auto& container_instance : container_instances)
     {

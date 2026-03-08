@@ -43,21 +43,6 @@ public:
         const std::uint16_t number_container_buckets);
 
     //
-    // Internal column family name for persisting
-    // user-created object containers and their metadata.
-    // This name is reserved for the data store use.
-    //
-    static constexpr const char* k_container_metadata_name = "metadata_containers";
-
-    //
-    // Checks if an object container is part of the internal metadata.
-    //
-    static
-    bool
-    is_internal_metadata_container(
-        const std::string& container_name);
-
-    //
     // Inserts a new object container entry into the index map.
     // This can either be invoked as a response_callback from a request-initiated
     // object container insertion or as the initial disk fetching process.
@@ -66,7 +51,7 @@ public:
     status::status_code
     insert_container(
         const schemas::container_persistent_interface& container_persistent_metadata,
-        const std::vector<container_partition_metadata>& container_instances);
+        const std::vector<container_instance>& container_instances);
 
     //
     // Gets the storage engine reference of the

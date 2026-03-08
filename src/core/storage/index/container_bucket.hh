@@ -45,7 +45,7 @@ public:
     status::status_code
     insert_container(
         const schemas::container_persistent_interface& container_persistent_metadata,
-        const std::vector<container_partition_metadata>& container_instances);
+        const std::vector<container_instance>& container_instances);
 
     //
     // Gets a reference of an object container.

@@ -34,7 +34,7 @@ container_bucket::set_index(
 status::status_code
 container_bucket::insert_container(
     const schemas::container_persistent_interface& container_persistent_metadata,
-    const std::vector<container_partition_metadata>& container_instances)
+    const std::vector<container_instance>& container_instances)
 {
     //
     // At this point, it is guaranteed that the object container

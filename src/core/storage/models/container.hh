@@ -19,7 +19,7 @@
 #include <string>
 #include <shared_mutex>
 #include "../../common/aliases.hh"
-#include "container_partition_metadata.hh"
+#include "container_instance.hh"
 #include "container_persistent_interface.pb.h"
 
 namespace lazarus
@@ -43,7 +43,7 @@ public:
     //
     container(
         const schemas::container_persistent_interface& container_persistent_metadata,
-        const std::vector<container_partition_metadata>& container_instances);
+        const std::vector<container_instance>& container_instances);
 
     //
     // Destructor for the object container.
@@ -96,7 +96,7 @@ public:
     //
     // Returns a copy of all container instances metadata.
     //
-    std::vector<container_partition_metadata>
+    std::vector<container_instance>
     get_container_instances();
 
 private:
@@ -114,7 +114,7 @@ private:
     //
     // List of the container instances and their data partition metadata.
     //
-    std::vector<container_partition_metadata> container_instances_;
+    std::vector<container_instance> container_instances_;
 
     //
     // Flag indicating whether this object container reference has been

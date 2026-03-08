@@ -6,7 +6,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'container_reference_registry.cc'
+// 'container_registry.cc'
 // Author: jcjuarez
 // Description:
 //      Registry for storing container names and their
@@ -15,7 +15,7 @@
 
 #include <unordered_set>
 #include <spdlog/spdlog.h>
-#include "container_reference_registry.hh"
+#include "container_registry.hh"
 #include "../../startup/collocation_builder.hh"
 
 namespace lazarus
@@ -23,11 +23,11 @@ namespace lazarus
 namespace storage
 {
 
-container_reference_registry::container_reference_registry()
+container_registry::container_registry()
 {}
 
 void
-container_reference_registry::register_container_reference(
+container_registry::register_container_reference(
     const std::string& container_name,
     storage_engine_reference_handle* engine_reference)
 {
@@ -35,7 +35,7 @@ container_reference_registry::register_container_reference(
 }
 
 status::status_code
-container_reference_registry::execute_integrity_validation() const
+container_registry::execute_integrity_validation() const
 {
     //
     // Ensure every container has all data partition instances
@@ -80,7 +80,7 @@ container_reference_registry::execute_integrity_validation() const
 }
 
 std::optional<std::vector<storage_engine_reference_handle*>>
-container_reference_registry::get_references(
+container_registry::get_references(
     const std::string& container_name) const
 {
     if (references_map_.find(container_name) != references_map_.end())

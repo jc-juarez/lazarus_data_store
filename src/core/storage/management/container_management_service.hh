@@ -24,8 +24,8 @@
 #include <drogon/HttpController.h>
 #include "../storage_configuration.hh"
 #include "../../network/server/server.hh"
-#include "../index/container_reference_registry.hh"
-#include "../models/container_partition_metadata.hh"
+#include "../index/container_registry.hh"
+#include "../models/container_instance.hh"
 #include "../../schemas/request-interfaces/container_request.hh"
 
 namespace lazarus
@@ -56,15 +56,6 @@ public:
         data_partition_provider& data_partition_provider);
 
     //
-    // Populates the in-memory contents of the object container
-    // index based on the references received from the storage engine start.
-    //
-    status::status_code
-    populate_container_index(
-        std::unordered_map<std::string, storage_engine_reference_handle*>& container_metadata_partition_references,
-        container_reference_registry& structured_partitions_registry);
-
-    //
     // Orchestrates possible update operations to the object container index.
     // Given possible check-then-act race conditions upon object
     // container creation/deletion, these operations need to be serialized.
@@ -85,15 +76,6 @@ public:
 private:
 
     //
-    // Creates the root container metadata column
-    // families for the system if not present already.
-    // On first-time startup, the data store will create them.
-    //
-    status::status_code
-    create_container_metadata_column_family(
-        std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping);
-
-    //
     // Validates if the given create request is valid.
     //
     status::status_code
@@ -106,42 +88,6 @@ private:
     status::status_code
     validate_container_remove_request(
         const schemas::container_request& container_request);
-
-    //
-    // Indexes the container metadata partition containers.
-    //
-    status::status_code
-    index_containers_from_container_metadata_partition(
-        std::unordered_map<std::string, storage_engine_reference_handle*>& container_metadata_partition_references);
-
-    //
-    // Indexes the structured data partition containers known to the persistent container metadata.
-    //
-    status::status_code
-    index_structured_partition_containers(
-        container_reference_registry& structured_partitions_registry,
-        std::unordered_map<std::string, byte_stream>& containers_present_on_metadata);
-
-    //
-    // Scans for orphaned containers and index them for garbage collection if found.
-    //
-    status::status_code
-    scan_and_index_orphaned_containers(
-        container_reference_registry& structured_partitions_registry,
-        std::unordered_map<std::string, byte_stream>& containers_present_on_metadata);
-
-    //
-    // Converts a given list of ordered storage engine references by collocation index
-    // into a list of container metadata instances.
-    //
-    std::vector<container_partition_metadata>
-        convert_ordered_engine_references_to_container_instances(
-        const std::vector<storage_engine_reference_handle*> storage_engine_references);
-
-    //
-    // Name for the default container for the container metadata data partitions.
-    //
-    static constexpr const char* k_default_container_name_metadata_partition = "metadata_default";
 
     //
     // Configurations for the storage subsystem.

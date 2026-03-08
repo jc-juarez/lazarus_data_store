@@ -17,7 +17,7 @@
 
 #include <vector>
 #include <memory>
-#include "../models/container_partition_metadata.hh"
+#include "../models/container_instance.hh"
 
 namespace lazarus::storage
 {
@@ -51,7 +51,7 @@ private:
     //
     status::status_code
     delete_container_instances_from_data_partitions(
-        std::vector<container_partition_metadata> container_instances);
+        std::vector<container_instance> container_instances);
 
     //
     // Handle for the object container index.

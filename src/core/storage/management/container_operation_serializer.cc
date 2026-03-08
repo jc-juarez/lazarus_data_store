@@ -293,12 +293,12 @@ container_operation_serializer::handle_container_removal(
 }
 
 std::expected<
-    std::vector<container_partition_metadata>,
+    std::vector<container_instance>,
     status::status_code>
 container_operation_serializer::create_container_instances_on_data_partitions(
     const std::string& container_name)
 {
-    std::vector<container_partition_metadata> container_instances;
+    std::vector<container_instance> container_instances;
 
     const std::span<data_partition> data_partitions =
         data_partition_provider_.get_all_partitions();

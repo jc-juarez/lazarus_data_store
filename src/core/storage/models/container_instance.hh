@@ -6,7 +6,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'container_partition_metadata.hh'
+// 'container_instance.hh'
 // Author: jcjuarez
 // Description:
 //      Data partition related metadata for
@@ -23,9 +23,9 @@ namespace lazarus
 namespace storage
 {
 
-struct container_partition_metadata
+struct container_instance
 {
-    container_partition_metadata(
+    container_instance(
         const std::uint16_t collocation_index,
         storage_engine_interface& storage_engine,
         storage_engine_reference_handle* storage_engine_reference)

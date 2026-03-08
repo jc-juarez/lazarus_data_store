@@ -24,7 +24,7 @@
 #include "../storage/gc/garbage_collector.hh"
 #include "../storage/storage_configuration.hh"
 #include "../network/server/server_configuration.hh"
-#include "../storage/index/container_reference_registry.hh"
+#include "../storage/index/container_registry.hh"
 
 namespace lazarus
 {
@@ -36,20 +36,21 @@ class server;
 
 namespace storage
 {
-class garbage_collector;
-class container_index;
+class data_partition;
+class cache_accessor;
 class frontline_cache;
+class container_index;
+class container_loader;
+class read_io_executor;
+class garbage_collector;
+class collocation_resolver;
 class io_dispatcher_interface;
 class io_dispatcher_interface;
+class data_partition_provider;
 class storage_engine_interface;
 class object_management_service;
-class container_management_service;
-class read_io_executor;
-class cache_accessor;
-class collocation_resolver;
-class data_partition_provider;
 class threading_context_provider;
-class data_partition;
+class container_management_service;
 }
 
 //
@@ -77,7 +78,8 @@ public:
         std::unique_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher,
         std::unique_ptr<storage::frontline_cache> frontline_cache,
         std::unique_ptr<storage::read_io_executor> object_io_executor,
-        std::unique_ptr<storage::cache_accessor> cache_accessor);
+        std::unique_ptr<storage::cache_accessor> cache_accessor,
+        std::unique_ptr<storage::container_loader> container_loader);
 
     //
     // Start the lazarus data store system.
@@ -92,7 +94,7 @@ private:
     // Upon success, the complete list of all storage engine references in the system is returned back.
     //
     std::expected<
-        storage::container_reference_registry,
+        storage::container_registry,
         status::status_code>
     boot_structured_data_partitions();
 
@@ -104,12 +106,6 @@ private:
     boot_data_partition(
         storage::data_partition& data_partition,
         std::unordered_map<std::string, storage::storage_engine_reference_handle*>& references_mapping);
-
-    //
-    // Max number of expected containers for the container metadata partition.
-    // This should correspond to the default container and the containers metadata container.
-    //
-    static constexpr std::uint8_t k_max_container_metadata_partition_containers = 2u;
 
     //
     // Session identifier.
@@ -185,6 +181,11 @@ private:
     // Cache accessor handle.
     //
     std::unique_ptr<storage::cache_accessor> cache_accessor_;
+
+    //
+    // Container loader handle.
+    //
+    std::unique_ptr<storage::container_loader> container_loader_;
 };
 
 } // namespace lazarus.

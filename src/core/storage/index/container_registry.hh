@@ -6,7 +6,7 @@
 // ****************************************************
 // Lazarus Data Store
 // Storage
-// 'container_reference_registry.hh'
+// 'container_registry.hh'
 // Author: jcjuarez
 // Description:
 //      Registry for storing container names and their
@@ -26,14 +26,14 @@ namespace lazarus
 namespace storage
 {
 
-class container_reference_registry
+class container_registry
 {
 public:
 
     //
     // Constructor.
     //
-    container_reference_registry();
+    container_registry();
 
     //
     // Iterators for range traversal support.

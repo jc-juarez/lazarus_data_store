@@ -16,6 +16,7 @@
 #include <cassert>
 #include <spdlog/spdlog.h>
 #include "container_index.hh"
+#include "container_loader.hh"
 
 namespace lazarus
 {
@@ -37,18 +38,10 @@ container_index::container_index(
     }
 }
 
-bool
-container_index::is_internal_metadata_container(
-    const std::string& container_name)
-{
-    return container_name == rocksdb::kDefaultColumnFamilyName ||
-           container_name == k_container_metadata_name;
-}
-
 status::status_code
 container_index::insert_container(
     const schemas::container_persistent_interface& container_persistent_metadata,
-    const std::vector<container_partition_metadata>& container_instances)
+    const std::vector<container_instance>& container_instances)
 {
     const std::uint16_t bucket_index = get_associated_bucket_index(
         container_persistent_metadata.name());
@@ -72,7 +65,7 @@ storage_engine_reference_handle*
 container_index::get_container_metadata_engine_reference() const
 {
     const std::shared_ptr<container> container =
-        get_container(k_container_metadata_name);
+        get_container(container_loader::k_containers_container_name_metadata_partition);
 
     //
     // The container metadata column family handle is a special case

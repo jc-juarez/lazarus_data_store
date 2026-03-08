@@ -20,7 +20,7 @@
 #include "../../status/status.hh"
 #include "../../network/server/server.hh"
 #include "../../common/task_serializer.hh"
-#include "../models/container_partition_metadata.hh"
+#include "../models/container_instance.hh"
 #include "../../schemas/request-interfaces/container_request.hh"
 
 namespace lazarus
@@ -94,7 +94,7 @@ private:
     // --------------------------------------------------------------
     //
     std::expected<
-        std::vector<container_partition_metadata>,
+        std::vector<container_instance>,
         status::status_code>
     create_container_instances_on_data_partitions(
         const std::string& container_name);

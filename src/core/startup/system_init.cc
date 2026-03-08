@@ -27,6 +27,7 @@
 #include "../storage/io/read_io_dispatcher.hh"
 #include "../storage/cache/frontline_cache.hh"
 #include "../storage/index/container_index.hh"
+#include "../storage/index/container_loader.hh"
 #include "../storage/io/write_io_dispatcher.hh"
 #include "../storage/io/data_partition_table.hh"
 #include "../storage/io/collocation_resolver.hh"
@@ -248,6 +249,11 @@ start_system(
         std::move(get_object_request_handler),
         std::move(remove_object_request_handler));
 
+    auto container_loader = std::make_unique<storage::container_loader>(
+        *container_metadata_partition,
+        *container_index,
+        *data_partition_provider);
+
     //
     // Initialize all core dependencies of the data store.
     //
@@ -266,7 +272,8 @@ start_system(
         std::move(read_io_task_dispatcher),
         std::move(frontline_cache),
         std::move(object_io_executor),
-        std::move(cache_accessor)};
+        std::move(cache_accessor),
+        std::move(container_loader)};
 
     //
     // Start the data store system. This will start the core
