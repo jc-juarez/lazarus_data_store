@@ -90,6 +90,13 @@ public:
 private:
 
     //
+    // Bootstraps the core storage state by booting the data partitions and
+    // loading the container index state.
+    //
+    status::status_code
+    bootstrap_storage_state();
+
+    //
     // Initializes the structured data partitions and their respective storage engines.
     // Upon success, the complete list of all storage engine references in the system is returned back.
     //

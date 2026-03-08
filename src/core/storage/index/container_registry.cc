@@ -26,12 +26,47 @@ namespace storage
 container_registry::container_registry()
 {}
 
-void
+status::status_code
 container_registry::register_container_reference(
     const std::string& container_name,
+    const std::uint16_t collocation_index,
     storage_engine_reference_handle* engine_reference)
 {
-    references_map_[container_name].emplace_back(engine_reference);
+    if (references_discovered_.find(engine_reference) != references_discovered_.end())
+    {
+        //
+        // This engine reference had already been discovered, this is
+        // an inconsistent state given every reference for every container across each
+        // data partition should be different.
+        //
+        spdlog::critical("Found duplicate engine reference in the container registry. "
+            "ContainerName={}, "
+            "DuplicateEngineReference={}, "
+            "CurrentCollocationIndex={}, "
+            "PreviouslyRegisteredCollocationIndex={}.",
+            container_name,
+            static_cast<void*>(engine_reference),
+            collocation_index,
+            references_discovered_.at(engine_reference));
+
+        return status::duplicate_engine_references;
+    }
+
+    references_discovered_.emplace(
+        engine_reference,
+        collocation_index);
+
+    //
+    // If not already present, create a list of Kth
+    // collocation entries filled with an invalid reference.
+    //
+    references_map_.try_emplace(
+        container_name,
+        collocation_builder::k_number_collocations,
+        nullptr);
+    references_map_.at(container_name).at(collocation_index) = engine_reference;
+
+    return status::success;
 }
 
 status::status_code
@@ -65,23 +100,23 @@ container_registry::execute_integrity_validation(
         return status::invalid_number_engine_references;
     }
 
-    std::unordered_set<storage_engine_reference_handle*> engine_references;
-    for (auto& engine_reference : container_references)
+    //
+    // Iterate over all engine reference slots and make sure
+    // the container was present on every data partition. This is essentially
+    // a filesystem scan for ensuring the container is present and not corrupted.
+    //
+    for (auto& reference : container_references)
     {
-        engine_references.insert(engine_reference);
-    }
+        if (reference == nullptr)
+        {
+            spdlog::critical("Container is not present on all filesystem structured data partitions. "
+                "ContainerName={}, "
+                "ContainerFilesystemLayout={}.",
+                container_name,
+                format_references_list(container_references));
 
-    if (engine_references.size() != collocation_builder::k_number_collocations)
-    {
-        spdlog::critical("Container contains duplicate storage engine references. "
-            "ContainerName={}, "
-            "ExpectedNumEngineReferences={}, "
-            "FoundNumEngineReferences={}.",
-            container_name,
-            collocation_builder::k_number_collocations,
-            container_references.size());
-
-        return status::duplicate_engine_references;
+            return status::invalid_number_engine_references;
+        }
     }
 
     return status::success;
@@ -98,6 +133,40 @@ container_registry::get_references(
     }
 
     return std::nullopt;
+}
+
+std::string
+container_registry::format_references_list(
+    const std::vector<storage_engine_reference_handle*>& references)
+{
+    std::stringstream ss;
+    ss << "{";
+
+    for (std::uint16_t collocation_index = 0u; collocation_index < references.size(); ++collocation_index)
+    {
+        ss
+        << "{CollocationIndex="
+        << collocation_index << "=";
+
+        auto* reference = references.at(collocation_index);
+
+        if (reference == nullptr)
+        {
+            ss << "NotFound";
+        }
+        else
+        {
+            ss
+            << "0x" << std::hex
+            << reinterpret_cast<std::uintptr_t>(reference)
+            << std::dec;
+        }
+
+        ss << "}";
+    }
+
+    ss << "}";
+    return ss.str();
 }
 
 } // namespace storage.

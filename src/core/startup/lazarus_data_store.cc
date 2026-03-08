@@ -73,6 +73,36 @@ lazarus_data_store::lazarus_data_store(
 status::status_code
 lazarus_data_store::start_data_store()
 {
+    status::status_code status = bootstrap_storage_state();
+
+    if (status::failed(status))
+    {
+        spdlog::critical("Failed to initialize the core storage state during startup. "
+            "Status={:#x}.",
+            status);
+
+        return status;
+    }
+
+    //
+    // Start the system garbage collector.
+    // This needs to be started after all initial orphaned
+    // object containers are discovered for proper initial cleanup.
+    //
+    garbage_collector_->start();
+
+    //
+    // Start the server for handling incoming data requests.
+    // This will block the main thread.
+    //
+    server_->start();
+
+    return status::success;
+}
+
+status::status_code
+lazarus_data_store::bootstrap_storage_state()
+{
     using references_mapping = std::unordered_map<std::string, storage::storage_engine_reference_handle*>;
 
     //
@@ -127,19 +157,6 @@ lazarus_data_store::start_data_store()
         return status;
     }
 
-    //
-    // Start the system garbage collector.
-    // This needs to be started after all initial orphaned
-    // object containers are discovered for proper initial cleanup.
-    //
-    garbage_collector_->start();
-
-    //
-    // Start the server for handling incoming data requests.
-    // This will block the main thread.
-    //
-    server_->start();
-
     return status::success;
 }
 
@@ -187,9 +204,22 @@ lazarus_data_store::boot_structured_data_partitions()
         //
         for (auto& reference_entry : structured_partitions_references)
         {
-            container_registry.register_container_reference(
+            status = container_registry.register_container_reference(
                 reference_entry.first,
+                data_partition.get_collocation_index(),
                 reference_entry.second);
+
+            if (status::failed(status))
+            {
+                spdlog::critical("Failed to register ContainerName={} for CollocationIndex={} "
+                    "on the container registry. "
+                    "Status={:#x}.",
+                    reference_entry.first,
+                    data_partition.get_collocation_index(),
+                    status);
+
+                return std::unexpected(status);
+            }
         }
     }
 
