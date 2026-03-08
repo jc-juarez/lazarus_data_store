@@ -32,6 +32,7 @@ RUN apt-get update && apt-get install -y \
     uuid-dev \
     nlohmann-json3-dev \
     libjsoncpp-dev \
+    libasan8 \
     && rm -rf /var/lib/apt/lists/*
 
 # Drogon is not in Ubuntu repos, build from source.

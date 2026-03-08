@@ -46,7 +46,7 @@ container_bucket::insert_container(
     //
     if (container_bucket_map_.emplace(
         container_persistent_metadata.name(),
-        std::make_unique<container>(
+        std::make_shared<container>(
             container_persistent_metadata,
             container_instances)))
     {
