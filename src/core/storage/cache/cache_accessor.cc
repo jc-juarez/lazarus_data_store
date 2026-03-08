@@ -23,8 +23,8 @@ namespace storage
 {
 
 cache_accessor::cache_accessor(
-    std::shared_ptr<frontline_cache> frontline_cache)
-    : frontline_cache_{std::move(frontline_cache)}
+    frontline_cache& frontline_cache)
+    : frontline_cache_{frontline_cache}
 {}
 
 void
@@ -37,7 +37,7 @@ cache_accessor::insert_object_into_cache(
     //
     const std::string object_id = object_request.get_object_id();
     const std::string container_name = object_request.get_container_name();
-    const status::status_code status = frontline_cache_->put(
+    const status::status_code status = frontline_cache_.put(
         std::move(object_request.get_object_id_mutable()),
         std::move(object_request.get_object_data_mutable()),
         std::move(object_request.get_container_name_mutable()));

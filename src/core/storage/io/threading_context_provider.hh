@@ -16,6 +16,7 @@
 
 #include <vector>
 #include <memory>
+#include "threading_context_table.hh"
 
 namespace lazarus
 {
@@ -24,7 +25,6 @@ namespace storage
 
 class threading_context;
 class collocation_resolver;
-class threading_context_table;
 
 class threading_context_provider
 {

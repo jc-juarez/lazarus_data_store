@@ -44,7 +44,7 @@ public:
     //
     garbage_collector(
         const storage_configuration& storage_configuration,
-        std::shared_ptr<container_index> container_index,
+        container_index& container_index,
         std::unique_ptr<orphaned_container_scavenger> orphaned_container_scavenger);
 
     //
@@ -72,7 +72,7 @@ private:
     //
     // Handle for the object container index.
     //
-    std::shared_ptr<container_index> container_index_;
+    container_index& container_index_;
 
     //
     // Handle for the container scavenger component.

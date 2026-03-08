@@ -50,10 +50,10 @@ public:
     //
     container_management_service(
         const storage_configuration& storage_configuration,
-        std::shared_ptr<data_partition> container_metadata_partition,
-        std::shared_ptr<container_index> container_index_handle,
+        data_partition& container_metadata_partition,
+        container_index& container_index_handle,
         std::unique_ptr<container_operation_serializer> container_operation_serializer_handle,
-        std::shared_ptr<storage::data_partition_provider> data_partition_provider);
+        data_partition_provider& data_partition_provider);
 
     //
     // Populates the in-memory contents of the object container
@@ -151,12 +151,12 @@ private:
     //
     // Handle for the container metadata partition.
     //
-    std::shared_ptr<data_partition> container_metadata_partition_;
+    data_partition& container_metadata_partition_;
 
     //
     // Handle for the object container index component.
     //
-    std::shared_ptr<container_index> container_index_;
+    container_index& container_index_;
 
     //
     // Handle for the object container operation serializer component.
@@ -164,9 +164,9 @@ private:
     std::unique_ptr<container_operation_serializer> container_operation_serializer_;
 
     //
-    // Handle for the data partition provdider component.
+    // Handle for the data partition provider component.
     //
-    std::shared_ptr<storage::data_partition_provider> data_partition_provider_;
+    data_partition_provider& data_partition_provider_;
 };
 
 } // namespace storage.

@@ -15,6 +15,7 @@
 #pragma once
 
 #include <memory>
+#include "data_partition_table.hh"
 
 namespace lazarus
 {
@@ -23,7 +24,6 @@ namespace storage
 
 class data_partition;
 class collocation_resolver;
-class data_partition_table;
 
 class data_partition_provider
 {

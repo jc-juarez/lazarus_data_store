@@ -38,14 +38,14 @@ class object_management_service
 public:
 
     //
-    // Constructor.
+    // Constructor&
     //
     object_management_service(
         const storage_configuration& storage_configuration,
-        std::shared_ptr<container_index> container_index,
-        std::shared_ptr<io_dispatcher_interface> write_request_dispatcher,
-        std::shared_ptr<io_dispatcher_interface> read_request_dispatcher,
-        std::shared_ptr<storage::frontline_cache> frontline_cache);
+        container_index& container_index,
+        io_dispatcher_interface& write_request_dispatcher,
+        io_dispatcher_interface& read_request_dispatcher,
+        storage::frontline_cache& frontline_cache);
 
     //
     // Validates if an object operation request can be executed.
@@ -129,22 +129,22 @@ private:
     //
     // Handle for the object container index component.
     //
-    std::shared_ptr<container_index> container_index_;
+    container_index& container_index_;
 
     //
     // Handle for the write request dispatcher component.
     //
-    std::shared_ptr<io_dispatcher_interface> write_io_task_dispatcher_;
+    io_dispatcher_interface& write_io_task_dispatcher_;
 
     //
     // Handle for the read request dispatcher component.
     //
-    std::shared_ptr<io_dispatcher_interface> read_io_task_dispatcher_;
+    io_dispatcher_interface& read_io_task_dispatcher_;
 
     //
     // Frontline cache handle.
     //
-    std::shared_ptr<storage::frontline_cache> frontline_cache_;
+    storage::frontline_cache& frontline_cache_;
 };
 
 } // namespace storage.

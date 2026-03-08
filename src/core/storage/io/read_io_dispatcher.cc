@@ -24,10 +24,10 @@ namespace lazarus::storage
 
 read_io_dispatcher::read_io_dispatcher(
     const std::uint32_t number_read_io_threads,
-    std::shared_ptr<read_io_executor> object_io_executor,
-    std::shared_ptr<cache_accessor> cache_accessor)
-    : object_io_executor_{std::move(object_io_executor)},
-      cache_accessor_{std::move(cache_accessor)},
+    read_io_executor& object_io_executor,
+    cache_accessor& cache_accessor)
+    : object_io_executor_{object_io_executor},
+      cache_accessor_{cache_accessor},
       read_io_thread_pool_{number_read_io_threads}
 {}
 
@@ -100,7 +100,7 @@ read_io_dispatcher::dispatch_read_io_task(
     // but only after replying back to the server. Cache insertions triggered
     // by get operations do not need a strong feedback loop; eventual cache alignment is accepted.
     //
-    cache_accessor_->insert_object_into_cache(
+    cache_accessor_.insert_object_into_cache(
         read_io_task.object_request_);
 }
 
@@ -118,7 +118,7 @@ read_io_dispatcher::execute_read_io_task(
     {
         case schemas::object_request_optype::get:
         {
-            return object_io_executor_->execute_get_operation(
+            return object_io_executor_.execute_get_operation(
                 read_io_task.container_->get_engine_reference(0u), // change.
                 read_io_task.object_request_,
                 object_data);

@@ -37,8 +37,8 @@ public:
     // Constructor.
     //
     write_batch_aggregator(
-        std::shared_ptr<read_io_executor> object_io_executor,
-        std::shared_ptr<cache_accessor> cache_accessor);
+        read_io_executor& object_io_executor,
+        cache_accessor& cache_accessor);
 
     //
     // Aggregates write IO tasks from a given queue and
@@ -54,12 +54,12 @@ private:
     //
     // Object IO executor handle.
     //
-    std::shared_ptr<read_io_executor> object_io_executor_;
+    read_io_executor& object_io_executor_;
 
     //
     // Cache accessor handle.
     //
-    std::shared_ptr<cache_accessor> cache_accessor_;
+    cache_accessor& cache_accessor_;
 };
 
 } // namespace storage.

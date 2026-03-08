@@ -36,7 +36,7 @@ public:
         const std::uint16_t number_cache_shards,
         const std::size_t max_cache_shard_size_bytes,
         const std::size_t max_object_size_bytes,
-        std::shared_ptr<container_index> container_index);
+        container_index& container_index);
 
     //
     // Inserts an object into the cache shard.
@@ -89,7 +89,7 @@ private:
     //
     // Container index component handle.
     //
-    std::shared_ptr<container_index> container_index_;
+    container_index& container_index_;
 };
 
 } // namespace lazarus::storage.

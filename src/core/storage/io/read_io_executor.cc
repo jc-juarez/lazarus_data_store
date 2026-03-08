@@ -22,8 +22,8 @@ namespace storage
 {
 
 read_io_executor::read_io_executor(
-    std::shared_ptr<storage::data_partition_provider> data_partition_provider)
-    : data_partition_provider_{std::move(data_partition_provider)}
+    data_partition_provider& data_partition_provider)
+    : data_partition_provider_{data_partition_provider}
 {}
 
 status::status_code

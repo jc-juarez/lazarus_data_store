@@ -30,7 +30,7 @@ public:
     // Constructor.
     //
     get_object_request_handler(
-        std::shared_ptr<storage::object_management_service> object_management_service);
+        storage::object_management_service& object_management_service);
 
     //
     // Handles the retrieval for an object.

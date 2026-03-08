@@ -30,7 +30,7 @@ public:
     // Constructor.
     //
     remove_container_request_handler(
-        std::shared_ptr<storage::container_management_service> container_management_service);
+        storage::container_management_service& container_management_service);
 
     //
     // Handles the removal for a container.

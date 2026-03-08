@@ -34,7 +34,7 @@ public:
     // Constructor.
     //
     cache_accessor(
-        std::shared_ptr<frontline_cache> frontline_cache);
+        frontline_cache& frontline_cache);
 
     //
     // Executes an insertion operation into the frontline cache.
@@ -55,7 +55,7 @@ private:
     //
     // Frontline cache handle.
     //
-    std::shared_ptr<frontline_cache> frontline_cache_;
+    frontline_cache& frontline_cache_;
 };
 
 } // namespace storage.

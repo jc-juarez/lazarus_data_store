@@ -24,6 +24,7 @@
 #include "../storage/index/container_index.hh"
 #include "../storage/cache/frontline_cache.hh"
 #include "../storage/io/read_io_dispatcher.hh"
+#include "../storage/io/collocation_resolver.hh"
 #include "../storage/io/data_partition_provider.hh"
 #include "../storage/io/threading_context_provider.hh"
 #include "../storage/management/object_management_service.hh"
@@ -35,35 +36,35 @@ namespace lazarus
 
 lazarus_data_store::lazarus_data_store(
     const boost::uuids::uuid session_id,
-    std::shared_ptr<storage::data_partition> containers_metadata_partition,
-    std::shared_ptr<storage::collocation_resolver> collocation_resolver,
-    std::shared_ptr<storage::data_partition_provider> data_partition_provider,
-    std::shared_ptr<storage::threading_context_provider> threading_context_provider,
-    std::shared_ptr<network::server> server,
-    std::shared_ptr<storage::container_management_service> container_management_service,
-    std::shared_ptr<storage::object_management_service> object_management_service,
+    std::unique_ptr<storage::data_partition> containers_metadata_partition,
+    std::unique_ptr<storage::collocation_resolver> collocation_resolver,
+    std::unique_ptr<storage::data_partition_provider> data_partition_provider,
+    std::unique_ptr<storage::threading_context_provider> threading_context_provider,
+    std::unique_ptr<network::server> server,
+    std::unique_ptr<storage::container_management_service> container_management_service,
+    std::unique_ptr<storage::object_management_service> object_management_service,
     std::unique_ptr<storage::garbage_collector> garbage_collector,
-    std::shared_ptr<storage::container_index> container_index,
-    std::shared_ptr<storage::io_dispatcher_interface> write_io_task_dispatcher,
-    std::shared_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher,
-    std::shared_ptr<storage::frontline_cache> frontline_cache,
-    std::shared_ptr<storage::read_io_executor> object_io_executor,
-    std::shared_ptr<storage::cache_accessor> cache_accessor)
+    std::unique_ptr<storage::container_index> container_index,
+    std::unique_ptr<storage::io_dispatcher_interface> write_io_task_dispatcher,
+    std::unique_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher,
+    std::unique_ptr<storage::frontline_cache> frontline_cache,
+    std::unique_ptr<storage::read_io_executor> object_io_executor,
+    std::unique_ptr<storage::cache_accessor> cache_accessor)
     : session_id_{session_id}
-    , containers_metadata_partition_{containers_metadata_partition}
-    , collocation_resolver_{collocation_resolver}
-    , data_partition_provider_{data_partition_provider}
-    , threading_context_provider_{threading_context_provider}
-    , server_{server}
-    , container_management_service_{container_management_service}
-    , object_management_service_{object_management_service}
+    , containers_metadata_partition_{std::move(containers_metadata_partition)}
+    , collocation_resolver_{std::move(collocation_resolver)}
+    , data_partition_provider_{std::move(data_partition_provider)}
+    , threading_context_provider_{std::move(threading_context_provider)}
+    , server_{std::move(server)}
+    , container_management_service_{std::move(container_management_service)}
+    , object_management_service_{std::move(object_management_service)}
     , garbage_collector_{std::move(garbage_collector)}
-    , container_index_{container_index}
-    , write_io_task_dispatcher_{write_io_task_dispatcher}
-    , read_io_task_dispatcher_{read_io_task_dispatcher}
-    , frontline_cache_{frontline_cache}
-    , object_io_executor_{object_io_executor}
-    , cache_accessor_{cache_accessor}
+    , container_index_{std::move(container_index)}
+    , write_io_task_dispatcher_{std::move(write_io_task_dispatcher)}
+    , read_io_task_dispatcher_{std::move(read_io_task_dispatcher)}
+    , frontline_cache_{std::move(frontline_cache)}
+    , object_io_executor_{std::move(object_io_executor)}
+    , cache_accessor_{std::move(cache_accessor)}
 {}
 
 status::status_code

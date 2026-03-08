@@ -28,12 +28,12 @@ namespace storage
 {
 
 container_operation_serializer::container_operation_serializer(
-    std::shared_ptr<data_partition> container_metadata_partition,
-    std::shared_ptr<storage::data_partition_provider> data_partition_provider,
-    std::shared_ptr<container_index> container_index)
-    : container_metadata_partition_{std::move(container_metadata_partition)},
-      data_partition_provider_{std::move(data_partition_provider)},
-      container_index_{std::move(container_index)}
+    data_partition& container_metadata_partition,
+    data_partition_provider& data_partition_provider,
+    container_index& container_index)
+    : container_metadata_partition_{container_metadata_partition},
+      data_partition_provider_{data_partition_provider},
+      container_index_{container_index}
 {}
 
 void
@@ -103,7 +103,7 @@ container_operation_serializer::handle_container_creation(
     const schemas::container_request& container_request)
 {
     status::status_code status =
-        container_index_->get_container_existence_status(
+        container_index_.get_container_existence_status(
             container_request.get_name());
 
     if (status != status::container_not_exists)
@@ -154,8 +154,8 @@ container_operation_serializer::handle_container_creation(
         container::create_container_persistent_metadata(container_request.get_name().c_str());
     byte_stream serialized_container_persistent_metadata;
     container_persistent_metadata.SerializeToString(&serialized_container_persistent_metadata);
-    status = container_metadata_partition_->get_storage_engine().insert_object(
-        container_index_->get_container_metadata_engine_reference(),
+    status = container_metadata_partition_.get_storage_engine().insert_object(
+        container_index_.get_container_metadata_engine_reference(),
         container_request.get_name().c_str(),
         serialized_container_persistent_metadata);
 
@@ -175,7 +175,7 @@ container_operation_serializer::handle_container_creation(
     //
     // Index the new object container to the internal metadata table.
     //
-    status = container_index_->insert_container(
+    status = container_index_.insert_container(
         container_persistent_metadata,
         container_instances_creation_result.value());
 
@@ -206,7 +206,7 @@ container_operation_serializer::handle_container_removal(
     const schemas::container_request& container_request)
 {
     status::status_code status =
-        container_index_->get_container_existence_status(
+        container_index_.get_container_existence_status(
             container_request.get_name());
 
     if (status != status::container_already_exists)
@@ -233,8 +233,8 @@ container_operation_serializer::handle_container_removal(
     // object container will be broken, and only the in-memory object container reference
     // will remain active for the rest of this session and be cleaned up by the garbage collector.
     //
-    status = container_metadata_partition_->get_storage_engine().remove_object(
-        container_index_->get_container_metadata_engine_reference(),
+    status = container_metadata_partition_.get_storage_engine().remove_object(
+        container_index_.get_container_metadata_engine_reference(),
         container_request.get_name().c_str());
 
     if (status::failed(status))
@@ -257,7 +257,7 @@ container_operation_serializer::handle_container_removal(
     // filesystem object container will be detected as orphaned during startup and will also be cleaned up.
     //
     std::shared_ptr<container> container =
-        container_index_->get_container(
+        container_index_.get_container(
             container_request.get_name());
 
     if (container == nullptr)
@@ -301,7 +301,7 @@ container_operation_serializer::create_container_instances_on_data_partitions(
     std::vector<container_partition_metadata> container_instances;
 
     const std::span<data_partition> data_partitions =
-        data_partition_provider_->get_all_partitions();
+        data_partition_provider_.get_all_partitions();
 
     for (auto& data_partition : data_partitions)
     {

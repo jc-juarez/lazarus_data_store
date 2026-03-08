@@ -49,10 +49,10 @@ public:
     //
     static
     std::tuple<
-        std::shared_ptr<data_partition>,
-        std::shared_ptr<collocation_resolver>,
-        std::shared_ptr<data_partition_provider>,
-        std::shared_ptr<threading_context_provider>>
+        std::unique_ptr<data_partition>,
+        std::unique_ptr<collocation_resolver>,
+        std::unique_ptr<data_partition_provider>,
+        std::unique_ptr<threading_context_provider>>
     generate_collocation_topology(
         const storage_configuration& storage_configuration);
 

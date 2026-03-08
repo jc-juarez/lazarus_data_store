@@ -22,8 +22,8 @@ namespace lazarus::storage
 {
 
 orphaned_container_scavenger::orphaned_container_scavenger(
-    std::shared_ptr<container_index> container_index)
-    : container_index_{std::move(container_index)}
+    container_index& container_index)
+    : container_index_{container_index}
 {}
 
 void
@@ -103,7 +103,7 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
             // At this point, the object container has been deleted
             // from the filesystem. Safe to delete the in-memory reference now.
             //
-            status = container_index_->remove_container(
+            status = container_index_.remove_container(
                 container->get_name().c_str());
 
             if (status::failed(status))

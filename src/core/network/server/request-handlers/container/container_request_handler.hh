@@ -38,7 +38,7 @@ public:
     // Constructor.
     //
     container_request_handler(
-        std::shared_ptr<storage::container_management_service> container_management_service);
+        storage::container_management_service& container_management_service);
 
     // Middleware execution for the container operation.
     // Handles common validations and actions for the HTTP request.
@@ -62,7 +62,7 @@ protected:
     //
     // Handle for the container management service.
     //
-    std::shared_ptr<storage::container_management_service> container_management_service_;
+    storage::container_management_service& container_management_service_;
 };
 
 } // namespace network.

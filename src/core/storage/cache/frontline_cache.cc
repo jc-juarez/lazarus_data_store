@@ -24,9 +24,9 @@ frontline_cache::frontline_cache(
     const std::uint16_t number_cache_shards,
     const std::size_t max_cache_shard_size_bytes,
     const std::size_t max_object_size_bytes,
-    std::shared_ptr<container_index> container_index)
+    container_index& container_index)
     : number_cache_shards_{number_cache_shards},
-      container_index_{std::move(container_index)}
+      container_index_{container_index}
 {
     for (std::uint16_t index = 0; index < number_cache_shards_; ++index)
     {
@@ -42,7 +42,7 @@ frontline_cache::put(
     std::string&& container_name)
 {
     status::status_code status =
-        container_index_->get_container_existence_status(container_name);
+        container_index_.get_container_existence_status(container_name);
 
     if (status != status::container_already_exists)
     {
@@ -75,7 +75,7 @@ frontline_cache::get(
     const std::string& container_name)
 {
     status::status_code status =
-        container_index_->get_container_existence_status(container_name);
+        container_index_.get_container_existence_status(container_name);
 
     if (status != status::container_already_exists)
     {

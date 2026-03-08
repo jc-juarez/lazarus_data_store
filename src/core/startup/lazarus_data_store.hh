@@ -64,20 +64,20 @@ public:
     //
     lazarus_data_store(
         const boost::uuids::uuid session_id,
-        std::shared_ptr<storage::data_partition> containers_metadata_partition,
-        std::shared_ptr<storage::collocation_resolver> collocation_resolver,
-        std::shared_ptr<storage::data_partition_provider> data_partition_provider,
-        std::shared_ptr<storage::threading_context_provider> threading_context_provider,
-        std::shared_ptr<network::server> server,
-        std::shared_ptr<storage::container_management_service> container_management_service,
-        std::shared_ptr<storage::object_management_service> object_management_service,
+        std::unique_ptr<storage::data_partition> containers_metadata_partition,
+        std::unique_ptr<storage::collocation_resolver> collocation_resolver,
+        std::unique_ptr<storage::data_partition_provider> data_partition_provider,
+        std::unique_ptr<storage::threading_context_provider> threading_context_provider,
+        std::unique_ptr<network::server> server,
+        std::unique_ptr<storage::container_management_service> container_management_service,
+        std::unique_ptr<storage::object_management_service> object_management_service,
         std::unique_ptr<storage::garbage_collector> garbage_collector,
-        std::shared_ptr<storage::container_index> container_index,
-        std::shared_ptr<storage::io_dispatcher_interface> write_io_task_dispatcher,
-        std::shared_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher,
-        std::shared_ptr<storage::frontline_cache> frontline_cache,
-        std::shared_ptr<storage::read_io_executor> object_io_executor,
-        std::shared_ptr<storage::cache_accessor> cache_accessor);
+        std::unique_ptr<storage::container_index> container_index,
+        std::unique_ptr<storage::io_dispatcher_interface> write_io_task_dispatcher,
+        std::unique_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher,
+        std::unique_ptr<storage::frontline_cache> frontline_cache,
+        std::unique_ptr<storage::read_io_executor> object_io_executor,
+        std::unique_ptr<storage::cache_accessor> cache_accessor);
 
     //
     // Start the lazarus data store system.
@@ -119,37 +119,37 @@ private:
     //
     // Containers metadata partition handle.
     //
-    std::shared_ptr<storage::data_partition> containers_metadata_partition_;
+    std::unique_ptr<storage::data_partition> containers_metadata_partition_;
 
     //
     // Collocation resolver handle.
     //
-    std::shared_ptr<storage::collocation_resolver> collocation_resolver_;
+    std::unique_ptr<storage::collocation_resolver> collocation_resolver_;
 
     //
     // Data partition provider handle.
     //
-    std::shared_ptr<storage::data_partition_provider> data_partition_provider_;
+    std::unique_ptr<storage::data_partition_provider> data_partition_provider_;
 
     //
     // Threading context provider handle.
     //
-    std::shared_ptr<storage::threading_context_provider> threading_context_provider_;
+    std::unique_ptr<storage::threading_context_provider> threading_context_provider_;
 
     //
     // HTTP server handle.
     //
-    std::shared_ptr<network::server> server_;
+    std::unique_ptr<network::server> server_;
 
     //
     // Object container management service handle.
     //
-    std::shared_ptr<storage::container_management_service> container_management_service_;
+    std::unique_ptr<storage::container_management_service> container_management_service_;
 
     //
     // Object management service handle.
     //
-    std::shared_ptr<storage::object_management_service> object_management_service_;
+    std::unique_ptr<storage::object_management_service> object_management_service_;
 
     //
     // Garbage collector handle.
@@ -159,32 +159,32 @@ private:
     //
     // Object container index handle.
     //
-    std::shared_ptr<storage::container_index> container_index_;
+    std::unique_ptr<storage::container_index> container_index_;
 
     //
     // Write request dispatcher handle.
     //
-    std::shared_ptr<storage::io_dispatcher_interface> write_io_task_dispatcher_;
+    std::unique_ptr<storage::io_dispatcher_interface> write_io_task_dispatcher_;
 
     //
     // Read request dispatcher handle.
     //
-    std::shared_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher_;
+    std::unique_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher_;
 
     //
     // Frontline cache handle.
     //
-    std::shared_ptr<storage::frontline_cache> frontline_cache_;
+    std::unique_ptr<storage::frontline_cache> frontline_cache_;
 
     //
     // Object IO executor handle.
     //
-    std::shared_ptr<storage::read_io_executor> object_io_executor_;
+    std::unique_ptr<storage::read_io_executor> object_io_executor_;
 
     //
     // Cache accessor handle.
     //
-    std::shared_ptr<storage::cache_accessor> cache_accessor_;
+    std::unique_ptr<storage::cache_accessor> cache_accessor_;
 };
 
 } // namespace lazarus.

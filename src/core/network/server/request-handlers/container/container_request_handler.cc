@@ -23,8 +23,8 @@ namespace network
 {
 
 container_request_handler::container_request_handler(
-    std::shared_ptr<storage::container_management_service> container_management_service)
-    : container_management_service_{std::move(container_management_service)}
+    storage::container_management_service& container_management_service)
+    : container_management_service_{container_management_service}
 {}
 
 void
@@ -34,7 +34,7 @@ container_request_handler::run(
 {
     schemas::container_request container_request{request};
 
-    const status::status_code status = container_management_service_->validate_container_operation_request(
+    const status::status_code status = container_management_service_.validate_container_operation_request(
         container_request);
 
     if (status::failed(status))

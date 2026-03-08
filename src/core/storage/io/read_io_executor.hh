@@ -33,7 +33,7 @@ public:
     // Constructor.
     //
     read_io_executor(
-        std::shared_ptr<storage::data_partition_provider> data_partition_provider);
+        data_partition_provider& data_partition_provider);
 
     //
     // Executes a get operation with the storage engine.
@@ -56,7 +56,7 @@ private:
     //
     // Reference for the data partition provider.
     //
-    std::shared_ptr<storage::data_partition_provider> data_partition_provider_;
+    data_partition_provider& data_partition_provider_;
 };
 
 } // namespace storage.

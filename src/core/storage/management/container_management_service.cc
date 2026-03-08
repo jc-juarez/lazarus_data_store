@@ -31,15 +31,15 @@ namespace storage
 
 container_management_service::container_management_service(
     const storage_configuration& storage_configuration,
-    std::shared_ptr<data_partition> container_metadata_partition,
-    std::shared_ptr<container_index> container_index_handle,
+    data_partition& container_metadata_partition,
+    container_index& container_index_handle,
     std::unique_ptr<container_operation_serializer> container_operation_serializer_handle,
-    std::shared_ptr<storage::data_partition_provider> data_partition_provider)
+    data_partition_provider& data_partition_provider)
     : storage_configuration_{storage_configuration},
-      container_metadata_partition_{std::move(container_metadata_partition)},
-      container_index_{std::move(container_index_handle)},
+      container_metadata_partition_{container_metadata_partition},
+      container_index_{container_index_handle},
       container_operation_serializer_{std::move(container_operation_serializer_handle)},
-      data_partition_provider_{std::move(data_partition_provider)}
+      data_partition_provider_{data_partition_provider}
 {}
 
 status::status_code
@@ -88,7 +88,7 @@ container_management_service::populate_container_index(
     // persistent container metadata and populate the rest of the object container index.
     //
     std::unordered_map<std::string, byte_stream> containers_present_on_metadata;
-    status::status_code status = container_metadata_partition_->get_storage_engine().get_all_objects_from_container(
+    status::status_code status = container_metadata_partition_.get_storage_engine().get_all_objects_from_container(
         container_metadata_engine_reference,
         &containers_present_on_metadata);
 
@@ -161,7 +161,7 @@ container_management_service::create_container_metadata_column_family(
     // Create the object containers column family on the storage engine.
     //
     storage_engine_reference_handle* container_metadata_engine_reference;
-    status::status_code status = container_metadata_partition_->get_storage_engine().create_container(
+    status::status_code status = container_metadata_partition_.get_storage_engine().create_container(
         container_index::k_container_metadata_name,
         &container_metadata_engine_reference);
 
@@ -181,7 +181,7 @@ container_management_service::create_container_metadata_column_family(
         container::create_container_persistent_metadata(rocksdb::kDefaultColumnFamilyName.c_str());
     byte_stream serialized_container_persistent_metadata;
     container_persistent_metadata.SerializeToString(&serialized_container_persistent_metadata);
-    status = container_metadata_partition_->get_storage_engine().insert_object(
+    status = container_metadata_partition_.get_storage_engine().insert_object(
         container_metadata_engine_reference,
         rocksdb::kDefaultColumnFamilyName.c_str(),
         serialized_container_persistent_metadata);
@@ -279,7 +279,7 @@ container_management_service::validate_container_create_request(
     const schemas::container_request& container_request)
 {
     const status::status_code status =
-        container_index_->get_container_existence_status(
+        container_index_.get_container_existence_status(
             container_request.get_name());
 
     if (status != status::container_not_exists)
@@ -299,7 +299,7 @@ container_management_service::validate_container_create_request(
         return status;
     }
 
-    if (container_index_->get_total_number_containers() >=
+    if (container_index_.get_total_number_containers() >=
         storage_configuration_.max_number_containers_)
     {
         //
@@ -314,7 +314,7 @@ container_management_service::validate_container_create_request(
             "MaxNumberOfObjectContainers={}.",
             static_cast<std::uint8_t>(container_request.get_optype()),
             container_request.get_name(),
-            container_index_->get_total_number_containers(),
+            container_index_.get_total_number_containers(),
             storage_configuration_.max_number_containers_);
 
         return status::max_number_containers_reached;
@@ -328,7 +328,7 @@ container_management_service::validate_container_remove_request(
     const schemas::container_request& container_request)
 {
     const status::status_code status =
-        container_index_->get_container_existence_status(
+        container_index_.get_container_existence_status(
             container_request.get_name());
 
     if (status != status::container_already_exists)
@@ -362,8 +362,8 @@ container_management_service::index_containers_from_container_metadata_partition
         // so it is only needed to pass down the respective storage engine reference for such partition.
         //
         container_partition_metadata container_metadata {
-            container_metadata_partition_->get_collocation_index(),
-            container_metadata_partition_->get_storage_engine(),
+            container_metadata_partition_.get_collocation_index(),
+            container_metadata_partition_.get_storage_engine(),
             container_to_index.second};
         std::vector<container_partition_metadata> container_instances {container_metadata};
 
@@ -387,7 +387,7 @@ container_management_service::index_containers_from_container_metadata_partition
 
         const schemas::container_persistent_interface container_persistent_metadata =
             container::create_container_persistent_metadata(container_name.c_str());
-        status::status_code status = container_index_->insert_container(
+        status::status_code status = container_index_.insert_container(
             container_persistent_metadata,
             container_instances);
 
@@ -403,7 +403,7 @@ container_management_service::index_containers_from_container_metadata_partition
         }
 
         const std::shared_ptr<container> container =
-            container_index_->get_container(container_name);
+            container_index_.get_container(container_name);
 
         spdlog::info("Indexed internal metadata container on startup. "
             "ContainerMetadata={}.",
@@ -454,7 +454,7 @@ container_management_service::index_structured_partition_containers(
         std::vector<container_partition_metadata> container_instances =
             convert_ordered_engine_references_to_container_instances(engine_references.value());
 
-        status::status_code status = container_index_->insert_container(
+        status::status_code status = container_index_.insert_container(
             container_persistent_metadata,
             container_instances);
 
@@ -470,7 +470,7 @@ container_management_service::index_structured_partition_containers(
         }
 
         const std::shared_ptr<container> container =
-            container_index_->get_container(container_name);
+            container_index_.get_container(container_name);
 
         spdlog::info("Found container on structured data partitions during startup and indexed into "
             "the object containers metadata table. "
@@ -507,7 +507,7 @@ container_management_service::scan_and_index_orphaned_containers(
 
             const schemas::container_persistent_interface container_persistent_metadata =
                 container::create_container_persistent_metadata(container_name.c_str());
-            status::status_code status = container_index_->insert_container(
+            status::status_code status = container_index_.insert_container(
                 container_persistent_metadata,
                 container_instances);
 
@@ -522,7 +522,7 @@ container_management_service::scan_and_index_orphaned_containers(
                 return status;
             }
 
-            std::shared_ptr<container> container = container_index_->get_container(container_name);
+            std::shared_ptr<container> container = container_index_.get_container(container_name);
 
             if (container == nullptr)
             {
@@ -550,7 +550,7 @@ container_management_service::convert_ordered_engine_references_to_container_ins
     {
         container_instances.emplace_back(
             collocation_index,
-            data_partition_provider_->get_partition_by_collocation(collocation_index).get_storage_engine(),
+            data_partition_provider_.get_partition_by_collocation(collocation_index).get_storage_engine(),
             storage_engine_references[collocation_index]);
     }
 

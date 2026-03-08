@@ -28,10 +28,10 @@ namespace storage
 
 garbage_collector::garbage_collector(
     const storage_configuration& storage_configuration,
-    std::shared_ptr<container_index> container_index,
+    container_index& container_index,
     std::unique_ptr<orphaned_container_scavenger> orphaned_container_scavenger)
     : storage_configuration_{storage_configuration},
-      container_index_{std::move(container_index)},
+      container_index_{container_index},
       orphaned_container_scavenger_{std::move(orphaned_container_scavenger)},
       iteration_count_{0u}
 {}
@@ -101,10 +101,10 @@ garbage_collector::cleanup_orphaned_containers()
     // Orphaned object containers are only discovered during startup and will be marked as deleted,
     // or in case the object container was deleted at runtime, it will also be marked as deleted.
     //
-    for (std::uint16_t bucket_index = 0; bucket_index < container_index_->get_number_container_buckets(); ++bucket_index)
+    for (std::uint16_t bucket_index = 0; bucket_index < container_index_.get_number_container_buckets(); ++bucket_index)
     {
         std::vector<std::shared_ptr<container>> containers =
-            container_index_->get_all_containers_from_bucket(bucket_index);
+            container_index_.get_all_containers_from_bucket(bucket_index);
 
         spdlog::info("Scanning container bucket to look for orphaned containers. "
             "ContainerBucketIndexBeingTraversed={}, "

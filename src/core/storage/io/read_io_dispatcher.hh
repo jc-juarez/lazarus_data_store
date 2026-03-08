@@ -35,8 +35,8 @@ public:
     //
     read_io_dispatcher(
         const std::uint32_t number_read_io_threads,
-        std::shared_ptr<read_io_executor> object_io_executor,
-        std::shared_ptr<cache_accessor> cache_accessor);
+        read_io_executor& object_io_executor,
+        cache_accessor& cache_accessor);
 
     //
     // Enqueues a read IO operation for to be processed
@@ -79,12 +79,12 @@ private:
     //
     // Object IO executor handle.
     //
-    std::shared_ptr<storage::read_io_executor> object_io_executor_;
+    read_io_executor& object_io_executor_;
 
     //
     // Cache accessor handle.
     //
-    std::shared_ptr<storage::cache_accessor> cache_accessor_;
+    cache_accessor& cache_accessor_;
 };
 
 } // namespace lazarus::common.

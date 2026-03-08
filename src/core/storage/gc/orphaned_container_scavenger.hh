@@ -33,7 +33,7 @@ public:
     // Constructor.
     //
     orphaned_container_scavenger(
-        std::shared_ptr<container_index> container_index);
+        container_index& container_index);
 
     //
     // Scans the given object containers and cleans them up if necessary.
@@ -56,7 +56,7 @@ private:
     //
     // Handle for the object container index.
     //
-    std::shared_ptr<container_index> container_index_;
+    container_index& container_index_;
 };
 
 } // namespace lazarus::storage.

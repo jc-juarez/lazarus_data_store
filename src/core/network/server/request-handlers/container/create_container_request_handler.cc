@@ -24,8 +24,8 @@ namespace network
 {
 
 create_container_request_handler::create_container_request_handler(
-    std::shared_ptr<storage::container_management_service> container_management_service)
-    : container_request_handler{std::move(container_management_service)}
+    storage::container_management_service& container_management_service)
+    : container_request_handler{container_management_service}
 {}
 
 void
@@ -44,7 +44,7 @@ create_container_request_handler::execute_operation(
     // container in async serialized fashion.
     // Response will be provided by a separate thread.
     //
-    container_management_service_->orchestrate_serial_container_operation(
+    container_management_service_.orchestrate_serial_container_operation(
         std::move(container_request),
         std::move(response_callback));
 }

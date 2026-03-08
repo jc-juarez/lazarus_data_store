@@ -27,15 +27,15 @@ namespace storage
 
 object_management_service::object_management_service(
     const storage_configuration& storage_configuration,
-    std::shared_ptr<container_index> container_index,
-    std::shared_ptr<io_dispatcher_interface> write_request_dispatcher,
-    std::shared_ptr<io_dispatcher_interface> read_request_dispatcher,
-    std::shared_ptr<storage::frontline_cache> frontline_cache)
+    container_index& container_index,
+    io_dispatcher_interface& write_request_dispatcher,
+    io_dispatcher_interface& read_request_dispatcher,
+    storage::frontline_cache& frontline_cache)
     : storage_configuration_{storage_configuration},
-      container_index_{std::move(container_index)},
-      write_io_task_dispatcher_{std::move(write_request_dispatcher)},
-      read_io_task_dispatcher_{std::move(read_request_dispatcher)},
-      frontline_cache_{std::move(frontline_cache)}
+      container_index_{container_index},
+      write_io_task_dispatcher_{write_request_dispatcher},
+      read_io_task_dispatcher_{read_request_dispatcher},
+      frontline_cache_{frontline_cache}
 {}
 
 status::status_code
@@ -161,7 +161,7 @@ std::shared_ptr<container>
 object_management_service::get_container_reference(
     const std::string& container_name)
 {
-    return container_index_->get_container(container_name);
+    return container_index_.get_container(container_name);
 }
 
 status::status_code
@@ -195,7 +195,7 @@ object_management_service::orchestrate_concurrent_write_request(
         std::move(container),
         std::move(response_callback)};
 
-    write_io_task_dispatcher_->enqueue_io_task(
+    write_io_task_dispatcher_.enqueue_io_task(
         std::move(write_io_task));
 
     return status::success;
@@ -232,7 +232,7 @@ object_management_service::orchestrate_concurrent_read_request(
         std::move(container),
         std::move(response_callback)};
 
-    read_io_task_dispatcher_->enqueue_io_task(
+    read_io_task_dispatcher_.enqueue_io_task(
         std::move(read_io_task));
 
     return status::success;
@@ -243,7 +243,7 @@ object_management_service::get_object_from_frontline_cache(
     const std::string& object_id,
     const std::string& container_name)
 {
-    return frontline_cache_->get(
+    return frontline_cache_.get(
         object_id,
         container_name);
 }

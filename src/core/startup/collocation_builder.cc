@@ -29,10 +29,10 @@ namespace storage
 collocation_builder::collocation_builder() = default;
 
 std::tuple<
-    std::shared_ptr<data_partition>,
-    std::shared_ptr<collocation_resolver>,
-    std::shared_ptr<data_partition_provider>,
-    std::shared_ptr<threading_context_provider>>
+    std::unique_ptr<data_partition>,
+    std::unique_ptr<collocation_resolver>,
+    std::unique_ptr<data_partition_provider>,
+    std::unique_ptr<threading_context_provider>>
 collocation_builder::generate_collocation_topology(
     const storage_configuration& storage_configuration)
 {
@@ -40,7 +40,7 @@ collocation_builder::generate_collocation_topology(
     // The system should create the same number of topology subtypes.
     // This is crucial as to maintain IO requirements for the storage engine.
     //
-    auto container_metadata_partition = std::make_shared<storage::data_partition>(
+    auto container_metadata_partition = std::make_unique<storage::data_partition>(
         k_container_metadata_partition_prefix,
         k_number_collocations, /* The index for the containers metadata corresponds to the Kth collocation. */
         storage_configuration,
@@ -50,7 +50,7 @@ collocation_builder::generate_collocation_topology(
     // Collocation resolver.
     // This routes all object keys to their respective data partitions or threading contexts.
     //
-    auto collocation_resolver = std::make_shared<storage::collocation_resolver>(
+    auto collocation_resolver = std::make_unique<storage::collocation_resolver>(
         k_number_collocations);
 
     //
@@ -84,16 +84,16 @@ collocation_builder::generate_collocation_topology(
     //
     // Providers for data partitions and threading contexts.
     //
-    auto data_partitions_provider = std::make_shared<data_partition_provider>(
+    auto data_partitions_provider = std::make_unique<data_partition_provider>(
         std::move(data_partitions_table));
-    auto threading_contexts_provider = std::make_shared<threading_context_provider>(
+    auto threading_contexts_provider = std::make_unique<threading_context_provider>(
         std::move(threading_contexts_table));
 
     return std::make_tuple(
-        container_metadata_partition,
-        collocation_resolver,
-        data_partitions_provider,
-        threading_contexts_provider);
+        std::move(container_metadata_partition),
+        std::move(collocation_resolver),
+        std::move(data_partitions_provider),
+        std::move(threading_contexts_provider));
 }
 
 } // namespace storage.
