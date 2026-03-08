@@ -43,16 +43,16 @@ container_loader::load_container_index(
         metadata_partition_references.size() > k_max_metadata_partition_containers)
     {
         //
-        // The container metadata partition should either the default container
-        // or the default container plus the container metadata container.
+        // The container metadata partition should either have the default
+        // container, or the default container plus the container metadata container.
         //
-        spdlog::critical("Unexpected number of containers found for the container metadata partition. "
+        spdlog::critical("Unexpected number of containers found for the metadata partition. "
             "MaxNumContainers={}, "
             "NumContainersFound={}.",
             k_max_metadata_partition_containers,
             metadata_partition_references.size());
 
-        return status::unexpected_container_metadata_partition_number_containers;
+        return status::unexpected_metadata_partition_number_containers;
     }
 
     //

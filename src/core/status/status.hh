@@ -237,9 +237,9 @@ status_code_definition(
     0x8000001f,
     static_cast<drogon::HttpStatusCode>(500));
 
-// Unexpected number of containers for the container metadata partition.
+// Unexpected number of containers for the metadata partition.
 status_code_definition(
-    unexpected_container_metadata_partition_number_containers,
+    unexpected_metadata_partition_number_containers,
     0x80000020,
     static_cast<drogon::HttpStatusCode>(500));
 

@@ -171,10 +171,10 @@ codes:
     http: 500
     desc: Container has duplicate storage engine references.
 
-  - name: unexpected_container_metadata_partition_number_containers
+  - name: unexpected_metadata_partition_number_containers
     internal: "0x80000020"
     http: 500
-    desc: Unexpected number of containers for the container metadata partition.
+    desc: Unexpected number of containers for the metadata partition.
 
   - name: missing_container_on_data_partitions
     internal: "0x80000021"
