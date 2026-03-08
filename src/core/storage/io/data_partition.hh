@@ -20,13 +20,12 @@
 #include "../../status/status.hh"
 #include "../../common/aliases.hh"
 #include "../storage_configuration.hh"
+#include "storage_engine_interface.hh"
 
 namespace lazarus
 {
 namespace storage
 {
-
-class storage_engine_interface;
 
 class data_partition
 {

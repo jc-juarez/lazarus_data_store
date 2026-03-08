@@ -26,14 +26,14 @@ data_partition_provider::data_partition_provider(
     : partitions_table_{std::move(data_partition_table)}
 {}
 
-std::shared_ptr<data_partition>
+data_partition&
 data_partition_provider::get_partition_by_collocation(
     const std::uint16_t collocation_index)
 {
     return partitions_table_->get_partition(collocation_index);
 }
 
-std::vector<std::shared_ptr<data_partition>>
+std::span<data_partition>
 data_partition_provider::get_all_partitions()
 {
     return partitions_table_->get_all_partitions();

@@ -16,13 +16,13 @@
 
 #include <vector>
 #include <memory>
+#include "data_partition.hh"
 
 namespace lazarus
 {
 namespace storage
 {
 
-class data_partition;
 class storage_engine;
 
 class data_partition_table
@@ -45,24 +45,24 @@ public:
         std::unique_ptr<storage_engine> storage_engine);
 
     //
-    // Returns a reference to a data partition.
+    // Returns a non-owning reference to a data partition.
     // This API is meant to be only be consumed by the data partition provider.
     //
-    std::shared_ptr<data_partition>
+    data_partition&
     get_partition(
         const std::uint16_t collocation_index);
 
     //
     // Returns a list with all data partitions in the system.
     //
-    std::vector<std::shared_ptr<data_partition>>
+    std::span<data_partition>
     get_all_partitions();
 
 private:
 
     //
     // Table for holding all data partitions in an owning model.
-    // References to be provided should be owning.
+    // References to be provided should be non-owning.
     // The table functions as a direct mapping given a collocation index:
     // --------------------------------------------------------------
     // | Offset_0 | Offset_1 | Offset_2 | Offset_3 | ... | Offset_N |
@@ -70,7 +70,7 @@ private:
     // |   DP_0   |   DP_1   |   DP_2   |   DP_3   | ... |   DP_N   |
     // --------------------------------------------------------------
     //
-    std::vector<std::shared_ptr<data_partition>> partitions_;
+    std::vector<data_partition> partitions_;
 };
 
 } // namespace storage.

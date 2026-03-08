@@ -13,7 +13,6 @@
 // ****************************************************
 
 #include "storage_engine.hh"
-#include "data_partition.hh"
 #include "data_partition_table.hh"
 
 namespace lazarus
@@ -32,21 +31,20 @@ data_partition_table::append_partition(
     std::unique_ptr<storage_engine> storage_engine)
 {
     partitions_.emplace_back(
-        std::make_shared<data_partition>(
-            partition_prefix,
-            collocation_index,
-            storage_configuration,
-            std::move(storage_engine)));
+        partition_prefix,
+        collocation_index,
+        storage_configuration,
+        std::move(storage_engine));
 }
 
-std::shared_ptr<data_partition>
+data_partition&
 data_partition_table::get_partition(
     const std::uint16_t collocation_index)
 {
     return partitions_.at(collocation_index);
 }
 
-std::vector<std::shared_ptr<data_partition>>
+std::span<data_partition>
 data_partition_table::get_all_partitions()
 {
     return partitions_;

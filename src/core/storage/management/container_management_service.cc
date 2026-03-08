@@ -550,7 +550,7 @@ container_management_service::convert_ordered_engine_references_to_container_ins
     {
         container_instances.emplace_back(
             collocation_index,
-            data_partition_provider_->get_partition_by_collocation(collocation_index)->get_storage_engine(),
+            data_partition_provider_->get_partition_by_collocation(collocation_index).get_storage_engine(),
             storage_engine_references[collocation_index]);
     }
 

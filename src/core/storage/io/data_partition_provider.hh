@@ -38,14 +38,14 @@ public:
     //
     // Provides access to a specific data partition by collocation index lookup.
     //
-    std::shared_ptr<data_partition>
+    data_partition&
     get_partition_by_collocation(
         const std::uint16_t collocation_index);
 
     //
     // Returns a list with all data partitions in the system.
     //
-    std::vector<std::shared_ptr<data_partition>>
+    std::span<data_partition>
     get_all_partitions();
 
 private:

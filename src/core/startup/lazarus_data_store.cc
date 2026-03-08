@@ -75,10 +75,9 @@ lazarus_data_store::start_data_store()
     // Before starting the server, boot the container
     // metadata partition to load the persistent metadata state.
     //
-    //
     references_mapping container_metadata_partition_references;
     status::status_code status = boot_data_partition(
-        containers_metadata_partition_,
+        *containers_metadata_partition_,
         container_metadata_partition_references);
 
     if (status::failed(status))
@@ -186,7 +185,7 @@ lazarus_data_store::boot_structured_data_partitions()
     //
     storage::container_reference_registry container_registry;
 
-    const std::vector<std::shared_ptr<storage::data_partition>> data_partitions =
+    const std::span<storage::data_partition> data_partitions =
         data_partition_provider_->get_all_partitions();
 
     for (auto& data_partition : data_partitions)
@@ -201,7 +200,7 @@ lazarus_data_store::boot_structured_data_partitions()
         {
             spdlog::critical("Failed to boot structured data partition on CollocationIndex={}. "
                 "Status={:#x}.",
-                data_partition->get_collocation_index(),
+                data_partition.get_collocation_index(),
                 status);
 
             return std::unexpected(status);
@@ -223,7 +222,7 @@ lazarus_data_store::boot_structured_data_partitions()
 
 status::status_code
 lazarus_data_store::boot_data_partition(
-    std::shared_ptr<storage::data_partition> data_partition,
+    storage::data_partition& data_partition,
     std::unordered_map<std::string, storage::storage_engine_reference_handle*>& references_mapping)
 {
     //
@@ -233,7 +232,7 @@ lazarus_data_store::boot_data_partition(
     // This is a static invocation being executed before the storage engine is started.
     //
     std::vector<std::string> containers_names;
-    status::status_code status = data_partition->fetch_containers_from_disk(
+    status::status_code status = data_partition.fetch_containers_from_disk(
         containers_names);
 
     if (status::failed(status))
@@ -249,7 +248,7 @@ lazarus_data_store::boot_data_partition(
     // Boot the partition. On success, it will associate the object
     // containers names to their respective column family reference.
     //
-    status = data_partition->boot(
+    status = data_partition.boot(
         containers_names,
         references_mapping);
 

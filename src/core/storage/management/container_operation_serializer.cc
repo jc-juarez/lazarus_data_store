@@ -300,14 +300,14 @@ container_operation_serializer::create_container_instances_on_data_partitions(
 {
     std::vector<container_partition_metadata> container_instances;
 
-    std::vector<std::shared_ptr<data_partition>> data_partitions =
+    const std::span<data_partition> data_partitions =
         data_partition_provider_->get_all_partitions();
 
     for (auto& data_partition : data_partitions)
     {
         storage_engine_reference_handle* container_storage_engine_reference;
 
-        status::status_code status = data_partition->get_storage_engine().create_container(
+        status::status_code status = data_partition.get_storage_engine().create_container(
             container_name.c_str(),
             &container_storage_engine_reference);
 
@@ -316,7 +316,7 @@ container_operation_serializer::create_container_instances_on_data_partitions(
             spdlog::error("Failed to create container on DataPartitionCollocationIndex={}. "
                 "ObjectContainerName={}, "
                 "Status={:#x}.",
-                data_partition->get_collocation_index(),
+                data_partition.get_collocation_index(),
                 container_name,
                 status);
 
@@ -324,8 +324,8 @@ container_operation_serializer::create_container_instances_on_data_partitions(
         }
 
         container_instances.emplace_back(
-            data_partition->get_collocation_index(),
-            data_partition->get_storage_engine(),
+            data_partition.get_collocation_index(),
+            data_partition.get_storage_engine(),
             container_storage_engine_reference);
     }
 

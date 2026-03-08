@@ -102,7 +102,7 @@ private:
     //
     status::status_code
     boot_data_partition(
-        std::shared_ptr<storage::data_partition> data_partition,
+        storage::data_partition& data_partition,
         std::unordered_map<std::string, storage::storage_engine_reference_handle*>& references_mapping);
 
     //
