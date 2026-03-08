@@ -40,18 +40,27 @@ container::~container()
 
     for (auto& container_instance : container_instances_)
     {
-        status::status_code status = container_instance.storage_engine_.close_container_storage_engine_reference(
-            container_instance.storage_engine_reference_);
-
-        if (status::failed(status))
+        //
+        // It should not be assumed that all storage engine references are valid
+        // since it could be possible this is referencing an orphaned container
+        // with an inconsistent number of presence across data partitions, on
+        // which, if not present on a partition, it will be a null reference.
+        //
+        if (container_instance.storage_engine_reference_ != nullptr)
         {
-            spdlog::warn("Failed to close container storage engine reference. "
-                "ObjectContainerMetadata={}, "
-                "DataPartitionCollocationIndex={}, "
-                "StorageEngineReference={}.",
-                to_string(),
-                container_instance.collocation_index_,
-                static_cast<void*>(container_instance.storage_engine_reference_));
+            status::status_code status = container_instance.storage_engine_.close_container_storage_engine_reference(
+                container_instance.storage_engine_reference_);
+
+            if (status::failed(status))
+            {
+                spdlog::warn("Failed to close container storage engine reference. "
+                    "ObjectContainerMetadata={}, "
+                    "DataPartitionCollocationIndex={}, "
+                    "StorageEngineReference={}.",
+                    to_string(),
+                    container_instance.collocation_index_,
+                    static_cast<void*>(container_instance.storage_engine_reference_));
+            }
         }
     }
 }
