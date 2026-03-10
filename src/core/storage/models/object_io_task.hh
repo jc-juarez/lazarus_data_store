@@ -32,6 +32,7 @@ public:
     // Constructor with moved parameters.
     //
     object_io_task(
+        const std::uint16_t collocation_index,
         schemas::object_request&& object_request,
         std::shared_ptr<container> container,
         network::server_response_callback&& response_callback);
@@ -57,6 +58,11 @@ public:
     // the operation associated to the respective IO task.
     //
     network::server_response_callback response_callback_;
+
+    //
+    // Represents the collocation index corresponding for the operation.
+    //
+    const std::uint16_t collocation_index_;
 
 private:
 

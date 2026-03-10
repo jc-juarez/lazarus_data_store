@@ -18,6 +18,7 @@
 #include "../network/server/server.hh"
 #include "../common/args_validations.hh"
 #include "../storage/io/data_partition.hh"
+#include "../common/startable_interface.hh"
 #include "../storage/io/read_io_executor.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "../storage/cache/cache_accessor.hh"
@@ -90,6 +91,12 @@ lazarus_data_store::start_data_store()
     // object containers are discovered for proper initial cleanup.
     //
     garbage_collector_->start();
+
+    //
+    // Start the core write IO dispatcher master thread.
+    //
+    auto write_io_dispatcher = dynamic_cast<common::startable_interface*>(write_io_task_dispatcher_.get());
+    write_io_dispatcher->start();
 
     //
     // Start the server for handling incoming data requests.

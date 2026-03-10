@@ -31,7 +31,6 @@
 #include "../storage/io/write_io_dispatcher.hh"
 #include "../storage/io/data_partition_table.hh"
 #include "../storage/io/collocation_resolver.hh"
-#include "../storage/io/write_batch_aggregator.hh"
 #include "../storage/io/data_partition_provider.hh"
 #include "../storage/io/threading_context_table.hh"
 #include "../storage/io/threading_context_provider.hh"
@@ -207,12 +206,9 @@ start_system(
     auto object_io_executor = std::make_unique<storage::read_io_executor>(
         *data_partition_provider);
 
-    auto write_batch_aggregator = std::make_unique<storage::write_batch_aggregator>(
-        *object_io_executor,
-        *cache_accessor);
-
     auto write_io_task_dispatcher = std::make_unique<storage::write_io_dispatcher>(
-        std::move(write_batch_aggregator));
+        *data_partition_provider,
+        *cache_accessor);
 
     auto read_io_task_dispatcher = std::make_unique<storage::read_io_dispatcher>(
         system_config.storage_configuration_.number_read_io_threads_,
@@ -224,7 +220,8 @@ start_system(
         *container_index,
         *write_io_task_dispatcher,
         *read_io_task_dispatcher,
-        *frontline_cache);
+        *frontline_cache,
+        *collocation_resolver);
 
     auto create_container_request_handler = std::make_unique<network::create_container_request_handler>(
         *container_management_service);

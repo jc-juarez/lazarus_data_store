@@ -40,16 +40,10 @@ public:
     //
     status::status_code
     execute_get_operation(
-        storage_engine_reference_handle* container_storage_engine_reference,
+        const std::uint16_t collocation_index,
+        storage_engine_reference_handle* engine_reference,
         const schemas::object_request& object_request,
         byte_stream& object_data);
-
-    //
-    // Executes a batch of write operations with the storage engine.
-    //
-    status::status_code
-    execute_write_batch_operation(
-        storage_engine_write_batch& write_batch);
 
 private:
 

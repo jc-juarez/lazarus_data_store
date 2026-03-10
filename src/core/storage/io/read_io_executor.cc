@@ -28,15 +28,18 @@ read_io_executor::read_io_executor(
 
 status::status_code
 read_io_executor::execute_get_operation(
-    storage_engine_reference_handle* container_storage_engine_reference,
+    const std::uint16_t collocation_index,
+    storage_engine_reference_handle* engine_reference,
     const schemas::object_request& object_request,
     byte_stream& object_data)
 {
-    status::status_code status = status::success;
-        /* storage_engine_->get_object(
-        container_storage_engine_reference,
+    storage_engine_interface& partition_storage_engine =
+        data_partition_provider_.get_partition_by_collocation(collocation_index).get_storage_engine();
+
+    status::status_code status = partition_storage_engine.get_object(
+        engine_reference,
         object_request.get_object_id().c_str(),
-        &object_data); */
+        &object_data);
 
     if (status::succeeded(status))
     {
@@ -59,26 +62,6 @@ read_io_executor::execute_get_operation(
             object_request.get_object_id(),
             object_request.get_container_name(),
             status);
-    }
-
-    return status;
-}
-
-status::status_code
-read_io_executor::execute_write_batch_operation(
-    storage_engine_write_batch& write_batch)
-{
-    status::status_code status = status::success;
-    /* storage_engine_->execute_objects_write_batch(
-        write_batch); */
-
-    if (status::succeeded(status))
-    {
-        spdlog::info("Write batch operation succeeded.");
-    }
-    else
-    {
-        spdlog::info("Write batch operation failed.");
     }
 
     return status;

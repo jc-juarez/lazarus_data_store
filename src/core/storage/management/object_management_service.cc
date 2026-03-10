@@ -18,6 +18,7 @@
 #include "../io/read_io_dispatcher.hh"
 #include "../io/write_io_dispatcher.hh"
 #include "object_management_service.hh"
+#include "../io/collocation_resolver.hh"
 #include "../../common/request_validations.hh"
 
 namespace lazarus
@@ -30,12 +31,14 @@ object_management_service::object_management_service(
     container_index& container_index,
     io_dispatcher_interface& write_request_dispatcher,
     io_dispatcher_interface& read_request_dispatcher,
-    storage::frontline_cache& frontline_cache)
+    frontline_cache& frontline_cache,
+    collocation_resolver& collocation_resolver)
     : storage_configuration_{storage_configuration},
       container_index_{container_index},
       write_io_task_dispatcher_{write_request_dispatcher},
       read_io_task_dispatcher_{read_request_dispatcher},
-      frontline_cache_{frontline_cache}
+      frontline_cache_{frontline_cache},
+      collocation_resolver_{collocation_resolver}
 {}
 
 status::status_code
@@ -191,6 +194,7 @@ object_management_service::orchestrate_concurrent_write_request(
     // Create the long-lived write IO task to be dispatched down to the storage engine.
     //
     object_io_task write_io_task {
+        collocation_resolver_.get_collocation_index_for_key(object_request.get_object_id()),
         std::move(object_request),
         std::move(container),
         std::move(response_callback)};
@@ -228,6 +232,7 @@ object_management_service::orchestrate_concurrent_read_request(
     // Create the long-lived read IO task to be dispatched down to the storage engine.
     //
     object_io_task read_io_task {
+        collocation_resolver_.get_collocation_index_for_key(object_request.get_object_id()),
         std::move(object_request),
         std::move(container),
         std::move(response_callback)};

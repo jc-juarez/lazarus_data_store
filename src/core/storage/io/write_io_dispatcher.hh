@@ -18,13 +18,15 @@
 
 #include "io_dispatcher_interface.hh"
 #include "../models/object_io_task.hh"
-//#include <moodycamel/concurrentqueue.h>
 #include "../../common/startable_interface.hh"
+#include <moodycamel/blockingconcurrentqueue.h>
 
 namespace lazarus::storage
 {
 
-class write_batch_aggregator;
+class cache_accessor;
+class data_partition_provider;
+class storage_engine_interface;
 
 class write_io_dispatcher : public io_dispatcher_interface, public common::startable_interface
 {
@@ -34,7 +36,8 @@ public:
     // Constructor.
     //
     write_io_dispatcher(
-        std::unique_ptr<write_batch_aggregator> write_batch_aggregator);
+        data_partition_provider& data_partition_provider,
+        cache_accessor& cache_accessor);
 
     //
     // Starts the write dispatcher master thread.
@@ -67,20 +70,47 @@ private:
     dispatch_write_io_tasks(
         std::stop_token stop_token);
 
+    void
+    execute_write_io_task(
+        std::unique_ptr<object_io_task> write_io_task);
+
+    //
+    // Executes an insertion operation with the storage engine.
+    //
+    status::status_code
+    execute_insert_operation(
+        storage_engine_interface& partition_storage_engine,
+        storage_engine_reference_handle* engine_reference,
+        const schemas::object_request& object_request);
+
+    //
+    // Executes a removal operation with the storage engine.
+    //
+    status::status_code
+    execute_remove_operation(
+        storage_engine_interface& partition_storage_engine,
+        storage_engine_reference_handle* engine_reference,
+        const schemas::object_request& object_request);
+
     //
     // Long-running write io dispatcher master thread.
     //
     std::jthread write_dispatcher_master_thread_;
 
     //
-    // Lock-free and non-blocking queue for processing write IO operations.
+    // Lock-free and blocking queue for processing write IO operations.
     //
-    //moodycamel::ConcurrentQueue<object_io_task> write_io_tasks_queue_;
+    moodycamel::BlockingConcurrentQueue<std::unique_ptr<object_io_task>> write_io_tasks_queue_;
 
     //
-    // Write batch aggregator handle.
+    // Reference for the data partition provider.
     //
-    std::unique_ptr<write_batch_aggregator> write_batch_aggregator_;
+    data_partition_provider& data_partition_provider_;
+
+    //
+    // Reference for the cache accessor.
+    //
+    cache_accessor& cache_accessor_;
 };
 
 } // namespace lazarus::storage.

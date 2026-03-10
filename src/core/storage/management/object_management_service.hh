@@ -26,9 +26,10 @@ namespace storage
 
 class container;
 class container_index;
-class io_dispatcher_interface;
-class io_dispatcher_interface;
 class frontline_cache;
+class collocation_resolver;
+class io_dispatcher_interface;
+class io_dispatcher_interface;
 
 //
 // Core storage access interface.
@@ -45,7 +46,8 @@ public:
         container_index& container_index,
         io_dispatcher_interface& write_request_dispatcher,
         io_dispatcher_interface& read_request_dispatcher,
-        storage::frontline_cache& frontline_cache);
+        frontline_cache& frontline_cache,
+        collocation_resolver& collocation_resolver);
 
     //
     // Validates if an object operation request can be executed.
@@ -144,7 +146,12 @@ private:
     //
     // Frontline cache handle.
     //
-    storage::frontline_cache& frontline_cache_;
+    frontline_cache& frontline_cache_;
+
+    //
+    // Collocation resolver handle.
+    //
+    collocation_resolver& collocation_resolver_;
 };
 
 } // namespace storage.

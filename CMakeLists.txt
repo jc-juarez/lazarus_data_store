@@ -93,8 +93,6 @@ set(SOURCE_FILES
         src/core/startup/shutdown_orchestrator.cc
         src/core/startup/shutdown_orchestrator.hh
         src/core/storage/models/object_io_task.hh
-        src/core/storage/io/write_batch_aggregator.cc
-        src/core/storage/io/write_batch_aggregator.hh
         src/core/common/startable_interface.hh
         src/core/storage/management/inflight_operations_tracker.cc
         src/core/storage/management/inflight_operations_tracker.hh
@@ -119,8 +117,6 @@ set(SOURCE_FILES
         src/core/storage/io/threading_context_table.hh
         src/core/storage/io/data_partition_provider.cc
         src/core/storage/io/data_partition_provider.hh
-        src/core/storage/io/write_io_executor.cc
-        src/core/storage/io/write_io_executor.hh
         src/core/startup/system_init.hh
         src/core/startup/system_init.cc
         src/core/common/args_validations.cc

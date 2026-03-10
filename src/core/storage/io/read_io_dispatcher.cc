@@ -119,7 +119,8 @@ read_io_dispatcher::execute_read_io_task(
         case schemas::object_request_optype::get:
         {
             return object_io_executor_.execute_get_operation(
-                read_io_task.container_->get_engine_reference(0u), // change.
+                read_io_task.collocation_index_,
+                read_io_task.container_->get_engine_reference(read_io_task.collocation_index_),
                 read_io_task.object_request_,
                 object_data);
         }
