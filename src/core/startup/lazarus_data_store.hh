@@ -65,7 +65,7 @@ public:
     //
     lazarus_data_store(
         const boost::uuids::uuid session_id,
-        std::unique_ptr<storage::data_partition> container_metadata_partition,
+        std::unique_ptr<storage::data_partition> metadata_partition,
         std::unique_ptr<storage::collocation_resolver> collocation_resolver,
         std::unique_ptr<storage::data_partition_provider> data_partition_provider,
         std::unique_ptr<storage::threading_context_provider> threading_context_provider,
@@ -122,7 +122,7 @@ private:
     //
     // Containers metadata partition handle.
     //
-    std::unique_ptr<storage::data_partition> container_metadata_partition_;
+    std::unique_ptr<storage::data_partition> metadata_partition_;
 
     //
     // Collocation resolver handle.

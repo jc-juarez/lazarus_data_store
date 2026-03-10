@@ -37,7 +37,7 @@ namespace lazarus
 
 lazarus_data_store::lazarus_data_store(
     const boost::uuids::uuid session_id,
-    std::unique_ptr<storage::data_partition> container_metadata_partition,
+    std::unique_ptr<storage::data_partition> metadata_partition,
     std::unique_ptr<storage::collocation_resolver> collocation_resolver,
     std::unique_ptr<storage::data_partition_provider> data_partition_provider,
     std::unique_ptr<storage::threading_context_provider> threading_context_provider,
@@ -53,7 +53,7 @@ lazarus_data_store::lazarus_data_store(
     std::unique_ptr<storage::cache_accessor> cache_accessor,
     std::unique_ptr<storage::container_loader> container_loader)
     : session_id_{session_id}
-    , container_metadata_partition_{std::move(container_metadata_partition)}
+    , metadata_partition_{std::move(metadata_partition)}
     , collocation_resolver_{std::move(collocation_resolver)}
     , data_partition_provider_{std::move(data_partition_provider)}
     , threading_context_provider_{std::move(threading_context_provider)}
@@ -111,7 +111,7 @@ lazarus_data_store::bootstrap_storage_state()
     //
     references_mapping metadata_partition_references;
     status::status_code status = boot_data_partition(
-        *container_metadata_partition_,
+        *metadata_partition_,
         metadata_partition_references);
 
     if (status::failed(status))
