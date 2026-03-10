@@ -1,5 +1,5 @@
 // ****************************************************
-// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Copyright (c) 2025-Present Juan Carlos Juarez Garcia
 // Licensed under the Business Source License 1.1
 // See the LICENSE file in the
 // project root for license terms.
@@ -18,7 +18,7 @@
 #include "../endpoints/ping.hh"
 #include "../endpoints/objects.hh"
 #include "../endpoints/containers.hh"
-#include "../../storage/frontline_cache.hh"
+#include "../../storage/cache/frontline_cache.hh"
 #include "../../common/response_utilities.hh"
 #include "request-handlers/object/get_object_request_handler.hh"
 #include "request-handlers/object/insert_object_request_handler.hh"

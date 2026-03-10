@@ -219,5 +219,35 @@ status_code_definition(
     0x8000001c,
     static_cast<drogon::HttpStatusCode>(500));
 
+// Objects write batch operation failed.
+status_code_definition(
+    object_write_batch_failed,
+    0x8000001d,
+    static_cast<drogon::HttpStatusCode>(500));
+
+// Invalid number of storage engine references for a container.
+status_code_definition(
+    invalid_number_engine_references,
+    0x8000001e,
+    static_cast<drogon::HttpStatusCode>(500));
+
+// Container has duplicate storage engine references.
+status_code_definition(
+    duplicate_engine_references,
+    0x8000001f,
+    static_cast<drogon::HttpStatusCode>(500));
+
+// Unexpected number of containers for the metadata partition.
+status_code_definition(
+    unexpected_metadata_partition_number_containers,
+    0x80000020,
+    static_cast<drogon::HttpStatusCode>(500));
+
+// Expected container missing from the structured data partitions on the filesystem.
+status_code_definition(
+    missing_container_on_data_partitions,
+    0x80000021,
+    static_cast<drogon::HttpStatusCode>(500));
+
 } // namespace status.
 } // namespace lazarus.

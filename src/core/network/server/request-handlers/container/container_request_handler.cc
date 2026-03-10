@@ -1,5 +1,5 @@
 // ****************************************************
-// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Copyright (c) 2025-Present Juan Carlos Juarez Garcia
 // Licensed under the Business Source License 1.1
 // See the LICENSE file in the
 // project root for license terms.
@@ -15,7 +15,7 @@
 
 #include "../../server.hh"
 #include "container_request_handler.hh"
-#include "../../../../storage/container_management_service.hh"
+#include "../../../../storage/management/container_management_service.hh"
 
 namespace lazarus
 {
@@ -23,8 +23,8 @@ namespace network
 {
 
 container_request_handler::container_request_handler(
-    std::shared_ptr<storage::container_management_service> container_management_service)
-    : container_management_service_{std::move(container_management_service)}
+    storage::container_management_service& container_management_service)
+    : container_management_service_{container_management_service}
 {}
 
 void
@@ -34,7 +34,7 @@ container_request_handler::run(
 {
     schemas::container_request container_request{request};
 
-    const status::status_code status = container_management_service_->validate_container_operation_request(
+    const status::status_code status = container_management_service_.validate_container_operation_request(
         container_request);
 
     if (status::failed(status))

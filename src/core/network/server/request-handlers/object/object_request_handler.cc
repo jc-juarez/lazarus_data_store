@@ -1,5 +1,5 @@
 // ****************************************************
-// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Copyright (c) 2025-Present Juan Carlos Juarez Garcia
 // Licensed under the Business Source License 1.1
 // See the LICENSE file in the
 // project root for license terms.
@@ -16,8 +16,8 @@
 #include "../../server.hh"
 #include <spdlog/spdlog.h>
 #include "object_request_handler.hh"
-#include "../../../../storage/container.hh"
-#include "../../../../storage/object_management_service.hh"
+#include "../../../../storage/models/container.hh"
+#include "../../../../storage/management/object_management_service.hh"
 
 namespace lazarus
 {
@@ -25,8 +25,8 @@ namespace network
 {
 
 object_request_handler::object_request_handler(
-    std::shared_ptr<storage::object_management_service> object_management_service)
-    : object_management_service_{std::move(object_management_service)}
+    storage::object_management_service& object_management_service)
+    : object_management_service_{object_management_service}
 {}
 
 void
@@ -36,7 +36,7 @@ object_request_handler::run(
 {
     schemas::object_request object_request{request};
 
-    status::status_code status = object_management_service_->validate_object_operation_request(
+    status::status_code status = object_management_service_.validate_object_operation_request(
         object_request);
 
     if (status::failed(status))
@@ -54,7 +54,7 @@ object_request_handler::run(
     }
 
     std::shared_ptr<storage::container> container =
-        object_management_service_->get_container_reference(object_request.get_container_name());
+        object_management_service_.get_container_reference(object_request.get_container_name());
 
     //
     // If the object container is in deleted state, fail the operation.

@@ -10,8 +10,14 @@
 cmake_minimum_required(VERSION 3.28)
 project(lazarus)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_BUILD_TYPE Debug)
+
+# Uncomment to activate ASAN.
+# set(SANITIZER_FLAGS "-fsanitize=address -fno-omit-frame-pointer")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SANITIZER_FLAGS}")
+# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${SANITIZER_FLAGS}")
+# set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SANITIZER_FLAGS}")
 
 find_package(TBB REQUIRED)
 find_package(Drogon REQUIRED)
@@ -42,28 +48,27 @@ set(SOURCE_FILES
         src/core/network/endpoints/containers.cc
         src/core/network/endpoints/objects.cc
         src/core/common/uuid_utilities.cc
-        src/core/storage/container_management_service.cc
-        src/core/storage/storage_engine.cc
-        src/core/storage/garbage_collector.cc
-        src/core/storage/container.cc
-        src/core/storage/container_index.cc
-        src/core/storage/container_operation_serializer.cc
+        src/core/storage/management/container_management_service.cc
+        src/core/storage/io/storage_engine.cc
+        src/core/storage/gc/garbage_collector.cc
+        src/core/storage/models/container.cc
+        src/core/storage/index/container_index.cc
+        src/core/storage/management/container_operation_serializer.cc
         src/core/schemas/request-interfaces/container_request.cc
         src/core/schemas/request-interfaces/object_request.cc
-        src/core/storage/object_management_service.cc
-        src/core/storage/read_io_dispatcher.cc
-        src/core/storage/write_io_dispatcher.cc
+        src/core/storage/management/object_management_service.cc
+        src/core/storage/io/read_io_dispatcher.cc
+        src/core/storage/io/write_io_dispatcher.cc
         src/core/common/alertable_sleeper.cc
         src/core/common/request_validations.cc
         src/core/common/task_serializer.cc
-        src/core/storage/orphaned_container_scavenger.cc
-        src/core/storage/concurrent_io_dispatcher.cc
+        src/core/storage/gc/orphaned_container_scavenger.cc
         src/core/status/status_code.hh
         src/core/common/response_utilities.cc
-        src/core/storage/container_bucket.cc
-        src/core/storage/cache_shard.cc
-        src/core/storage/object.cc
-        src/core/storage/frontline_cache.cc
+        src/core/storage/index/container_bucket.cc
+        src/core/storage/cache/cache_shard.cc
+        src/core/storage/models/object.cc
+        src/core/storage/cache/frontline_cache.cc
         src/core/network/server/request-handlers/container/create_container_request_handler.cc
         src/core/network/server/request-handlers/container/create_container_request_handler.hh
         src/core/network/server/request-handlers/container/remove_container_request_handler.cc
@@ -83,8 +88,43 @@ set(SOURCE_FILES
         src/core/common/args_validations.hh
         src/core/network/endpoints/ping.cc
         src/core/network/endpoints/ping.hh
-        src/core/storage/storage_engine_interface.hh
+        src/core/storage/io/storage_engine_interface.hh
         src/core/common/interface.hh
+        src/core/startup/shutdown_orchestrator.cc
+        src/core/startup/shutdown_orchestrator.hh
+        src/core/storage/models/object_io_task.hh
+        src/core/common/startable_interface.hh
+        src/core/storage/management/inflight_operations_tracker.cc
+        src/core/storage/management/inflight_operations_tracker.hh
+        src/core/storage/cache/cache_accessor.cc
+        src/core/storage/cache/cache_accessor.hh
+        src/core/storage/io/read_io_executor.cc
+        src/core/storage/io/read_io_executor.hh
+        src/core/storage/models/object_io_task.cc
+        src/core/storage/io/threading_context.cc
+        src/core/storage/io/threading_context.hh
+        src/core/storage/io/data_partition.cc
+        src/core/storage/io/data_partition.hh
+        src/core/storage/io/collocation_resolver.cc
+        src/core/storage/io/collocation_resolver.hh
+        src/core/startup/collocation_builder.cc
+        src/core/startup/collocation_builder.hh
+        src/core/storage/io/threading_context_provider.cc
+        src/core/storage/io/threading_context_provider.hh
+        src/core/storage/io/data_partition_table.cc
+        src/core/storage/io/data_partition_table.hh
+        src/core/storage/io/threading_context_table.cc
+        src/core/storage/io/threading_context_table.hh
+        src/core/storage/io/data_partition_provider.cc
+        src/core/storage/io/data_partition_provider.hh
+        src/core/startup/system_init.hh
+        src/core/startup/system_init.cc
+        src/core/common/args_validations.cc
+        src/core/storage/models/container_instance.hh
+        src/core/storage/index/container_registry.cc
+        src/core/storage/index/container_registry.hh
+        src/core/storage/index/container_loader.cc
+        src/core/storage/index/container_loader.hh
 )
 
 # Lazarus core library.

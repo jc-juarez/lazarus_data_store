@@ -32,6 +32,7 @@ RUN apt-get update && apt-get install -y \
     uuid-dev \
     nlohmann-json3-dev \
     libjsoncpp-dev \
+    libasan8 \
     && rm -rf /var/lib/apt/lists/*
 
 # Drogon is not in Ubuntu repos, build from source.
@@ -42,6 +43,12 @@ RUN git clone --recursive https://github.com/drogonframework/drogon.git /tmp/dro
     && make -j$(nproc) \
     && make install \
     && rm -rf /tmp/drogon
+
+# Install the ConcurrentQueue dependency.
+RUN git clone https://github.com/cameron314/concurrentqueue.git /tmp/concurrentqueue \
+    && mkdir -p /usr/local/include/moodycamel \
+    && cp /tmp/concurrentqueue/*.h /usr/local/include/moodycamel/ \
+    && rm -rf /tmp/concurrentqueue
 
 # Create a non-root user.
 RUN useradd -ms /bin/bash dev && echo "dev:dev" | chpasswd

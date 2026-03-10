@@ -1,0 +1,135 @@
+// ****************************************************
+// Copyright (c) 2025-Present Juan Carlos Juarez Garcia
+// Licensed under the Business Source License 1.1
+// See the LICENSE file in the
+// project root for license terms.
+// ****************************************************
+// Lazarus Data Store
+// Storage
+// 'container.hh'
+// Author: jcjuarez
+// Description:
+//      Object container metadata structure. Object
+//      containers are logical buckets for holding
+//      closely related data inside the data store. 
+// ****************************************************
+
+#pragma once
+
+#include <string>
+#include <shared_mutex>
+#include "../../common/aliases.hh"
+#include "container_instance.hh"
+#include "container_persistent_interface.pb.h"
+
+namespace lazarus
+{
+namespace storage
+{
+
+class storage_engine_interface;
+
+//
+// Object container metadata internal structure.
+// An in-memory creation of an object container reference can
+// only be created after a well-known committed disk write its creation.
+//
+class container
+{
+public:
+
+    //
+    // Constructor for the object container.
+    //
+    container(
+        const schemas::container_persistent_interface& container_persistent_metadata,
+        const std::vector<container_instance>& container_instances);
+
+    //
+    // Destructor for the object container.
+    // Ensures that the storage engine reference is invalidated.
+    //
+    ~container();
+
+    //
+    // Initializes an object container persistent metadata instance
+    // with default values and returns it to the caller.
+    // Should be used for all new object container creations.
+    //
+    static
+    schemas::container_persistent_interface
+    create_container_persistent_metadata(
+        const char* container_name);
+
+    //
+    // Gets the name of the object container.
+    //
+    std::string
+    get_name() const;
+
+    //
+    // Marks the object container as deleted.
+    //
+    void
+    mark_as_deleted();
+
+    //
+    // Gets the deletion state of the object container.
+    //
+    bool
+    is_deleted() const;
+
+    //
+    // Returns the object container contents in a string format.
+    //
+    std::string
+    to_string() const;
+
+    //
+    // Returns the corresponding storage engine reference for
+    // a specific container instance given a collocation index lookup.
+    //
+    storage_engine_reference_handle*
+    get_engine_reference(
+        const std::uint16_t collocation_index);
+
+    //
+    // Returns a copy of all container instances metadata.
+    //
+    std::vector<container_instance>
+    get_container_instances();
+
+private:
+
+    //
+    // Handle for the storage engine.
+    //
+    std::shared_ptr<storage_engine_interface> storage_engine_;
+
+    //
+    // Object container persistent metadata.
+    //
+    schemas::container_persistent_interface container_persistent_metadata_;
+
+    //
+    // List of the container instances and their data partition metadata.
+    //
+    std::vector<container_instance> container_instances_;
+
+    //
+    // Flag indicating whether this object container reference has been
+    // marked for deletion. In-memory only.
+    // This state does not need to be persisted as it is only set
+    // once the storage engine has deleted the internal filesystem
+    // metadata reference for the object container.
+    //
+    bool is_deleted_;
+
+    //
+    // Lock for synchronizing access to the object.
+    //
+    mutable std::shared_mutex lock_;
+};
+
+} // namespace storage.
+} // namespace lazarus.

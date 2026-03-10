@@ -1,5 +1,5 @@
 // ****************************************************
-// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Copyright (c) 2025-Present Juan Carlos Juarez Garcia
 // Licensed under the Business Source License 1.1
 // See the LICENSE file in the
 // project root for license terms.
@@ -16,7 +16,7 @@
 #include "../../server.hh"
 #include <spdlog/spdlog.h>
 #include "insert_object_request_handler.hh"
-#include "../../../../storage/object_management_service.hh"
+#include "../../../../storage/management/object_management_service.hh"
 
 namespace lazarus
 {
@@ -24,8 +24,8 @@ namespace network
 {
 
 insert_object_request_handler::insert_object_request_handler(
-    std::shared_ptr<storage::object_management_service> object_management_service)
-    : object_request_handler{std::move(object_management_service)}
+    storage::object_management_service& object_management_service)
+    : object_request_handler{object_management_service}
 {}
 
 void
@@ -48,7 +48,7 @@ insert_object_request_handler::execute_operation(
     // operation. The response will be provided asynchronously over the
     // provided callback if the enqueue operation is successful.
     //
-    status::status_code status = object_management_service_->orchestrate_concurrent_write_request(
+    status::status_code status = object_management_service_.orchestrate_concurrent_write_request(
         std::move(object_request),
         container,
         std::move(response_callback));

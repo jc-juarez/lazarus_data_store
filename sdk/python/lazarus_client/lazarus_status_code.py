@@ -101,6 +101,21 @@ class LazarusStatusCode(Enum):
     # Object data size exceeds limit for the frontline cache.
     object_data_size_exceeds_cache_limit = 0x8000001c
 
+    # Objects write batch operation failed.
+    object_write_batch_failed = 0x8000001d
+
+    # Invalid number of storage engine references for a container.
+    invalid_number_engine_references = 0x8000001e
+
+    # Container has duplicate storage engine references.
+    duplicate_engine_references = 0x8000001f
+
+    # Unexpected number of containers for the metadata partition.
+    unexpected_metadata_partition_number_containers = 0x80000020
+
+    # Expected container missing from the structured data partitions on the filesystem.
+    missing_container_on_data_partitions = 0x80000021
+
     @classmethod
     def from_code(cls, code: int):
         for s in cls:

@@ -1,5 +1,5 @@
 // ****************************************************
-// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Copyright (c) 2025-Present Juan Carlos Juarez Garcia
 // Licensed under the Business Source License 1.1
 // See the LICENSE file in the
 // project root for license terms.
@@ -15,7 +15,7 @@
 #pragma once
 
 #include <gmock/gmock.h>
-#include "../../core/storage/storage_engine_interface.hh"
+#include "core/storage/io/storage_engine_interface.hh"
 
 namespace lazarus
 {

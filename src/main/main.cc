@@ -1,6 +1,6 @@
 
 // ****************************************************
-// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Copyright (c) 2025-Present Juan Carlos Juarez Garcia
 // Licensed under the Business Source License 1.1
 // See the LICENSE file in the
 // project root for license terms.
@@ -27,10 +27,10 @@
 ┗━┛┗━╸╹ ╹┗━╸╹┗╸╹ ╹┗━╸   ╹  ┗━┛╹┗╸╹  ┗━┛┗━┛┗━╸   ╹ ╹╹┗━┛╹ ╹   ╹  ┗━╸╹┗╸╹  ┗━┛╹┗╸╹ ╹╹ ╹╹ ╹┗━╸┗━╸   ╺┻┛╹ ╹ ╹ ╹ ╹   ┗━┛ ╹ ┗━┛╹┗╸┗━╸   ┗━┛┗━╸╹┗╸┗┛ ┗━╸╹┗╸
 */
 
-#include "../core/startup/lazarus_data_store.hh"
+#include "../core/startup/system_init.hh"
 
 int main(int argc, char** argv)
 {
    const std::vector<std::string> args(argv, argv + argc);
-   return lazarus::lazarus_data_store::run(args);
+   return lazarus::init_system(args);
 }

@@ -1,5 +1,5 @@
 // ****************************************************
-// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Copyright (c) 2025-Present Juan Carlos Juarez Garcia
 // Licensed under the Business Source License 1.1
 // See the LICENSE file in the
 // project root for license terms.
@@ -15,13 +15,16 @@
 #pragma once
 
 #include <memory>
+#include <expected>
 #include <stop_token>
 #include "../status/status.hh"
 #include "../common/aliases.hh"
 #include "../common/uuid_utilities.hh"
 #include "../logger/logger_configuration.hh"
+#include "../storage/gc/garbage_collector.hh"
 #include "../storage/storage_configuration.hh"
 #include "../network/server/server_configuration.hh"
+#include "../storage/index/container_registry.hh"
 
 namespace lazarus
 {
@@ -33,13 +36,20 @@ class server;
 
 namespace storage
 {
-class garbage_collector;
-class container_index;
+class data_partition;
+class cache_accessor;
 class frontline_cache;
-class write_io_dispatcher;
-class read_io_dispatcher;
+class container_index;
+class container_loader;
+class read_io_executor;
+class garbage_collector;
+class collocation_resolver;
+class io_dispatcher_interface;
+class io_dispatcher_interface;
+class data_partition_provider;
 class storage_engine_interface;
 class object_management_service;
+class threading_context_provider;
 class container_management_service;
 }
 
@@ -55,68 +65,54 @@ public:
     //
     lazarus_data_store(
         const boost::uuids::uuid session_id,
-        const network::server_configuration& server_config,
-        const storage::storage_configuration& storage_configuration);
-
-    //
-    // Entry point for the data store.
-    //
-    static
-    exit_code
-    run(
-        const std::vector<std::string>& args);
-
-    //
-    // Gets the stop source token for listening to termination requests.
-    //
-    static
-    std::stop_token
-    get_stop_source_token();
-
-private:
-
-    //
-    // Constructs the dependency tree and injects
-    // the required dependencies across components.
-    //
-    void
-    construct_dependency_tree(
-        const network::server_configuration& server_config,
-        const storage::storage_configuration& storage_configuration);
+        std::unique_ptr<storage::data_partition> metadata_partition,
+        std::unique_ptr<storage::collocation_resolver> collocation_resolver,
+        std::unique_ptr<storage::data_partition_provider> data_partition_provider,
+        std::unique_ptr<storage::threading_context_provider> threading_context_provider,
+        std::unique_ptr<network::server> server,
+        std::unique_ptr<storage::container_management_service> container_management_service,
+        std::unique_ptr<storage::object_management_service> object_management_service,
+        std::unique_ptr<storage::garbage_collector> garbage_collector,
+        std::unique_ptr<storage::container_index> container_index,
+        std::unique_ptr<storage::io_dispatcher_interface> write_io_task_dispatcher,
+        std::unique_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher,
+        std::unique_ptr<storage::frontline_cache> frontline_cache,
+        std::unique_ptr<storage::read_io_executor> object_io_executor,
+        std::unique_ptr<storage::cache_accessor> cache_accessor,
+        std::unique_ptr<storage::container_loader> container_loader);
 
     //
     // Start the lazarus data store system.
     //
     status::status_code
-    start_data_store() const;
+    start_data_store();
+
+private:
 
     //
-    // Initializes the global logger to be used by the system.
+    // Bootstraps the core storage state by booting the data partitions and
+    // loading the container index state.
     //
-    static
-    void
-    initialize_logger(
-        const boost::uuids::uuid session_id,
-        const logger::logger_configuration logger_config);
+    status::status_code
+    bootstrap_storage_state();
 
     //
-    // Registers the signals to listen to for termination.
+    // Initializes the structured data partitions and their respective storage engines.
+    // Upon success, the complete list of all storage engine references in the system is returned back.
     //
-    static
-    void
-    register_signals();
+    std::expected<
+        storage::container_registry,
+        status::status_code>
+    boot_structured_data_partitions();
 
     //
-    // Signals termination requests from the OS through the stop source.
+    // Handles the boot process for a given data partition.
+    // Upon success, the storage engine references for such engine is returned back.
     //
-    static
-    void
-    signal_handler(std::int32_t signal);
-
-    //
-    // Stop source for handling graceful terminations.
-    //
-    static std::stop_source stop_source_;
+    status::status_code
+    boot_data_partition(
+        storage::data_partition& data_partition,
+        std::unordered_map<std::string, storage::storage_engine_reference_handle*>& references_mapping);
 
     //
     // Session identifier.
@@ -124,29 +120,39 @@ private:
     boost::uuids::uuid session_id_;
 
     //
-    // Logger configurations.
+    // Containers metadata partition handle.
     //
-    const logger::logger_configuration logger_config_;
+    std::unique_ptr<storage::data_partition> metadata_partition_;
+
+    //
+    // Collocation resolver handle.
+    //
+    std::unique_ptr<storage::collocation_resolver> collocation_resolver_;
+
+    //
+    // Data partition provider handle.
+    //
+    std::unique_ptr<storage::data_partition_provider> data_partition_provider_;
+
+    //
+    // Threading context provider handle.
+    //
+    std::unique_ptr<storage::threading_context_provider> threading_context_provider_;
 
     //
     // HTTP server handle.
     //
-    std::shared_ptr<network::server> server_;
-
-    //
-    // Storage engine handle.
-    //
-    std::shared_ptr<storage::storage_engine_interface> storage_engine_;
+    std::unique_ptr<network::server> server_;
 
     //
     // Object container management service handle.
     //
-    std::shared_ptr<storage::container_management_service> container_management_service_;
+    std::unique_ptr<storage::container_management_service> container_management_service_;
 
     //
     // Object management service handle.
     //
-    std::shared_ptr<storage::object_management_service> object_management_service_;
+    std::unique_ptr<storage::object_management_service> object_management_service_;
 
     //
     // Garbage collector handle.
@@ -156,22 +162,37 @@ private:
     //
     // Object container index handle.
     //
-    std::shared_ptr<storage::container_index> container_index_;
+    std::unique_ptr<storage::container_index> container_index_;
 
     //
     // Write request dispatcher handle.
     //
-    std::shared_ptr<storage::write_io_dispatcher> write_request_dispatcher_;
+    std::unique_ptr<storage::io_dispatcher_interface> write_io_task_dispatcher_;
 
     //
     // Read request dispatcher handle.
     //
-    std::shared_ptr<storage::read_io_dispatcher> read_request_dispatcher_;
+    std::unique_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher_;
 
     //
     // Frontline cache handle.
     //
-    std::shared_ptr<storage::frontline_cache> frontline_cache_;
+    std::unique_ptr<storage::frontline_cache> frontline_cache_;
+
+    //
+    // Object IO executor handle.
+    //
+    std::unique_ptr<storage::read_io_executor> object_io_executor_;
+
+    //
+    // Cache accessor handle.
+    //
+    std::unique_ptr<storage::cache_accessor> cache_accessor_;
+
+    //
+    // Container loader handle.
+    //
+    std::unique_ptr<storage::container_loader> container_loader_;
 };
 
 } // namespace lazarus.

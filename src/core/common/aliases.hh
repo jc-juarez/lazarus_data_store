@@ -1,5 +1,5 @@
 // ****************************************************
-// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Copyright (c) 2025-Present Juan Carlos Juarez Garcia
 // Licensed under the Business Source License 1.1
 // See the LICENSE file in the
 // project root for license terms.
@@ -45,6 +45,7 @@ namespace storage
 using byte = char;
 using byte_stream = std::string;
 using storage_engine_reference_handle = rocksdb::ColumnFamilyHandle;
+using storage_engine_write_batch = rocksdb::WriteBatch;
 }
 
 } // namespace lazarus.

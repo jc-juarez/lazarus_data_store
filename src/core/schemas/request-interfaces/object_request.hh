@@ -1,5 +1,5 @@
 // ****************************************************
-// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Copyright (c) 2025-Present Juan Carlos Juarez Garcia
 // Licensed under the Business Source License 1.1
 // See the LICENSE file in the
 // project root for license terms.
@@ -19,7 +19,7 @@
 #include <cstdint>
 #include <drogon/HttpController.h>
 #include "../../common/aliases.hh"
-#include "../../storage/object.hh"
+#include "../../storage/models/object.hh"
 #include "../request-optypes/object_request_optype.hh"
 
 namespace lazarus

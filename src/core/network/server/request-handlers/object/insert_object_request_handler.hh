@@ -1,5 +1,5 @@
 // ****************************************************
-// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Copyright (c) 2025-Present Juan Carlos Juarez Garcia
 // Licensed under the Business Source License 1.1
 // See the LICENSE file in the
 // project root for license terms.
@@ -30,7 +30,7 @@ public:
     // Constructor.
     //
     insert_object_request_handler(
-        std::shared_ptr<storage::object_management_service> object_management_service);
+        storage::object_management_service& object_management_service);
 
     //
     // Handles the insertion for an object.

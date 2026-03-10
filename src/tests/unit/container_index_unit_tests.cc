@@ -1,5 +1,5 @@
 // ****************************************************
-// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Copyright (c) 2025-Present Juan Carlos Juarez Garcia
 // Licensed under the Business Source License 1.1
 // See the LICENSE file in the
 // project root for license terms.
@@ -15,8 +15,8 @@
 #include <gtest/gtest.h>
 #include "../../core/status/status.hh"
 #include "../mocks/mock_storage_engine.hh"
-#include "../../core/storage/container.hh"
-#include "../../core/storage/container_index.hh"
+#include "core/storage/models/container.hh"
+#include "core/storage/index/container_index.hh"
 
 namespace lazarus
 {

@@ -1,5 +1,5 @@
 // ****************************************************
-// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Copyright (c) 2025-Present Juan Carlos Juarez Garcia
 // Licensed under the Business Source License 1.1
 // See the LICENSE file in the
 // project root for license terms.
@@ -12,314 +12,74 @@
 //      Lazarus data store root object. 
 // ****************************************************
 
-#include <csignal>
-#include <spdlog/async.h>
 #include <spdlog/spdlog.h>
 #include "../common/aliases.hh"
 #include "lazarus_data_store.hh"
 #include "../network/server/server.hh"
-#include "../storage/storage_engine.hh"
-#include "../storage/container_index.hh"
-#include "../storage/frontline_cache.hh"
 #include "../common/args_validations.hh"
-#include "../storage/garbage_collector.hh"
-#include "../storage/read_io_dispatcher.hh"
-#include "../storage/write_io_dispatcher.hh"
-#include "../common/system_configuration.hh"
+#include "../storage/io/data_partition.hh"
+#include "../common/startable_interface.hh"
+#include "../storage/io/read_io_executor.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
-#include "../storage/object_management_service.hh"
-#include "../storage/orphaned_container_scavenger.hh"
-#include "../storage/container_management_service.hh"
-#include "../storage/container_operation_serializer.hh"
-#include "../network/server/request-handlers/object/get_object_request_handler.hh"
-#include "../network/server/request-handlers/object/insert_object_request_handler.hh"
-#include "../network/server/request-handlers/object/remove_object_request_handler.hh"
-#include "../network/server/request-handlers/container/create_container_request_handler.hh"
-#include "../network/server/request-handlers/container/remove_container_request_handler.hh"
+#include "../storage/cache/cache_accessor.hh"
+#include "../storage/index/container_index.hh"
+#include "../storage/cache/frontline_cache.hh"
+#include "../storage/io/read_io_dispatcher.hh"
+#include "../storage/index/container_loader.hh"
+#include "../storage/io/collocation_resolver.hh"
+#include "../storage/io/data_partition_provider.hh"
+#include "../storage/io/threading_context_provider.hh"
+#include "../storage/management/object_management_service.hh"
+#include "../storage/management/container_management_service.hh"
+#include "../storage/management/container_operation_serializer.hh"
 
 namespace lazarus
 {
 
-std::stop_source lazarus::lazarus_data_store::stop_source_;
-
 lazarus_data_store::lazarus_data_store(
     const boost::uuids::uuid session_id,
-    const network::server_configuration& server_config,
-    const storage::storage_configuration& storage_configuration)
+    std::unique_ptr<storage::data_partition> metadata_partition,
+    std::unique_ptr<storage::collocation_resolver> collocation_resolver,
+    std::unique_ptr<storage::data_partition_provider> data_partition_provider,
+    std::unique_ptr<storage::threading_context_provider> threading_context_provider,
+    std::unique_ptr<network::server> server,
+    std::unique_ptr<storage::container_management_service> container_management_service,
+    std::unique_ptr<storage::object_management_service> object_management_service,
+    std::unique_ptr<storage::garbage_collector> garbage_collector,
+    std::unique_ptr<storage::container_index> container_index,
+    std::unique_ptr<storage::io_dispatcher_interface> write_io_task_dispatcher,
+    std::unique_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher,
+    std::unique_ptr<storage::frontline_cache> frontline_cache,
+    std::unique_ptr<storage::read_io_executor> object_io_executor,
+    std::unique_ptr<storage::cache_accessor> cache_accessor,
+    std::unique_ptr<storage::container_loader> container_loader)
     : session_id_{session_id}
-{
-    construct_dependency_tree(
-        server_config,
-        storage_configuration);
-}
-
-exit_code
-lazarus_data_store::run(
-    const std::vector<std::string>& args)
-{
-    status::status_code status = status::success;
-
-    try
-    {
-        //
-        // Assign the session ID for the process-lifetime.
-        // This ID is used for logging correlation.
-        //
-        const boost::uuids::uuid session_id = common::generate_uuid();
-
-        //
-        // Register termination signals to be handled by the system.
-        //
-        register_signals();
-
-        //
-        // Validate the args provided by the process invoker.
-        // At the point the logger has not been yet initialized,
-        // so the function below can throw for debuggability purposes.
-        //
-        common::validate_process_args(args);
-
-        //
-        // Instantiate the configurations to be used by the system
-        // and load the configurations from a config file if available.
-        //
-        common::system_configuration system_config;
-
-        if (args.size() == common::max_args_count)
-        {
-            //
-            // This implies a config file was provided, so override
-            // the default configurations with the ones provided in the file.
-            //
-            system_config.load_configuration_from_file(args.back());
-        }
-
-        //
-        // Create the required system directories which need to be present
-        // before spinning up the rest of the system.
-        //
-        system_config.set_up_system_directories();
-
-        //
-        // Initialize the logger to be used by the system.
-        //
-        initialize_logger(
-            session_id,
-            system_config.logger_configuration_);
-
-        //
-        // Initialize all core dependencies of the data store.
-        //
-        lazarus::lazarus_data_store lazarus_ds{
-            session_id,
-            system_config.server_configuration_,
-            system_config.storage_configuration_};
-
-        //
-        // Start the data store system. This will start the core 
-        // storage engine and the main server for handling data requests.
-        //
-        status = lazarus_ds.start_data_store();
-    }
-    catch (const std::exception& exception)
-    {
-        //
-        // Generic operation failed and threw.
-        // Handle the error gracefully and terminate the system.
-        //
-        status = status::fail;
-
-        spdlog::critical("Exception thrown in the data store startup path. Terminating the data store. "
-            "Exception={}",
-            exception.what());
-    }
-
-    return status::succeeded(status) ? EXIT_SUCCESS : EXIT_FAILURE;
-}
-
-std::stop_token
-lazarus_data_store::get_stop_source_token()
-{
-    return stop_source_.get_token();
-}
-
-void
-lazarus_data_store::construct_dependency_tree(
-    const network::server_configuration& server_config,
-    const storage::storage_configuration& storage_configuration)
-{
-    //
-    // Storage engine component allocation.
-    //
-    storage_engine_ = std::make_shared<storage::storage_engine>(
-        storage_configuration);
-
-    //
-    // Object container index component allocation.
-    //
-    container_index_ = std::make_shared<storage::container_index>(
-        storage_configuration.container_index_number_buckets_,
-        storage_engine_);
-
-    //
-    // Orphaned container scavenger component allocation.
-    //
-    auto orphaned_container_scavenger = std::make_unique<storage::orphaned_container_scavenger>(
-        storage_engine_,
-        container_index_);
-
-    //
-    // Garbage collector component allocation.
-    //
-    garbage_collector_ = std::make_unique<storage::garbage_collector>(
-        storage_configuration,
-        container_index_,
-        std::move(orphaned_container_scavenger));
-
-    //
-    // Object container operation serializer component allocation.
-    //
-    auto container_operation_serializer = std::make_unique<storage::container_operation_serializer>(
-        storage_engine_,
-        container_index_);
-
-    //
-    // Object container management service component allocation.
-    //
-    container_management_service_ = std::make_shared<storage::container_management_service>(
-        storage_configuration,
-        storage_engine_,
-        container_index_,
-        std::move(container_operation_serializer));
-
-    //
-    // Frontline cache component allocation.
-    //
-    frontline_cache_ = std::make_shared<storage::frontline_cache>(
-        storage_configuration.number_frontline_cache_shards_,
-        storage_configuration.max_frontline_cache_shard_size_mib_ * 1'024 * 1'024,
-        storage_configuration.max_frontline_cache_shard_object_size_bytes,
-        container_index_);
-
-    //
-    // Write request dispatcher component allocation.
-    //
-    write_request_dispatcher_ = std::make_shared<storage::write_io_dispatcher>(
-        storage_configuration.number_write_io_threads_,
-        storage_engine_,
-        frontline_cache_);
-
-    //
-    // Read request dispatcher component allocation.
-    //
-    read_request_dispatcher_ = std::make_shared<storage::read_io_dispatcher>(
-        storage_configuration.number_read_io_threads_,
-        storage_engine_,
-        frontline_cache_);
-
-    //
-    // Object management service component allocation.
-    //
-    object_management_service_ = std::make_shared<storage::object_management_service>(
-        storage_configuration,
-        container_index_,
-        write_request_dispatcher_,
-        read_request_dispatcher_,
-        frontline_cache_);
-
-    //
-    // Create container request handler allocation.
-    //
-    auto create_container_request_handler = std::make_unique<network::create_container_request_handler>(
-        container_management_service_);
-
-    //
-    // Remove container request handler allocation.
-    //
-    auto remove_container_request_handler = std::make_unique<network::remove_container_request_handler>(
-        container_management_service_);
-
-    //
-    // Insert object request handler allocation
-    //
-    auto insert_object_request_handler = std::make_unique<network::insert_object_request_handler>(
-        object_management_service_);
-
-    //
-    // Get object request handler allocation
-    //
-    auto get_object_request_handler = std::make_unique<network::get_object_request_handler>(
-        object_management_service_);
-
-    //
-    // Remove object request handler allocation
-    //
-    auto remove_object_request_handler = std::make_unique<network::remove_object_request_handler>(
-        object_management_service_);
-
-    //
-    // Server component allocation.
-    //
-    server_ = std::make_shared<network::server>(
-        server_config,
-        std::move(create_container_request_handler),
-        std::move(remove_container_request_handler),
-        std::move(insert_object_request_handler),
-        std::move(get_object_request_handler),
-        std::move(remove_object_request_handler));
-}
+    , metadata_partition_{std::move(metadata_partition)}
+    , collocation_resolver_{std::move(collocation_resolver)}
+    , data_partition_provider_{std::move(data_partition_provider)}
+    , threading_context_provider_{std::move(threading_context_provider)}
+    , server_{std::move(server)}
+    , container_management_service_{std::move(container_management_service)}
+    , object_management_service_{std::move(object_management_service)}
+    , garbage_collector_{std::move(garbage_collector)}
+    , container_index_{std::move(container_index)}
+    , write_io_task_dispatcher_{std::move(write_io_task_dispatcher)}
+    , read_io_task_dispatcher_{std::move(read_io_task_dispatcher)}
+    , frontline_cache_{std::move(frontline_cache)}
+    , object_io_executor_{std::move(object_io_executor)}
+    , cache_accessor_{std::move(cache_accessor)}
+    , container_loader_{std::move(container_loader)}
+{}
 
 status::status_code
-lazarus_data_store::start_data_store() const
+lazarus_data_store::start_data_store()
 {
-    //
-    // Before starting the server, fetch all persistent object containers from the 
-    // filesystem. These are needed for starting the storage engine so that it can
-    // later associate an object container name to its respective column family reference.
-    // This is a static invocation being executed before the storage engine is started.
-    //
-    std::vector<std::string> containers_names;
-    status::status_code status = storage_engine_->fetch_containers_from_disk(
-        &containers_names);
+    status::status_code status = bootstrap_storage_state();
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to fetch the initial object containers from disk during the system startup. "
-            "Status={}.",
-            status);
-
-        return status;
-    }
-
-    //
-    // Start the storage engine. On success, it will associate the object
-    // containers names to their respective column family reference.
-    //
-    std::unordered_map<std::string, storage::storage_engine_reference_handle*> storage_engine_references_mapping;
-    status = storage_engine_->start(
-        containers_names,
-        &storage_engine_references_mapping);
-
-    if (status::failed(status))
-    {
-        spdlog::critical("Failed to start the storage engine during the system startup. "
-            "Status={}.",
-            status);
-
-        return status;
-    }
-
-    //
-    // Populate the in-memory object container index with the
-    // references obtained when the storage engine was started.
-    //
-    container_management_service_->populate_container_index(
-        &storage_engine_references_mapping);
-
-    if (status::failed(status))
-    {
-        spdlog::critical("Failed to populate the object container index during the system startup. "
-            "Status={}.",
+        spdlog::critical("Failed to initialize the core storage state during startup. "
+            "Status={:#x}.",
             status);
 
         return status;
@@ -333,6 +93,12 @@ lazarus_data_store::start_data_store() const
     garbage_collector_->start();
 
     //
+    // Start the core write IO dispatcher master thread.
+    //
+    auto write_io_dispatcher = dynamic_cast<common::startable_interface*>(write_io_task_dispatcher_.get());
+    write_io_dispatcher->start();
+
+    //
     // Start the server for handling incoming data requests.
     // This will block the main thread.
     //
@@ -341,66 +107,174 @@ lazarus_data_store::start_data_store() const
     return status::success;
 }
 
-void
-lazarus_data_store::initialize_logger(
-    const boost::uuids::uuid session_id,
-    const logger::logger_configuration logger_config)
+status::status_code
+lazarus_data_store::bootstrap_storage_state()
 {
-    spdlog::init_thread_pool(
-        logger_config.queue_size_bytes_,
-        1u /* thread_count */);
+    using references_mapping = std::unordered_map<std::string, storage::storage_engine_reference_handle*>;
 
-    const std::string current_session_logs_directory =
-        logger_config.logging_session_directory_prefix_ + "-" + common::uuid_to_string(session_id);
-    const std::filesystem::path logging_session_directory_path =
-        std::filesystem::path(logger_config.logs_directory_path_) / current_session_logs_directory / logger_config.log_file_prefix_;
+    //
+    // Before starting the server, boot the container
+    // metadata partition to load the persistent metadata state.
+    //
+    references_mapping metadata_partition_references;
+    status::status_code status = boot_data_partition(
+        *metadata_partition_,
+        metadata_partition_references);
 
-    auto logger = spdlog::rotating_logger_mt<spdlog::async_factory>(
-        logger_config.component_name_,
-        logging_session_directory_path.string(),
-        logger_config.max_log_file_size_bytes_,
-        logger_config.max_number_files_for_session_);
+    if (status::failed(status))
+    {
+        spdlog::critical("Failed to boot container metadata partition during the system startup. "
+            "Status={:#x}.",
+            status);
 
-    spdlog::set_default_logger(logger);
-    spdlog::flush_on(spdlog::level::critical);
-    spdlog::flush_every(std::chrono::milliseconds(logger_config.flush_frequency_ms_));
+        return status;
+    }
 
-    spdlog::info("Logger has been initialized successfully. "
-        "LogsDirectoryPath={}, "
-        "ComponentName={}, "
-        "QueueSizeBytes={}, "
-        "MaxLogFileSizeBytes={}, "
-        "MaxNumberFilesForSession={}, "
-        "FlushFrequencyMs={}, "
-        "LogFilePrefix={}, "
-        "LoggingSessionDirectoryPrefix={}.",
-        logger_config.logs_directory_path_ ,
-        logger_config.component_name_ ,
-        logger_config.queue_size_bytes_ ,
-        logger_config.max_log_file_size_bytes_ ,
-        logger_config.max_number_files_for_session_ ,
-        logger_config.flush_frequency_ms_ ,
-        logger_config.log_file_prefix_ ,
-        logger_config.logging_session_directory_prefix_);
+    //
+    // Boot up all structured data partitions which hold the master data.
+    // This will make sure the underlying storage engines are ready for core data access.
+    //
+    auto boot_result = boot_structured_data_partitions();
+
+    if (!boot_result)
+    {
+        spdlog::critical("Failed to boot structured data partitions during the system startup. "
+            "Status={:#x}.",
+            boot_result.error());
+
+        return boot_result.error();
+    }
+
+    //
+    // Populate the in-memory container index with the
+    // references obtained when the data partitions were booted.
+    // This will ensure the filesystem and metadata state are in agreement.
+    //
+    storage::container_registry structured_partitions_registry = boot_result.value();
+    status = container_loader_->load_container_index(
+        metadata_partition_references,
+        structured_partitions_registry);
+
+    if (status::failed(status))
+    {
+        spdlog::critical("Failed to load and populate the container index during the system startup. "
+            "Status={:#x}.",
+            status);
+
+        return status;
+    }
+
+    return status::success;
 }
 
-void
-lazarus_data_store::register_signals()
+std::expected<
+    storage::container_registry,
+    status::status_code>
+lazarus_data_store::boot_structured_data_partitions()
 {
     //
-    // The system handles 'Ctrl-C' and 'kill' commands by itself.
+    // Keep track of all container names and their respective
+    // engine references present on the structured data partitions:
+    // ----------------------------------------------
+    // | ContainerX | ContainerY | ContainerZ | ... |
+    // ----------------------------------------------
+    // | 0x11223344 | 0x22334455 | 0x33445566 | ... |
+    // | 0x44556677 | 0x55667788 | 0x66778899 | ... |
+    // |    ...     |     ...    |     ...    | ... |
+    // ----------------------------------------------
     //
-    std::signal(SIGINT, &lazarus_data_store::signal_handler);
-    std::signal(SIGTERM, &lazarus_data_store::signal_handler);
+    storage::container_registry container_registry;
+
+    const std::span<storage::data_partition> data_partitions =
+        data_partition_provider_->get_all_partitions();
+
+    for (auto& data_partition : data_partitions)
+    {
+        std::unordered_map<std::string, storage::storage_engine_reference_handle*> structured_partitions_references;
+
+        status::status_code status = boot_data_partition(
+            data_partition,
+            structured_partitions_references);
+
+        if (status::failed(status))
+        {
+            spdlog::critical("Failed to boot structured data partition on CollocationIndex={}. "
+                "Status={:#x}.",
+                data_partition.get_collocation_index(),
+                status);
+
+            return std::unexpected(status);
+        }
+
+        //
+        // Every registration into the registry will correspond to the respective collocation.
+        //
+        for (auto& reference_entry : structured_partitions_references)
+        {
+            status = container_registry.register_container_reference(
+                reference_entry.first,
+                data_partition.get_collocation_index(),
+                reference_entry.second);
+
+            if (status::failed(status))
+            {
+                spdlog::critical("Failed to register ContainerName={} for CollocationIndex={} "
+                    "on the container registry. "
+                    "Status={:#x}.",
+                    reference_entry.first,
+                    data_partition.get_collocation_index(),
+                    status);
+
+                return std::unexpected(status);
+            }
+        }
+    }
+
+    return container_registry;
 }
 
-void
-lazarus_data_store::signal_handler(
-    std::int32_t signal)
+status::status_code
+lazarus_data_store::boot_data_partition(
+    storage::data_partition& data_partition,
+    std::unordered_map<std::string, storage::storage_engine_reference_handle*>& references_mapping)
 {
-    spdlog::info("Termination signal received. Requesting system stop.");
-    network::server::stop();
-    stop_source_.request_stop();
+    //
+    // Fetch all persistent object containers from the filesystem.
+    // These are needed for starting the storage engine so that it can
+    // later associate an object container name to its respective column family reference.
+    // This is a static invocation being executed before the storage engine is started.
+    //
+    std::vector<std::string> containers_names;
+    status::status_code status = data_partition.fetch_containers_from_disk(
+        containers_names);
+
+    if (status::failed(status))
+    {
+        spdlog::critical("Failed to fetch data partition object containers from disk during the system startup. "
+            "Status={:#x}.",
+            status);
+
+        return status;
+    }
+
+    //
+    // Boot the partition. On success, it will associate the object
+    // containers names to their respective column family reference.
+    //
+    status = data_partition.boot(
+        containers_names,
+        references_mapping);
+
+    if (status::failed(status))
+    {
+        spdlog::critical("Failed to boot data partition during the system startup. "
+            "Status={:#x}.",
+            status);
+
+        return status;
+    }
+
+    return status::success;
 }
 
 } // namespace lazarus.

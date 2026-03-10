@@ -12,7 +12,7 @@ set -euo pipefail
 
 BUILD_IMAGE_NAME_AMD64="build-ubuntu-lazarus-amd64"
 BUILD_IMAGE_NAME_ARM64="build-ubuntu-lazarus-arm64"
-BUILD_DOCKERFILE="build.dockerfile"
+BUILD_DOCKERFILE="scripts/build.dockerfile"
 
 echo "[PRE-BUILD] Checking for Docker build image: ${BUILD_IMAGE_NAME_AMD64}"
 if ! docker image inspect "$BUILD_IMAGE_NAME_AMD64" >/dev/null 2>&1; then

@@ -1,5 +1,5 @@
 // ****************************************************
-// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Copyright (c) 2025-Present Juan Carlos Juarez Garcia
 // Licensed under the Business Source License 1.1
 // See the LICENSE file in the
 // project root for license terms.
@@ -16,7 +16,7 @@
 #include "../../server.hh"
 #include <spdlog/spdlog.h>
 #include "get_object_request_handler.hh"
-#include "../../../../storage/object_management_service.hh"
+#include "../../../../storage/management/object_management_service.hh"
 
 namespace lazarus
 {
@@ -24,8 +24,8 @@ namespace network
 {
 
 get_object_request_handler::get_object_request_handler(
-    std::shared_ptr<storage::object_management_service> object_management_service)
-    : object_request_handler{std::move(object_management_service)}
+    storage::object_management_service& object_management_service)
+    : object_request_handler{object_management_service}
 {}
 
 void
@@ -47,7 +47,7 @@ get_object_request_handler::execute_operation(
     // check the frontline cache. If present, this avoids
     // context-switch overhead and calling the storage engine backend.
     //
-    std::optional<storage::byte_stream> object_data = object_management_service_->get_object_from_frontline_cache(
+    std::optional<storage::byte_stream> object_data = object_management_service_.get_object_from_frontline_cache(
         object_request.get_object_id(),
         object_request.get_container_name());
 
@@ -77,7 +77,7 @@ get_object_request_handler::execute_operation(
     // operation. The response will be provided asynchronously over the
     // provided callback if the enqueue operation is successful.
     //
-    status::status_code status = object_management_service_->orchestrate_concurrent_read_request(
+    status::status_code status = object_management_service_.orchestrate_concurrent_read_request(
         std::move(object_request),
         container,
         std::move(response_callback));

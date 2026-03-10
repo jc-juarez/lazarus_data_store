@@ -1,5 +1,5 @@
 // ****************************************************
-// Copyright (c) 2025 Juan Carlos Juarez Garcia
+// Copyright (c) 2025-Present Juan Carlos Juarez Garcia
 // Licensed under the Business Source License 1.1
 // See the LICENSE file in the
 // project root for license terms.
@@ -30,7 +30,7 @@ public:
     // Constructor.
     //
     remove_container_request_handler(
-        std::shared_ptr<storage::container_management_service> container_management_service);
+        storage::container_management_service& container_management_service);
 
     //
     // Handles the removal for a container.
