@@ -39,6 +39,22 @@ storage_engine::insert_object(
     const char* object_id,
     const byte_stream& object_data)
 {
+    if (!fence_engine_reference(container_storage_engine_reference))
+    {
+        spdlog::error("Insert object operation is invalid since "
+            "engine reference is not approved for the storage engine. "
+            "ObjectId={}, "
+            "EngineReference={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}.",
+            object_id,
+            static_cast<void*>(container_storage_engine_reference),
+            container_storage_engine_reference->GetName(),
+            collocation_index_);
+
+        return status::storage_engine_reference_not_approved;
+    }
+
     const rocksdb::Status status = persistent_store_->Put(
         rocksdb::WriteOptions(),
         container_storage_engine_reference,
@@ -69,6 +85,22 @@ storage_engine::get_object(
     const char* object_id,
     byte_stream* object_data)
 {
+    if (!fence_engine_reference(container_storage_engine_reference))
+    {
+        spdlog::error("Get object operation is invalid since "
+            "engine reference is not approved for the storage engine. "
+            "ObjectId={}, "
+            "EngineReference={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}.",
+            object_id,
+            static_cast<void*>(container_storage_engine_reference),
+            container_storage_engine_reference->GetName(),
+            collocation_index_);
+
+        return status::storage_engine_reference_not_approved;
+    }
+
     const rocksdb::Status status = persistent_store_->Get(
         rocksdb::ReadOptions(),
         container_storage_engine_reference,
@@ -129,6 +161,20 @@ storage_engine::get_all_objects_from_container(
     storage_engine_reference_handle* container_storage_engine_reference,
     std::unordered_map<std::string, byte_stream>* objects)
 {
+    if (!fence_engine_reference(container_storage_engine_reference))
+    {
+        spdlog::error("Get all objects operation is invalid since "
+            "engine reference is not approved for the storage engine. "
+            "EngineReference={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}.",
+            static_cast<void*>(container_storage_engine_reference),
+            container_storage_engine_reference->GetName(),
+            collocation_index_);
+
+        return status::storage_engine_reference_not_approved;
+    }
+
     rocksdb::ReadOptions read_options;
     std::unique_ptr<rocksdb::Iterator> it(persistent_store_->NewIterator(
         read_options,
@@ -171,6 +217,20 @@ status::status_code
 storage_engine::close_container_storage_engine_reference(
     storage_engine_reference_handle* container_storage_engine_reference)
 {
+    if (!fence_engine_reference(container_storage_engine_reference))
+    {
+        spdlog::error("Close engine reference operation is invalid since "
+            "engine reference is not approved for the storage engine. "
+            "EngineReference={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}.",
+            static_cast<void*>(container_storage_engine_reference),
+            container_storage_engine_reference->GetName(),
+            collocation_index_);
+
+        return status::storage_engine_reference_not_approved;
+    }
+
     const rocksdb::Status status = persistent_store_->DestroyColumnFamilyHandle(
         container_storage_engine_reference);
 
@@ -187,6 +247,12 @@ storage_engine::close_container_storage_engine_reference(
         return status::storage_engine_reference_close_failed;
     }
 
+    //
+    // At this point, we are now safe to delete the approved reference for
+    // fencing purposes.
+    //
+    approved_references_.erase(container_storage_engine_reference);
+
     return status::success;
 }
 
@@ -195,6 +261,22 @@ storage_engine::remove_object(
     storage_engine_reference_handle* container_storage_engine_reference,
     const char* object_id)
 {
+    if (!fence_engine_reference(container_storage_engine_reference))
+    {
+        spdlog::error("Get object operation is invalid since "
+            "engine reference is not approved for the storage engine. "
+            "ObjectId={}, "
+            "EngineReference={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}.",
+            object_id,
+            static_cast<void*>(container_storage_engine_reference),
+            container_storage_engine_reference->GetName(),
+            collocation_index_);
+
+        return status::storage_engine_reference_not_approved;
+    }
+
     const rocksdb::Status status = persistent_store_->Delete(
         rocksdb::WriteOptions(),
         container_storage_engine_reference,
@@ -222,6 +304,20 @@ status::status_code
 storage_engine::remove_container(
     storage_engine_reference_handle* container_storage_engine_reference)
 {
+    if (!fence_engine_reference(container_storage_engine_reference))
+    {
+        spdlog::error("Remove container operation is invalid since "
+            "engine reference is not approved for the storage engine. "
+            "EngineReference={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}.",
+            static_cast<void*>(container_storage_engine_reference),
+            container_storage_engine_reference->GetName(),
+            collocation_index_);
+
+        return status::storage_engine_reference_not_approved;
+    }
+
     const rocksdb::Status status = persistent_store_->DropColumnFamily(
         container_storage_engine_reference);
 
@@ -245,6 +341,8 @@ status::status_code
 storage_engine::execute_objects_write_batch(
     storage_engine_write_batch& write_batch)
 {
+    // Pending fencing.
+
     const rocksdb::Status status = persistent_store_->Write(
         rocksdb::WriteOptions(),
         &write_batch);
@@ -261,6 +359,25 @@ storage_engine::execute_objects_write_batch(
     }
 
     return status::success;
+}
+
+void
+storage_engine::register_approved_engine_references(
+    const std::vector<storage_engine_reference_handle*> engine_references)
+{
+    for (const auto& engine_reference : engine_references)
+    {
+        approved_references_.insert(
+            engine_reference,
+            std::monostate{});
+    }
+}
+
+bool
+storage_engine::fence_engine_reference(
+    storage_engine_reference_handle* engine_reference)
+{
+    return approved_references_.exists(engine_reference);
 }
 
 } // namespace storage.

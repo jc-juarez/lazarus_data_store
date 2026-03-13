@@ -23,6 +23,7 @@
 #include "../../common/aliases.hh"
 #include "../storage_configuration.hh"
 #include "storage_engine_interface.hh"
+#include "../../common/concurrent_flat_map.hh"
 
 namespace lazarus
 {
@@ -113,12 +114,35 @@ public:
     execute_objects_write_batch(
         storage_engine_write_batch& write_batch) override;
 
+    //
+    // Registers an engine reference into the approved set of references.
+    //
+    void
+    register_approved_engine_references(
+        const std::vector<storage_engine_reference_handle*> engine_references) override;
+
+    //
+    // Validates whether the provided engine reference is part
+    // of the approved set of engine references for this engine instance.
+    // Returns true if it is approved, false otherwise.
+    //
+    bool
+    fence_engine_reference(
+        storage_engine_reference_handle* engine_reference) override;
+
 private:
 
     //
     // Main handle for the underlying storage backend key-value persistent store.
     //
     std::unique_ptr<rocksdb::DB> persistent_store_;
+
+    //
+    // Container for storing the engine references associated to this data partition.
+    // This implements the fencing logic for ensuring only approved engine references
+    // can execute on this storage engine instance.
+    //
+    common::concurrent_flat_map<storage_engine_reference_handle*, std::monostate> approved_references_;
 
     //
     // Corresponding collocation index.

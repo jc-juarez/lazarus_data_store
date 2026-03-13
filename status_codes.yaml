@@ -180,3 +180,18 @@ codes:
     internal: "0x80000021"
     http: 500
     desc: Expected container missing from the structured data partitions on the filesystem.
+
+  - name: storage_engine_reference_not_approved
+    internal: "0x80000022"
+    http: 500
+    desc: Engine reference is not approved for the storage engine instance.
+
+  - name: null_engine_reference_non_orphaned_container
+    internal: "0x80000023"
+    http: 500
+    desc: Found null engine reference for non-orphaned container.
+
+  - name: storage_engine_reference_unexpectedly_approved
+    internal: "0x80000024"
+    http: 500
+    desc: Storage engine reference unexpectedly referenced with a storage engine.

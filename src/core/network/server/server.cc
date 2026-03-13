@@ -45,7 +45,8 @@ server::server(
          .setLogLevel(trantor::Logger::kInfo)
          .addListener(server_config_.server_listener_ip_address_, server_config_.port_number_)
          .setThreadNum(server_config_.server_number_threads_)
-         .disableSigtermHandling();
+         .disableSigtermHandling()
+         .setUploadPath(server_config_.server_uploads_parent_directory_path_);
 
     //
     // Register all needed endpoints for the server

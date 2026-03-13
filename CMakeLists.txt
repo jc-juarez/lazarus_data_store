@@ -20,6 +20,7 @@ set(CMAKE_BUILD_TYPE Debug)
 # set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SANITIZER_FLAGS}")
 
 find_package(TBB REQUIRED)
+find_package(absl REQUIRED)
 find_package(Drogon REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(RocksDB REQUIRED)
@@ -125,6 +126,7 @@ set(SOURCE_FILES
         src/core/storage/index/container_registry.hh
         src/core/storage/index/container_loader.cc
         src/core/storage/index/container_loader.hh
+        src/core/common/concurrent_flat_map.hh
 )
 
 # Lazarus core library.
@@ -142,6 +144,7 @@ target_link_libraries(
         rocksdb
         TBB::tbb
         ${JSONCPP_LIBRARY}
+        absl::flat_hash_map
 )
 
 # Lazarus executable.

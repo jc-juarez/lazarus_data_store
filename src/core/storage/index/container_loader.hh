@@ -103,6 +103,19 @@ private:
         const std::vector<storage_engine_reference_handle*> storage_engine_references);
 
     //
+    // Validates the correctness of the engine references for each container loaded.
+    //
+    status::status_code
+    validate_loaded_engine_references();
+
+    //
+    // Validates the engine references for a given container.
+    //
+    status::status_code
+    validate_container_engine_references(
+        std::shared_ptr<container> container);
+
+    //
     // Max number of expected containers for the metadata partition.
     // This should correspond to the default container and the containers metadata container.
     //

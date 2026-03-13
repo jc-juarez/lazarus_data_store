@@ -158,6 +158,21 @@ container_loader::load_container_index(
         return status;
     }
 
+    //
+    // As a final sanity check, ensure that every engine reference
+    // for every container matches the expected data partition.
+    //
+    status = validate_loaded_engine_references();
+
+    if (status::failed(status))
+    {
+        spdlog::critical("Failed to validate loaded engine references during startup. "
+            "Status={:#x}.",
+            status);
+
+        return status;
+    }
+
     return status::success;
 }
 
@@ -180,6 +195,12 @@ container_loader::create_container_metadata_column_family(
 
         return status;
     }
+
+    //
+    // This authoritative metadata container must be considered as an approved reference.
+    //
+    metadata_partition_.get_storage_engine().register_approved_engine_references(
+        {container_metadata_engine_reference});
 
     //
     // All structured data partitions which thus container tracks will always spin up
@@ -439,6 +460,126 @@ const std::vector<storage_engine_reference_handle*> storage_engine_references)
     }
 
     return container_instances;
+}
+
+status::status_code
+container_loader::validate_loaded_engine_references()
+{
+    //
+    // Traverse the complete index.
+    // For every container instance, ensure the engine reference is
+    // correctly associated to the expected data partition and confirm
+    // there are no other data partitions considering such reference as approved.
+    //
+    for (std::uint16_t bucket_index = 0; bucket_index < container_index_.get_number_container_buckets(); ++bucket_index)
+    {
+        std::vector<std::shared_ptr<container>> containers =
+            container_index_.get_all_containers_from_bucket(bucket_index);
+
+        for (auto& container : containers)
+        {
+            status::status_code status = validate_container_engine_references(
+                container);
+
+            if (status::failed(status))
+            {
+                spdlog::critical("Failed to validate engine references for container during startup. "
+                    "ContainerMetadata={}.",
+                    container->to_string());
+
+                return status;
+            }
+        }
+    }
+
+    return status::success;
+}
+
+status::status_code
+container_loader::validate_container_engine_references(
+    std::shared_ptr<container> container)
+{
+    const bool is_orphaned_container = container->is_deleted();
+    std::vector<container_instance> container_instances = container->get_container_instances();
+
+    for (auto& container_instance : container_instances)
+    {
+        if (container_instance.storage_engine_reference_ == nullptr)
+        {
+            //
+            // If the engine reference for the given instance is marked as null,
+            // this must correspond to an orphaned container. This is valid and should be
+            // allowed, but only for orphaned containers. If this is not an orphaned container,
+            // the startup process should be halted.
+            //
+            if (!is_orphaned_container)
+            {
+                spdlog::critical("Found null engine reference for a non-orphaned container during startup. "
+                    "ContainerMetadata={}, "
+                    "CollocationIndex={}.",
+                    container->to_string(),
+                    container_instance.collocation_index_);
+
+                return status::null_engine_reference_non_orphaned_container;
+            }
+        }
+        else
+        {
+            //
+            // For all other references that are not null, validate:
+            // 1. Reference is approved for the expected storage engine.
+            // 2. Reference is not approved for any of the other storage engines.
+            //
+            const std::span<data_partition> data_partitions =
+                data_partition_provider_.get_all_partitions();
+
+            for (auto& partition : data_partitions)
+            {
+                storage_engine_interface& engine = partition.get_storage_engine();
+
+                if (partition.get_collocation_index() == container_instance.collocation_index_)
+                {
+                    //
+                    // This is the expected data partition.
+                    // Should be present here.
+                    //
+                    if (!engine.fence_engine_reference(container_instance.storage_engine_reference_))
+                    {
+                        spdlog::critical("Engine reference is not registered with the expected storage engine. "
+                            "EngineReference={}, "
+                            "ContainerMetadata={}, "
+                            "CollocationIndex={}.",
+                            static_cast<void*>(container_instance.storage_engine_reference_),
+                            container->to_string(),
+                            container_instance.collocation_index_);
+
+                        return status::storage_engine_reference_not_approved;
+                    }
+                }
+                else
+                {
+                    //
+                    // These are the rest of partitions.
+                    // Should not be present here.
+                    //
+                    if (engine.fence_engine_reference(container_instance.storage_engine_reference_))
+                    {
+                        spdlog::critical("Engine reference is registered with an unexpected storage engine. "
+                            "EngineReference={}, "
+                            "ContainerMetadata={}, "
+                            "CollocationIndex={}.",
+                            static_cast<void*>(container_instance.storage_engine_reference_),
+                            container->to_string(),
+                            container_instance.collocation_index_);
+
+                        return status::storage_engine_reference_unexpectedly_approved;
+                    }
+                }
+            }
+        }
+    }
+
+    return status::success;
 }
 
 } // namespace storage.

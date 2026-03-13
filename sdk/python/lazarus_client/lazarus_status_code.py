@@ -116,6 +116,15 @@ class LazarusStatusCode(Enum):
     # Expected container missing from the structured data partitions on the filesystem.
     missing_container_on_data_partitions = 0x80000021
 
+    # Engine reference is not approved for the storage engine instance.
+    storage_engine_reference_not_approved = 0x80000022
+
+    # Found null engine reference for non-orphaned container.
+    null_engine_reference_non_orphaned_container = 0x80000023
+
+    # Storage engine reference unexpectedly referenced with a storage engine.
+    storage_engine_reference_unexpectedly_approved = 0x80000024
+
     @classmethod
     def from_code(cls, code: int):
         for s in cls:

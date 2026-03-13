@@ -99,6 +99,14 @@ data_partition::boot(
     }
 
     //
+    // All the engine references returned at this point must be
+    // considered as approved for the storage engine from this partition
+    // as they are mapping exactly to the internal state of the engine, so register them.
+    //
+    storage_engine_->register_approved_engine_references(
+        storage_engine_references);
+
+    //
     // At this point, the storage engine has been successfully started,
     // so assign the core persistent key-value store handle.
     //

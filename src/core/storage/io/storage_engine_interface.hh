@@ -113,6 +113,24 @@ public:
     status::status_code
     execute_objects_write_batch(
         storage_engine_write_batch& write_batch) = 0;
+
+    //
+    // Registers an engine reference into the approved set of references.
+    //
+    virtual
+    void
+    register_approved_engine_references(
+        const std::vector<storage_engine_reference_handle*> engine_references) = 0;
+
+    //
+    // Validates whether the provided engine reference is part
+    // of the approved set of engine references for this engine instance.
+    // Returns true if it is approved, false otherwise.
+    //
+    virtual
+    bool
+    fence_engine_reference(
+        storage_engine_reference_handle* engine_reference) = 0;
 };
 
 } // namespace storage.

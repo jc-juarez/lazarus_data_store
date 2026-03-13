@@ -50,7 +50,10 @@ struct server_configuration
         }
 
         server_logs_directory_path_ =
-            std::string(home_environment_variable) + "/lazarus/server-logs";
+            std::string(home_environment_variable) + "/lazarus/server/server-logs";
+
+        server_uploads_parent_directory_path_ =
+            std::string(home_environment_variable) + "/lazarus/server";
     }
 
     //
@@ -62,6 +65,11 @@ struct server_configuration
     // Directory path for the HTTP server logs.
     //
     std::string server_logs_directory_path_;
+
+    //
+    // Directory path for the HTTP server uploads folder.
+    //
+    std::string server_uploads_parent_directory_path_;
 
     //
     // Number of threads for the HTTP server.
