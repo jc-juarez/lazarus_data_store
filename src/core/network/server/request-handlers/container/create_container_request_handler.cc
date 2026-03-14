@@ -14,7 +14,7 @@
 // ****************************************************
 
 #include "../../server.hh"
-#include <spdlog/spdlog.h>
+#include "../../../../logger/logging.hh"
 #include "create_container_request_handler.hh"
 #include "../../../../storage/management/container_management_service.hh"
 
@@ -33,7 +33,7 @@ create_container_request_handler::execute_operation(
     schemas::container_request&& container_request,
     server_response_callback&& response_callback)
 {
-    spdlog::info("Create object container request received. "
+    TRACE_LOG(info, "Create container request received. "
         "Optype={}, "
         "ObjectContainerName={}.",
         static_cast<std::uint8_t>(container_request.get_optype()),

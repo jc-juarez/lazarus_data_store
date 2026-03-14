@@ -33,7 +33,7 @@ remove_container_request_handler::execute_operation(
     schemas::container_request&& container_request,
     server_response_callback&& response_callback)
 {
-    spdlog::info("Remove object container request received. "
+    spdlog::info("Remove container request received. "
         "Optype={}, "
         "ObjectContainerName={}.",
         static_cast<std::uint8_t>(container_request.get_optype()),

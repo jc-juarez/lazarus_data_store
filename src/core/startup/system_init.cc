@@ -131,7 +131,6 @@ init_logger(
 
     spdlog::set_default_logger(logger);
     spdlog::flush_on(spdlog::level::critical);
-    spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%l] [%&] %v");
     spdlog::flush_every(std::chrono::milliseconds(logger_config.flush_frequency_ms_));
 
     spdlog::info("Logger has been initialized successfully. "

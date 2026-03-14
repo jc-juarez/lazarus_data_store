@@ -127,6 +127,10 @@ set(SOURCE_FILES
         src/core/storage/index/container_loader.cc
         src/core/storage/index/container_loader.hh
         src/core/common/concurrent_flat_map.hh
+        src/core/network/server/logging_context_filter.cc
+        src/core/network/server/logging_context_filter.hh
+        src/core/logger/logging.hh
+        src/core/logger/logging.cc
 )
 
 # Lazarus core library.
