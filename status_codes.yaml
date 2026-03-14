@@ -195,3 +195,8 @@ codes:
     internal: "0x80000024"
     http: 500
     desc: Storage engine reference unexpectedly referenced with a storage engine.
+
+  - name: unexpected_storage_engine
+    internal: "0x80000025"
+    http: 500
+    desc: Unexpected storage engine instance.

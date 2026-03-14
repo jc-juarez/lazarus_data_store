@@ -125,6 +125,9 @@ class LazarusStatusCode(Enum):
     # Storage engine reference unexpectedly referenced with a storage engine.
     storage_engine_reference_unexpectedly_approved = 0x80000024
 
+    # Unexpected storage engine instance.
+    unexpected_storage_engine = 0x80000025
+
     @classmethod
     def from_code(cls, code: int):
         for s in cls:

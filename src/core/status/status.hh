@@ -267,5 +267,11 @@ status_code_definition(
     0x80000024,
     static_cast<drogon::HttpStatusCode>(500));
 
+// Unexpected storage engine instance.
+status_code_definition(
+    unexpected_storage_engine,
+    0x80000025,
+    static_cast<drogon::HttpStatusCode>(500));
+
 } // namespace status.
 } // namespace lazarus.

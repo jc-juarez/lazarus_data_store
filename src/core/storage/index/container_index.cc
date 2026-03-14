@@ -25,7 +25,7 @@ namespace storage
 
 container_index::container_index(
     const std::uint16_t number_container_buckets)
-    : container_index_table_{number_container_buckets, container_bucket{}},
+    : container_index_table_{number_container_buckets},
       number_container_buckets_{number_container_buckets},
       number_containers_{0u}
 {

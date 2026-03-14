@@ -13,6 +13,8 @@
 //      implementation.
 // ****************************************************
 
+#pragma once
+
 #include <vector>
 #include <optional>
 #include <shared_mutex>
@@ -55,7 +57,7 @@ public:
     //
     std::optional<V>
     get(
-        const K& key)
+        const K& key) const
     {
         auto& map_shard = get_map_shard(key);
         std::shared_lock<std::shared_mutex> lock(map_shard.lock_);
@@ -74,7 +76,7 @@ public:
     //
     bool
     exists(
-        const K& key)
+        const K& key) const
     {
         auto& map_shard = get_map_shard(key);
         std::shared_lock<std::shared_mutex> lock(map_shard.lock_);
@@ -93,6 +95,56 @@ public:
         return map_shard.flat_hash_map_.erase(key) > 0;
     }
 
+    //
+    // Returns a list of elements in the map at a given time snapshot.
+    //
+    std::vector<std::pair<K, V>>
+    get_all() const
+    {
+        std::vector<std::shared_lock<std::shared_mutex>> locks;
+        locks.reserve(num_map_shards_);
+
+        for (auto& shard : map_shards_)
+        {
+            locks.emplace_back(shard.lock_);
+        }
+
+        //
+        // Compute total size in advance.
+        //
+        const std::size_t total_size = get_size_lock_free();
+
+        std::vector<std::pair<K, V>> result;
+        result.reserve(total_size);
+
+        for (auto& shard : map_shards_)
+        {
+            for (auto& map_entry : shard.flat_hash_map_)
+            {
+                result.emplace_back(map_entry.first, map_entry.second);
+            }
+        }
+
+        return result;
+    }
+
+    //
+    // Returns the size of the map.
+    //
+    std::size_t
+    get_size() const
+    {
+        std::vector<std::shared_lock<std::shared_mutex>> locks;
+        locks.reserve(num_map_shards_);
+
+        for (auto& shard : map_shards_)
+        {
+            locks.emplace_back(shard.lock_);
+        }
+
+        return get_size_lock_free();
+    }
+
 private:
 
     //
@@ -102,18 +154,45 @@ private:
     //
     struct map_shard
     {
-        std::shared_mutex lock_;
+        mutable std::shared_mutex lock_;
         absl::flat_hash_map<K, V> flat_hash_map_;
     };
 
     //
-    // Gets a reference to the respective shard.
+    // Gets a non-const reference to the respective shard.
     //
     map_shard&
     get_map_shard(
         const K& key)
     {
         return map_shards_.at(hasher_(key) % num_map_shards_);
+    }
+
+    //
+    // Gets a const reference to the respective shard.
+    //
+    const map_shard&
+    get_map_shard(
+        const K& key) const
+    {
+        return map_shards_.at(hasher_(key) % num_map_shards_);
+    }
+
+    //
+    // Computes the total size of entries across all shards.
+    // Assumes all locks are held for consistency.
+    //
+    std::size_t
+    get_size_lock_free() const
+    {
+        std::size_t total_size = 0u;
+
+        for (const auto& shard : map_shards_)
+        {
+            total_size += shard.flat_hash_map_.size();
+        }
+
+        return total_size;
     }
 
     //

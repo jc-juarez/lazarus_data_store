@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include <tbb/tbb.h>
 #include "../models/container.hh"
 #include "../../status/status.hh"
+#include "../../common/concurrent_flat_map.hh"
 
 namespace lazarus::storage
 {
@@ -85,11 +85,12 @@ private:
     std::uint16_t index_;
 
     //
+    // Thread-safe containers holder.
     // Holds object containers in the system.
     // Maps an object container identifier to the
     // respective object container memory reference.
     //
-    tbb::concurrent_hash_map<std::string, std::shared_ptr<container>> container_bucket_map_;
+    common::concurrent_flat_map<std::string, std::shared_ptr<container>> container_bucket_map_;
 };
 
 } // namespace lazarus::storage.

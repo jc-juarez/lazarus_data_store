@@ -555,6 +555,15 @@ container_loader::validate_container_engine_references(
 
                         return status::storage_engine_reference_not_approved;
                     }
+
+                    //
+                    // Also make sure that the engine baked into the instance structure
+                    // maps to the expected engine instance.
+                    //
+                    if (&container_instance.storage_engine_ != &engine)
+                    {
+                        return status::unexpected_storage_engine;
+                    }
                 }
                 else
                 {
