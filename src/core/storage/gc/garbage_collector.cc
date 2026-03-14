@@ -39,7 +39,7 @@ garbage_collector::garbage_collector(
 void
 garbage_collector::start()
 {
-    spdlog::info("Starting lazarus data store garbage collector thread.");
+    TRACE_LOG(info, "Starting lazarus data store garbage collector thread.");
 
     garbage_collector_thread_ = std::jthread(
         &garbage_collector::execute_garbage_collection,
@@ -53,7 +53,7 @@ garbage_collector::execute_garbage_collection(
 {
     while (!stop_token.stop_requested())
     {
-        spdlog::info("Starting garbage collection iteration. "
+        TRACE_LOG(info, "Starting garbage collection iteration. "
             "GarbageCollectorCurrentIteration={}.",
             iteration_count_);
 
@@ -66,7 +66,7 @@ garbage_collector::execute_garbage_collection(
         //
         // Iteration finished. increment counter and put thread into idle mode.
         //
-        spdlog::info("Finishing garbage collection iteration. "
+        TRACE_LOG(info, "Finishing garbage collection iteration. "
             "GarbageCollectorCurrentIteration={}.",
             iteration_count_);
 
@@ -85,7 +85,7 @@ garbage_collector::execute_garbage_collection(
         }
     }
 
-    spdlog::info("Stopping lazarus data store garbage collector thread.");
+    TRACE_LOG(info, "Stopping lazarus data store garbage collector thread.");
 }
 
 void
@@ -106,7 +106,7 @@ garbage_collector::cleanup_orphaned_containers()
         std::vector<std::shared_ptr<container>> containers =
             container_index_.get_all_containers_from_bucket(bucket_index);
 
-        spdlog::info("Scanning container bucket to look for orphaned containers. "
+        TRACE_LOG(info, "Scanning container bucket to look for orphaned containers. "
             "ContainerBucketIndexBeingTraversed={}, "
             "GarbageCollectorCurrentIteration={}.",
             bucket_index,

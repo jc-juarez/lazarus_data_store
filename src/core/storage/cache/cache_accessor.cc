@@ -44,7 +44,7 @@ cache_accessor::insert_object_into_cache(
 
     if (status::succeeded(status))
     {
-        spdlog::info("Frontline cache object insertion succeeded on insert object operation. "
+        TRACE_LOG(info, "Frontline cache object insertion succeeded on insert object operation. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}.",
@@ -54,7 +54,7 @@ cache_accessor::insert_object_into_cache(
     }
     else
     {
-        spdlog::error("Frontline cache object insertion failed on insert object operation. "
+        TRACE_LOG(error, "Frontline cache object insertion failed on insert object operation. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}, "

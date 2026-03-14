@@ -34,7 +34,7 @@ public:
     ping() = default;
 
     METHOD_LIST_BEGIN
-        METHOD_ADD(ping::reply_to_ping, "", drogon::Get);
+        METHOD_ADD(ping::reply_to_ping, "", drogon::Get, "lazarus::network::logging_context_filter");
     METHOD_LIST_END
 
     //

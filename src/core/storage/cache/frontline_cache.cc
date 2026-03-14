@@ -49,7 +49,7 @@ frontline_cache::put(
         //
         // Invalid cache access for an object container which is no longer indexed.
         //
-        spdlog::error("Invalid frontline cache put operation as the object container is not active. "
+        TRACE_LOG(error, "Invalid frontline cache put operation as the object container is not active. "
             "ObjectId={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
@@ -82,7 +82,7 @@ frontline_cache::get(
         //
         // Invalid cache access for an object container which is no longer indexed.
         //
-        spdlog::error("Invalid frontline cache get operation as the object container is not active. "
+        TRACE_LOG(error, "Invalid frontline cache get operation as the object container is not active. "
             "ObjectId={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",

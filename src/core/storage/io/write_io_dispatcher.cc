@@ -36,7 +36,7 @@ write_io_dispatcher::write_io_dispatcher(
 void
 write_io_dispatcher::start()
 {
-    spdlog::info("Starting lazarus data store write IO dispatcher thread.");
+    TRACE_LOG(info, "Starting lazarus data store write IO dispatcher thread.");
 
     write_dispatcher_master_thread_ = std::jthread(
         &write_io_dispatcher::dispatch_write_io_tasks,
@@ -82,7 +82,7 @@ write_io_dispatcher::dispatch_write_io_tasks(
         }
     }
 
-    spdlog::info("Stopping lazarus data store write IO dispatcher thread.");
+    TRACE_LOG(info, "Stopping lazarus data store write IO dispatcher thread.");
 }
 
 void
@@ -123,7 +123,7 @@ write_io_dispatcher::execute_write_io_task(
             // This should never happen given this should have been
             // taken care of before enqueuing the task to the thread pool.
             //
-            spdlog::critical("Invalid write request optype for object "
+            TRACE_LOG(critical, "Invalid write request optype for object "
                 "operation scheduled in the write IO thread pool. "
                 "Optype={}, "
                 "ObjectId={}, "
@@ -170,7 +170,7 @@ write_io_dispatcher::execute_insert_operation(
 
     if (status::succeeded(status))
     {
-        spdlog::info("Object insertion succeeded. "
+        TRACE_LOG(info, "Object insertion succeeded. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}.",
@@ -180,7 +180,7 @@ write_io_dispatcher::execute_insert_operation(
     }
     else
     {
-        spdlog::error("Object insertion failed. "
+        TRACE_LOG(error, "Object insertion failed. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}, "
@@ -206,7 +206,7 @@ write_io_dispatcher::execute_remove_operation(
 
     if (status::succeeded(status))
     {
-        spdlog::info("Object removal succeeded. "
+        TRACE_LOG(info, "Object removal succeeded. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}.",
@@ -216,7 +216,7 @@ write_io_dispatcher::execute_remove_operation(
     }
     else
     {
-        spdlog::error("Object removal failed. "
+        TRACE_LOG(error, "Object removal failed. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}, "

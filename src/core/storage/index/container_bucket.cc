@@ -61,7 +61,7 @@ container_bucket::insert_container(
     // Key did not exist and metadata register was successful.
     // Exit execution.
     //
-    spdlog::info("Inserted container to the bucket map. "
+    TRACE_LOG(info, "Inserted container to the bucket map. "
         "ContainerName={}, "
         "ContainerBucketIndex={}.",
         container_persistent_metadata.name().c_str(),
@@ -103,7 +103,7 @@ container_bucket::remove_container(
 
     container_bucket_map_.erase(container_name);
 
-    spdlog::info("Deleted object container reference from the bucket map. "
+    TRACE_LOG(info, "Deleted object container reference from the bucket map. "
         "ContainerName={}, "
         "ContainerBucketIndex={}.",
         container_name.c_str(),

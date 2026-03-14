@@ -46,7 +46,7 @@ container_loader::load_container_index(
         // The container metadata partition should either have the default
         // container, or the default container plus the container metadata container.
         //
-        spdlog::critical("Unexpected number of containers found for the metadata partition. "
+        TRACE_LOG(critical, "Unexpected number of containers found for the metadata partition. "
             "MaxNumContainers={}, "
             "NumContainersFound={}.",
             k_max_metadata_partition_containers,
@@ -82,7 +82,7 @@ container_loader::load_container_index(
         // This is a critical error as the persistent container metadata to discover
         // previously existing containers is not present. Fail the system startup.
         //
-        spdlog::critical("Failed to find find the storage engine reference for the '{}' internal metadata.",
+        TRACE_LOG(critical, "Failed to find find the storage engine reference for the '{}' internal metadata.",
             k_containers_container_name_metadata_partition);
 
         return status::containers_internal_metadata_lookup_failed;
@@ -102,7 +102,7 @@ container_loader::load_container_index(
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to get all container names from the container metadata partition. "
+        TRACE_LOG(critical, "Failed to get all container names from the container metadata partition. "
             "Status={:#x}.",
             status);
 
@@ -117,7 +117,7 @@ container_loader::load_container_index(
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to index the container metadata internal containers. "
+        TRACE_LOG(critical, "Failed to index the container metadata internal containers. "
             "Status={:#x}.",
             status);
 
@@ -134,7 +134,7 @@ container_loader::load_container_index(
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to index the containers known to the persistent container metadata. "
+        TRACE_LOG(critical, "Failed to index the containers known to the persistent container metadata. "
             "Status={:#x}.",
             status);
 
@@ -151,7 +151,7 @@ container_loader::load_container_index(
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to scan and index orphaned containers during startup. "
+        TRACE_LOG(critical, "Failed to scan and index orphaned containers during startup. "
             "Status={:#x}.",
             status);
 
@@ -166,7 +166,7 @@ container_loader::load_container_index(
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to validate loaded engine references during startup. "
+        TRACE_LOG(critical, "Failed to validate loaded engine references during startup. "
             "Status={:#x}.",
             status);
 
@@ -190,7 +190,7 @@ container_loader::create_container_metadata_column_family(
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to create internal metadata column family '{}'.",
+        TRACE_LOG(critical, "Failed to create internal metadata column family '{}'.",
             k_containers_container_name_metadata_partition);
 
         return status;
@@ -217,7 +217,7 @@ container_loader::create_container_metadata_column_family(
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to insert default column family for the container metadata container.");
+        TRACE_LOG(critical, "Failed to insert default column family for the container metadata container.");
 
         return status;
     }
@@ -274,7 +274,7 @@ container_loader::index_containers_from_metadata_partition(
 
         if (status::failed(status))
         {
-            spdlog::critical("Failed to insert container from container metadata into the container index. "
+            TRACE_LOG(critical, "Failed to insert container from container metadata into the container index. "
                 "ContainerName={}, "
                 "Status={:#x}.",
                 container_persistent_metadata.name().c_str(),
@@ -286,7 +286,7 @@ container_loader::index_containers_from_metadata_partition(
         const std::shared_ptr<container> container =
             container_index_.get_container(container_name);
 
-        spdlog::info("Indexed internal metadata container on startup. "
+        TRACE_LOG(info, "Indexed internal metadata container on startup. "
             "ContainerMetadata={}.",
             container->to_string());
     }
@@ -313,7 +313,7 @@ container_loader::index_containers_from_structured_data_partitions(
             // This implies that the persistent container metadata has a record of a container
             // which is not present on the filesystem across the structured data partitions.
             //
-            spdlog::critical("Failed to locate a container known to the persistent container metadata "
+            TRACE_LOG(critical, "Failed to locate a container known to the persistent container metadata "
                 "on the filesystem across the structured data partitions. "
                 "ContainerName={}.",
                 container_name);
@@ -335,7 +335,7 @@ container_loader::index_containers_from_structured_data_partitions(
 
         if (status::failed(status))
         {
-            spdlog::critical("Integrity validation for the container name on the "
+            TRACE_LOG(critical, "Integrity validation for the container name on the "
                 "structured data partitions containers failed. "
                 "ContainerName={}, "
                 "Status={:#x}.",
@@ -349,7 +349,7 @@ container_loader::index_containers_from_structured_data_partitions(
         const bool is_parsing_successful = container_persistent_metadata.ParseFromString(container_raw_metadata);
         if (!is_parsing_successful)
         {
-            spdlog::critical("Failed to parse a container raw metadata on startup. "
+            TRACE_LOG(critical, "Failed to parse a container raw metadata on startup. "
                 "ContainerName={}.",
                 container_name);
 
@@ -365,7 +365,7 @@ container_loader::index_containers_from_structured_data_partitions(
 
         if (status::failed(status))
         {
-            spdlog::critical("Failed to insert container into the container index. "
+            TRACE_LOG(critical, "Failed to insert container into the container index. "
                 "ContainerName={}, "
                 "Status={:#x}.",
                 container_persistent_metadata.name().c_str(),
@@ -377,7 +377,7 @@ container_loader::index_containers_from_structured_data_partitions(
         const std::shared_ptr<container> container =
             container_index_.get_container(container_name);
 
-        spdlog::info("Found container on structured data partitions during startup and indexed into "
+        TRACE_LOG(info, "Found container on structured data partitions during startup and indexed into "
             "the object containers metadata table. "
             "ContainerMetadata={}.",
             container->to_string());
@@ -403,7 +403,7 @@ container_loader::scan_and_index_orphaned_containers(
             // filesystem, but the persistent container metadata is not aware of it. Mark it as deleted for
             // the garbage collector to clean it up later.
             //
-            spdlog::warn("Found orphaned object container on startup to be cleaned up by the garbage collector. "
+            TRACE_LOG(warn, "Found orphaned object container on startup to be cleaned up by the garbage collector. "
                 "ObjectContainerName={}.",
                 container_name.c_str());
 
@@ -418,7 +418,7 @@ container_loader::scan_and_index_orphaned_containers(
 
             if (status::failed(status))
             {
-                spdlog::critical("Failed to insert orphaned container into the container index. "
+                TRACE_LOG(critical, "Failed to insert orphaned container into the container index. "
                     "ContainerName={}, "
                     "Status={:#x}.",
                     container_persistent_metadata.name().c_str(),
@@ -431,7 +431,7 @@ container_loader::scan_and_index_orphaned_containers(
 
             if (container == nullptr)
             {
-                spdlog::critical("Failed to mark orphaned container as deleted on startup. "
+                TRACE_LOG(critical, "Failed to mark orphaned container as deleted on startup. "
                     "ObjectContainerName={}.",
                     container_name.c_str());
 
@@ -483,7 +483,7 @@ container_loader::validate_loaded_engine_references()
 
             if (status::failed(status))
             {
-                spdlog::critical("Failed to validate engine references for container during startup. "
+                TRACE_LOG(critical, "Failed to validate engine references for container during startup. "
                     "ContainerMetadata={}.",
                     container->to_string());
 
@@ -514,7 +514,7 @@ container_loader::validate_container_engine_references(
             //
             if (!is_orphaned_container)
             {
-                spdlog::critical("Found null engine reference for a non-orphaned container during startup. "
+                TRACE_LOG(critical, "Found null engine reference for a non-orphaned container during startup. "
                     "ContainerMetadata={}, "
                     "CollocationIndex={}.",
                     container->to_string(),
@@ -545,7 +545,7 @@ container_loader::validate_container_engine_references(
                     //
                     if (!engine.fence_engine_reference(container_instance.storage_engine_reference_))
                     {
-                        spdlog::critical("Engine reference is not registered with the expected storage engine. "
+                        TRACE_LOG(critical, "Engine reference is not registered with the expected storage engine. "
                             "EngineReference={}, "
                             "ContainerMetadata={}, "
                             "CollocationIndex={}.",
@@ -573,7 +573,7 @@ container_loader::validate_container_engine_references(
                     //
                     if (engine.fence_engine_reference(container_instance.storage_engine_reference_))
                     {
-                        spdlog::critical("Engine reference is registered with an unexpected storage engine. "
+                        TRACE_LOG(critical, "Engine reference is registered with an unexpected storage engine. "
                             "EngineReference={}, "
                             "ContainerMetadata={}, "
                             "CollocationIndex={}.",

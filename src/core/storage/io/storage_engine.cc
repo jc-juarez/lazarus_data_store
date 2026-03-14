@@ -42,7 +42,7 @@ storage_engine::insert_object(
     if (!fence_engine_reference(container_storage_engine_reference))
     {
         status::status_code status = status::storage_engine_reference_not_approved;
-        spdlog::error("Insert object operation is invalid since "
+        TRACE_LOG(error, "Insert object operation is invalid since "
             "engine reference is not approved for the storage engine. "
             "ObjectId={}, "
             "EngineReference={}, "
@@ -69,7 +69,7 @@ storage_engine::insert_object(
     if (!engine_status.ok())
     {
         status::status_code status = status::object_insertion_failed;
-        spdlog::error("Failed to insert object into the specified object container. "
+        TRACE_LOG(error, "Failed to insert object into the specified object container. "
             "ObjectId={}, "
             "EngineReference={}, "
             "EngineReferenceID={}, "
@@ -102,7 +102,7 @@ storage_engine::get_object(
     if (!fence_engine_reference(container_storage_engine_reference))
     {
         status::status_code status = status::storage_engine_reference_not_approved;
-        spdlog::error("Get object operation is invalid since "
+        TRACE_LOG(error, "Get object operation is invalid since "
             "engine reference is not approved for the storage engine. "
             "ObjectId={}, "
             "EngineReference={}, "
@@ -129,7 +129,7 @@ storage_engine::get_object(
     if (!engine_status.ok())
     {
         status::status_code status = status::object_retrieval_failed;
-        spdlog::error("Failed to retrieve object from the specified object container. "
+        TRACE_LOG(error, "Failed to retrieve object from the specified object container. "
             "ObjectId={}, "
             "EngineReference={}, "
             "EngineReferenceID={}, "
@@ -171,7 +171,7 @@ storage_engine::create_container(
         container_storage_engine_reference = nullptr;
 
         status::status_code status = status::container_creation_failed;
-        spdlog::error("Failed to create the specified object container. "
+        TRACE_LOG(error, "Failed to create the specified object container. "
             "ContainerName={}, "
             "StorageEngineCode={}, "
             "StorageEngineSubCode={}, "
@@ -197,7 +197,7 @@ storage_engine::get_all_objects_from_container(
     if (!fence_engine_reference(container_storage_engine_reference))
     {
         status::status_code status = status::storage_engine_reference_not_approved;
-        spdlog::error("Get all objects operation is invalid since "
+        TRACE_LOG(error, "Get all objects operation is invalid since "
             "engine reference is not approved for the storage engine. "
             "EngineReference={}, "
             "EngineReferenceID={}, "
@@ -238,7 +238,7 @@ storage_engine::get_all_objects_from_container(
     if (!engine_status.ok())
     {
         status::status_code status = status::objects_retrieval_from_container_failed;
-        spdlog::error("Failed to retrieve all objects inside the specified object container. "
+        TRACE_LOG(error, "Failed to retrieve all objects inside the specified object container. "
             "EngineReference={}, "
             "EngineReferenceID={}, "
             "ContainerName={}, "
@@ -267,7 +267,7 @@ storage_engine::close_container_storage_engine_reference(
     if (!fence_engine_reference(container_storage_engine_reference))
     {
         status::status_code status = status::storage_engine_reference_not_approved;
-        spdlog::error("Close engine reference operation is invalid since "
+        TRACE_LOG(error, "Close engine reference operation is invalid since "
             "engine reference is not approved for the storage engine. "
             "EngineReference={}, "
             "EngineReferenceID={}, "
@@ -289,7 +289,7 @@ storage_engine::close_container_storage_engine_reference(
     if (!engine_status.ok())
     {
         status::status_code status = status::storage_engine_reference_close_failed;
-        spdlog::error("Failed to close storage engine reference. "
+        TRACE_LOG(error, "Failed to close storage engine reference. "
             "EngineReference={}, "
             "EngineReferenceID={}, "
             "ContainerName={}, "
@@ -325,7 +325,7 @@ storage_engine::remove_object(
     if (!fence_engine_reference(container_storage_engine_reference))
     {
         status::status_code status = status::storage_engine_reference_not_approved;
-        spdlog::error("Remove object operation is invalid since "
+        TRACE_LOG(error, "Remove object operation is invalid since "
             "engine reference is not approved for the storage engine. "
             "ObjectId={}, "
             "EngineReference={}, "
@@ -351,7 +351,7 @@ storage_engine::remove_object(
     if (!engine_status.ok())
     {
         status::status_code status = status::object_deletion_failed;
-        spdlog::error("Failed to remove object from the specified object container. "
+        TRACE_LOG(error, "Failed to remove object from the specified object container. "
             "ObjectId={}, "
             "EngineReference={}, "
             "EngineReferenceID={}, "
@@ -382,7 +382,7 @@ storage_engine::remove_container(
     if (!fence_engine_reference(container_storage_engine_reference))
     {
         status::status_code status = status::storage_engine_reference_not_approved;
-        spdlog::error("Remove container operation is invalid since "
+        TRACE_LOG(error, "Remove container operation is invalid since "
             "engine reference is not approved for the storage engine. "
             "EngineReference={}, "
             "EngineReferenceID={}, "
@@ -404,7 +404,7 @@ storage_engine::remove_container(
     if (!engine_status.ok())
     {
         status::status_code status = status::container_storage_engine_deletion_failed;
-        spdlog::error("Failed to remove object container from the storage engine. "
+        TRACE_LOG(error, "Failed to remove object container from the storage engine. "
             "EngineReference={}, "
             "EngineReferenceID={}, "
             "ContainerName={}, "

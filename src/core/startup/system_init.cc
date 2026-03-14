@@ -83,7 +83,7 @@ init_system(
         //
         status = status::fail;
 
-        spdlog::critical("Exception thrown in the data store startup path. Terminating the data store. "
+        TRACE_LOG(critical, "Exception thrown in the data store startup path. Terminating the data store. "
             "Exception={}",
             exception.what());
     }
@@ -133,7 +133,7 @@ init_logger(
     spdlog::flush_on(spdlog::level::critical);
     spdlog::flush_every(std::chrono::milliseconds(logger_config.flush_frequency_ms_));
 
-    spdlog::info("Logger has been initialized successfully. "
+    TRACE_LOG(info, "Logger has been initialized successfully. "
         "LogsDirectoryPath={}, "
         "ComponentName={}, "
         "QueueSizeBytes={}, "
@@ -334,7 +334,7 @@ void
 signal_handler(
     std::int32_t signal)
 {
-    spdlog::info("Termination signal received. Requesting system stop.");
+    TRACE_LOG(info, "Termination signal received. Requesting system stop.");
     network::server::stop();
     stop_source.request_stop();
 }

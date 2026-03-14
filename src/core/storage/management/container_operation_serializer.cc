@@ -61,7 +61,7 @@ container_operation_serializer::container_operation_serial_proxy(
     const schemas::container_request& container_request,
     const network::server_response_callback& response_callback)
 {
-    spdlog::info("Executing serialized object container operation action. "
+    TRACE_LOG(info, "Executing serialized object container operation action. "
         "OpType={}, "
         "ObjectContainerName={}.",
         static_cast<std::uint8_t>(container_request.get_optype()),
@@ -112,7 +112,7 @@ container_operation_serializer::handle_container_creation(
         // At this point, it is guaranteed that this operation is serialized
         // and that the object container is in a non-creatable state; no further action needed.
         //
-        spdlog::error("Object container creation will be failed as the "
+        TRACE_LOG(error, "Object container creation will be failed as the "
             "object container is in a non-creatable state. "
             "Optype={}, "
             "ObjectContainerName={}, "
@@ -136,7 +136,7 @@ container_operation_serializer::handle_container_creation(
 
     if (!container_instances_creation_result)
     {
-        spdlog::error("Object container creation across data partitions failed. "
+        TRACE_LOG(error, "Object container creation across data partitions failed. "
             "Optype={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
@@ -161,7 +161,7 @@ container_operation_serializer::handle_container_creation(
 
     if (status::failed(status))
     {
-        spdlog::error("Storage engine failed insert the metadata entry for the new object container. "
+        TRACE_LOG(error, "Storage engine failed insert the metadata entry for the new object container. "
             "Optype={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
@@ -189,7 +189,7 @@ container_operation_serializer::handle_container_creation(
 
     if (status::failed(status))
     {
-        spdlog::error("Container index insertion failed for the new object container. "
+        TRACE_LOG(error, "Container index insertion failed for the new object container. "
             "Optype={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
@@ -200,7 +200,7 @@ container_operation_serializer::handle_container_creation(
         return status;
     }
 
-    spdlog::info("Object container creation succeeded. "
+    TRACE_LOG(info, "Object container creation succeeded. "
         "Optype={}, "
         "ObjectContainerName={}.",
         static_cast<std::uint8_t>(container_request.get_optype()),
@@ -223,7 +223,7 @@ container_operation_serializer::handle_container_removal(
         // At this point, it is guaranteed that this operation is serialized
         // and that the object container is in a non-deletable state; no further action needed.
         //
-        spdlog::error("Object container creation will be failed as the "
+        TRACE_LOG(error, "Object container creation will be failed as the "
             "object container is in a non-deletable state. "
             "Optype={}, "
             "ObjectContainerName={}, "
@@ -247,7 +247,7 @@ container_operation_serializer::handle_container_removal(
 
     if (status::failed(status))
     {
-        spdlog::error("Failed to remove object container from the internal filesystem metadata. "
+        TRACE_LOG(error, "Failed to remove object container from the internal filesystem metadata. "
             "Optype={}, "
             "ObjectContainerName={}, "
             "Status={:#x}.",
@@ -274,7 +274,7 @@ container_operation_serializer::handle_container_removal(
         // This should never happen.
         // This indicates a resource leak for the lifetime of the session.
         //
-        spdlog::error("Failed to mark the object container as deleted. "
+        TRACE_LOG(error, "Failed to mark the object container as deleted. "
             "Resource will be leaked for the lifetime of the current session. "
             "Optype={}, "
             "ObjectContainerName={}, "
@@ -291,7 +291,7 @@ container_operation_serializer::handle_container_removal(
     //
     container->mark_as_deleted();
 
-    spdlog::info("Object container internal metadata deletion marking succeeded. "
+    TRACE_LOG(info, "Object container internal metadata deletion marking succeeded. "
         "Optype={}, "
         "ObjectContainerName={}.",
         static_cast<std::uint8_t>(container_request.get_optype()),
@@ -321,7 +321,7 @@ container_operation_serializer::create_container_instances_on_data_partitions(
 
         if (status::failed(status))
         {
-            spdlog::error("Failed to create container on DataPartitionCollocationIndex={}. "
+            TRACE_LOG(error, "Failed to create container on DataPartitionCollocationIndex={}. "
                 "ObjectContainerName={}, "
                 "Status={:#x}.",
                 data_partition.get_collocation_index(),

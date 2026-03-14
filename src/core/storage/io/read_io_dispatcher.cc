@@ -130,7 +130,7 @@ read_io_dispatcher::execute_read_io_task(
             // This should never happen given this should have been
             // taken care of before enqueuing the task to the thread pool.
             //
-            spdlog::critical("Invalid read request optype for object "
+            TRACE_LOG(critical, "Invalid read request optype for object "
                 "operation scheduled in the read IO thread pool. "
                 "Optype={}, "
                 "ObjectId={}, "

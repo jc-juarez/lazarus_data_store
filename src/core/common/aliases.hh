@@ -18,6 +18,7 @@
 #include <functional>
 #include <rocksdb/db.h>
 #include <drogon/drogon.h>
+#include "../logger/logging.hh"
 
 namespace lazarus
 {

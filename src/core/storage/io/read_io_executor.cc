@@ -43,7 +43,7 @@ read_io_executor::execute_get_operation(
 
     if (status::succeeded(status))
     {
-        spdlog::info("Object retrieval succeeded. "
+        TRACE_LOG(info, "Object retrieval succeeded. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}.",
@@ -53,7 +53,7 @@ read_io_executor::execute_get_operation(
     }
     else
     {
-        spdlog::error("Object retrieval failed. "
+        TRACE_LOG(error, "Object retrieval failed. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}, "

@@ -78,7 +78,7 @@ lazarus_data_store::start_data_store()
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to initialize the core storage state during startup. "
+        TRACE_LOG(critical, "Failed to initialize the core storage state during startup. "
             "Status={:#x}.",
             status);
 
@@ -123,7 +123,7 @@ lazarus_data_store::bootstrap_storage_state()
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to boot container metadata partition during the system startup. "
+        TRACE_LOG(critical, "Failed to boot container metadata partition during the system startup. "
             "Status={:#x}.",
             status);
 
@@ -138,7 +138,7 @@ lazarus_data_store::bootstrap_storage_state()
 
     if (!boot_result)
     {
-        spdlog::critical("Failed to boot structured data partitions during the system startup. "
+        TRACE_LOG(critical, "Failed to boot structured data partitions during the system startup. "
             "Status={:#x}.",
             boot_result.error());
 
@@ -157,7 +157,7 @@ lazarus_data_store::bootstrap_storage_state()
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to load and populate the container index during the system startup. "
+        TRACE_LOG(critical, "Failed to load and populate the container index during the system startup. "
             "Status={:#x}.",
             status);
 
@@ -198,7 +198,7 @@ lazarus_data_store::boot_structured_data_partitions()
 
         if (status::failed(status))
         {
-            spdlog::critical("Failed to boot structured data partition on CollocationIndex={}. "
+            TRACE_LOG(critical, "Failed to boot structured data partition on CollocationIndex={}. "
                 "Status={:#x}.",
                 data_partition.get_collocation_index(),
                 status);
@@ -218,7 +218,7 @@ lazarus_data_store::boot_structured_data_partitions()
 
             if (status::failed(status))
             {
-                spdlog::critical("Failed to register ContainerName={} for CollocationIndex={} "
+                TRACE_LOG(critical, "Failed to register ContainerName={} for CollocationIndex={} "
                     "on the container registry. "
                     "Status={:#x}.",
                     reference_entry.first,
@@ -250,7 +250,7 @@ lazarus_data_store::boot_data_partition(
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to fetch data partition object containers from disk during the system startup. "
+        TRACE_LOG(critical, "Failed to fetch data partition object containers from disk during the system startup. "
             "Status={:#x}.",
             status);
 
@@ -267,7 +267,7 @@ lazarus_data_store::boot_data_partition(
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to boot data partition during the system startup. "
+        TRACE_LOG(critical, "Failed to boot data partition during the system startup. "
             "Status={:#x}.",
             status);
 

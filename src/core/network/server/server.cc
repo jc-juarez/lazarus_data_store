@@ -65,7 +65,7 @@ server::server(
 void
 server::start()
 {
-    spdlog::info("Starting lazarus data store server. "
+    TRACE_LOG(info, "Starting lazarus data store server. "
         "Port={}, "
         "LogsDirectoryPath={}, "
         "NumThreads={}, "
@@ -81,7 +81,7 @@ server::start()
 void
 server::stop()
 {
-    spdlog::info("Stopping lazarus data store server.");
+    TRACE_LOG(info, "Stopping lazarus data store server.");
 
     drogon::app().quit();
 }

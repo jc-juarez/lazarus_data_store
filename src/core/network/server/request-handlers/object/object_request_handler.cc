@@ -65,7 +65,7 @@ object_request_handler::run(
     if (container == nullptr ||
         is_container_deleted)
     {
-        spdlog::error("Object container provided for object operation "
+        TRACE_LOG(error, "Object container provided for object operation "
             "does not exist or is in deletion process. "
             "Optype={}, "
             "ObjectId={}, "

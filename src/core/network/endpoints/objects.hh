@@ -43,9 +43,9 @@ public:
         std::unique_ptr<remove_object_request_handler> remove_object_request_handler);
 
     METHOD_LIST_BEGIN
-    METHOD_ADD(objects::insert_object, "", drogon::Post);
-    METHOD_ADD(objects::get_object, "", drogon::Get);
-    METHOD_ADD(objects::remove_object, "", drogon::Delete);
+    METHOD_ADD(objects::insert_object, "", drogon::Post, "lazarus::network::logging_context_filter");
+    METHOD_ADD(objects::get_object, "", drogon::Get, "lazarus::network::logging_context_filter");
+    METHOD_ADD(objects::remove_object, "", drogon::Delete, "lazarus::network::logging_context_filter");
     METHOD_LIST_END
 
     //

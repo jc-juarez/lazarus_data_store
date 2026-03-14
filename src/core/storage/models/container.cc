@@ -34,7 +34,7 @@ container::container(
 
 container::~container()
 {
-    spdlog::info("Removing last object container reference from memory. "
+    TRACE_LOG(info, "Removing last object container reference from memory. "
         "ObjectContainerMetadata={}.",
         to_string());
 
@@ -53,7 +53,7 @@ container::~container()
 
             if (status::failed(status))
             {
-                spdlog::warn("Failed to close container storage engine reference. "
+                TRACE_LOG(warn, "Failed to close container storage engine reference. "
                     "ObjectContainerMetadata={}, "
                     "DataPartitionCollocationIndex={}, "
                     "StorageEngineReference={}.",

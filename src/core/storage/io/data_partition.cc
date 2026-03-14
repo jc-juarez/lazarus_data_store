@@ -55,7 +55,7 @@ data_partition::boot(
 
     if (!std::filesystem::exists(partition_path_))
     {
-        spdlog::info("Expected data partition not found for CollocationIndex={}. "
+        TRACE_LOG(info, "Expected data partition not found for CollocationIndex={}. "
             "Creating directory for the partition at '{}'.",
             collocation_index_,
             partition_path_);
@@ -64,7 +64,7 @@ data_partition::boot(
     }
     else
     {
-        spdlog::info("Existing data partition found for CollocationIndex={} "
+        TRACE_LOG(info, "Existing data partition found for CollocationIndex={} "
             "at directory '{}'.",
             collocation_index_,
             partition_path_);
@@ -87,7 +87,7 @@ data_partition::boot(
 
     if (!status.ok())
     {
-        spdlog::critical("An error occurred while trying to start the storage engine. "
+        TRACE_LOG(critical, "An error occurred while trying to start the storage engine. "
             "NumberObjectContainersOnDisk={}, "
             "StorageEngineCode={}, "
             "StorageEngineSubCode={}.",
@@ -153,7 +153,7 @@ data_partition::fetch_containers_from_disk(
     if (!status.ok() &&
         status.subcode() != rocksdb::Status::kPathNotFound)
     {
-        spdlog::critical("Failed to retrieve initial object containers from disk. "
+        TRACE_LOG(critical, "Failed to retrieve initial object containers from disk. "
             "StorageEngineCode={}, "
             "StorageEngineSubCode={}.",
             static_cast<std::uint32_t>(status.code()),
