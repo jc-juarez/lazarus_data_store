@@ -108,13 +108,6 @@ public:
         storage_engine_reference_handle* container_storage_engine_reference) override;
 
     //
-    // Executes a batch of write operations (insert/remove) for objects.
-    //
-    status::status_code
-    execute_objects_write_batch(
-        storage_engine_write_batch& write_batch) override;
-
-    //
     // Registers an engine reference into the approved set of references.
     //
     void
