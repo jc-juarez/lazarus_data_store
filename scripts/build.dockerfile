@@ -33,6 +33,7 @@ RUN apt-get update && apt-get install -y \
     nlohmann-json3-dev \
     libasan8 \
     libabsl-dev \
+    libxxhash-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Drogon is not in Ubuntu repos, build from source.

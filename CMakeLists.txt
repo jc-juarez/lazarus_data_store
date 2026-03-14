@@ -145,6 +145,7 @@ target_link_libraries(
         TBB::tbb
         ${JSONCPP_LIBRARY}
         absl::flat_hash_map
+        xxhash
 )
 
 # Lazarus executable.
