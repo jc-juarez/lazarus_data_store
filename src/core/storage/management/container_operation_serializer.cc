@@ -173,11 +173,19 @@ container_operation_serializer::handle_container_creation(
     }
 
     //
-    // Index the new object container to the internal metadata table.
+    // At this point, a WDT (Well Defined Transaction) has been completed
+    // for the container creation, so it is safe to mark its engine references as approved.
+    //
+    const std::vector<container_instance> container_instances = container_instances_creation_result.value();
+    mark_engine_references_as_approved(container_instances);
+
+    //
+    // Index the new object container to the internal metadata table
+    // after all engine references have been made publicly available.
     //
     status = container_index_.insert_container(
         container_persistent_metadata,
-        container_instances_creation_result.value());
+        container_instances);
 
     if (status::failed(status))
     {
@@ -330,6 +338,23 @@ container_operation_serializer::create_container_instances_on_data_partitions(
     }
 
     return container_instances;
+}
+
+void
+container_operation_serializer::mark_engine_references_as_approved(
+    const std::vector<container_instance>& container_instances)
+{
+    //
+    // The instances vector is 0-based for the respective data collocations.
+    //
+    for (std::uint16_t collocation_index = 0u; collocation_index < container_instances.size(); ++collocation_index)
+    {
+        storage_engine_interface& engine =
+            data_partition_provider_.get_partition_by_collocation(collocation_index).get_storage_engine();
+
+        engine.register_approved_engine_references(
+            {container_instances.at(collocation_index).storage_engine_reference_});
+    }
 }
 
 } // namespace storage.

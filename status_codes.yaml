@@ -200,3 +200,8 @@ codes:
     internal: "0x80000025"
     http: 500
     desc: Unexpected storage engine instance.
+
+  - name: null_storage_engine_reference
+    internal: "0x80000026"
+    http: 500
+    desc: Unexpected null engine reference.

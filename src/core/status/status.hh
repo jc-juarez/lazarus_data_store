@@ -273,5 +273,11 @@ status_code_definition(
     0x80000025,
     static_cast<drogon::HttpStatusCode>(500));
 
+// Unexpected null engine reference.
+status_code_definition(
+    null_storage_engine_reference,
+    0x80000026,
+    static_cast<drogon::HttpStatusCode>(500));
+
 } // namespace status.
 } // namespace lazarus.

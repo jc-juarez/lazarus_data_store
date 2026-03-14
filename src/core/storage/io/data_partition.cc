@@ -99,6 +99,17 @@ data_partition::boot(
     }
 
     //
+    // Make sure none of the provided references from the engine are null.
+    //
+    for (storage_engine_reference_handle* engine_reference : storage_engine_references)
+    {
+        if (engine_reference == nullptr)
+        {
+            return status::null_storage_engine_reference;
+        }
+    }
+
+    //
     // All the engine references returned at this point must be
     // considered as approved for the storage engine from this partition
     // as they are mapping exactly to the internal state of the engine, so register them.
