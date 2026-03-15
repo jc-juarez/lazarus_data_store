@@ -159,7 +159,7 @@ write_io_dispatcher::execute_write_io_task(
 status::status_code
 write_io_dispatcher::execute_insert_operation(
     storage_engine_interface& partition_storage_engine,
-    storage_engine_reference_handle* engine_reference,
+    storage_engine_reference* engine_reference,
     const schemas::object_request& object_request)
 {
     status::status_code status = partition_storage_engine.insert_object(
@@ -196,7 +196,7 @@ write_io_dispatcher::execute_insert_operation(
 status::status_code
 write_io_dispatcher::execute_remove_operation(
     storage_engine_interface& partition_storage_engine,
-    storage_engine_reference_handle* engine_reference,
+    storage_engine_reference* engine_reference,
     const schemas::object_request& object_request)
 {
     status::status_code status = partition_storage_engine.remove_object(

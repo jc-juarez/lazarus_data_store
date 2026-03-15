@@ -38,7 +38,7 @@ data_partition::data_partition(
 status::status_code
 data_partition::boot(
     const std::vector<std::string>& containers_names,
-    std::unordered_map<std::string, storage_engine_reference_handle*>& storage_engine_references_mapping)
+    std::unordered_map<std::string, storage_engine_reference*>& storage_engine_references_mapping)
 {
     std::vector<rocksdb::ColumnFamilyDescriptor> column_family_descriptors;
 
@@ -71,28 +71,28 @@ data_partition::boot(
 
     rocksdb::DB* persistent_store;
     const rocksdb::Options options = generate_engine_configurations();
-    std::vector<storage_engine_reference_handle*> storage_engine_references;
+    std::vector<storage_engine_reference*> storage_engine_references;
 
     //
     // Start the engine. At this point the system will start
     // spinning up all internal resources for handling IO operations.
     //
-    const rocksdb::Status status = rocksdb::DB::Open(
+    const rocksdb::Status engine_status = rocksdb::DB::Open(
         options,
         partition_path_,
         column_family_descriptors,
         &storage_engine_references,
         &persistent_store);
 
-    if (!status.ok())
+    if (!engine_status.ok())
     {
         TRACE_LOG(critical, "An error occurred while trying to start the storage engine. "
             "NumberObjectContainersOnDisk={}, "
             "StorageEngineCode={}, "
             "StorageEngineSubCode={}.",
             containers_names.size(),
-            static_cast<std::uint32_t>(status.code()),
-            static_cast<std::uint32_t>(status.subcode()));
+            static_cast<std::uint32_t>(engine_status.code()),
+            static_cast<std::uint32_t>(engine_status.subcode()));
 
         return status::storage_engine_startup_failed;
     }
@@ -100,7 +100,7 @@ data_partition::boot(
     //
     // Make sure none of the provided references from the engine are null.
     //
-    for (storage_engine_reference_handle* engine_reference : storage_engine_references)
+    for (storage_engine_reference* engine_reference : storage_engine_references)
     {
         if (engine_reference == nullptr)
         {
@@ -140,7 +140,7 @@ status::status_code
 data_partition::fetch_containers_from_disk(
     std::vector<std::string>& containers_names)
 {
-    const rocksdb::Status status = rocksdb::DB::ListColumnFamilies(
+    const rocksdb::Status engine_status = rocksdb::DB::ListColumnFamilies(
         rocksdb::DBOptions(),
         partition_path_,
         &containers_names);
@@ -149,14 +149,14 @@ data_partition::fetch_containers_from_disk(
     // rocksdb::Status::kPathNotFound is a valid error code
     // in case this is the first-time startup for the data store.
     //
-    if (!status.ok() &&
-        status.subcode() != rocksdb::Status::kPathNotFound)
+    if (!engine_status.ok() &&
+        engine_status.subcode() != rocksdb::Status::kPathNotFound)
     {
         TRACE_LOG(critical, "Failed to retrieve initial object containers from disk. "
             "StorageEngineCode={}, "
             "StorageEngineSubCode={}.",
-            static_cast<std::uint32_t>(status.code()),
-            static_cast<std::uint32_t>(status.subcode()));
+            static_cast<std::uint32_t>(engine_status.code()),
+            static_cast<std::uint32_t>(engine_status.subcode()));
 
         return status::fetch_containers_from_disk_failed;
     }

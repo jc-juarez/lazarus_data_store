@@ -34,7 +34,7 @@ storage_engine::set_persistent_store(
 
 status::status_code
 storage_engine::insert_object(
-    storage_engine_reference_handle* container_storage_engine_reference,
+    storage_engine_reference* container_storage_engine_reference,
     const char* object_id,
     const byte_stream& object_data)
 {
@@ -94,7 +94,7 @@ storage_engine::insert_object(
 
 status::status_code
 storage_engine::get_object(
-    storage_engine_reference_handle* container_storage_engine_reference,
+    storage_engine_reference* container_storage_engine_reference,
     const char* object_id,
     byte_stream* object_data)
 {
@@ -155,7 +155,7 @@ storage_engine::get_object(
 status::status_code
 storage_engine::create_container(
     const char* container_name,
-    storage_engine_reference_handle** container_storage_engine_reference)
+    storage_engine_reference** container_storage_engine_reference)
 {
     const rocksdb::Status engine_status = persistent_store_->CreateColumnFamily(
         rocksdb::ColumnFamilyOptions(),
@@ -190,7 +190,7 @@ storage_engine::create_container(
 
 status::status_code
 storage_engine::get_all_objects_from_container(
-    storage_engine_reference_handle* container_storage_engine_reference,
+    storage_engine_reference* container_storage_engine_reference,
     std::unordered_map<std::string, byte_stream>* objects)
 {
     if (!fence_engine_reference(container_storage_engine_reference))
@@ -261,7 +261,7 @@ storage_engine::get_all_objects_from_container(
 
 status::status_code
 storage_engine::close_container_storage_engine_reference(
-    storage_engine_reference_handle* container_storage_engine_reference)
+    storage_engine_reference* container_storage_engine_reference)
 {
     if (!fence_engine_reference(container_storage_engine_reference))
     {
@@ -318,7 +318,7 @@ storage_engine::close_container_storage_engine_reference(
 
 status::status_code
 storage_engine::remove_object(
-    storage_engine_reference_handle* container_storage_engine_reference,
+    storage_engine_reference* container_storage_engine_reference,
     const char* object_id)
 {
     if (!fence_engine_reference(container_storage_engine_reference))
@@ -376,7 +376,7 @@ storage_engine::remove_object(
 
 status::status_code
 storage_engine::remove_container(
-    storage_engine_reference_handle* container_storage_engine_reference)
+    storage_engine_reference* container_storage_engine_reference)
 {
     if (!fence_engine_reference(container_storage_engine_reference))
     {
@@ -427,7 +427,7 @@ storage_engine::remove_container(
 
 void
 storage_engine::register_approved_engine_references(
-    const std::vector<storage_engine_reference_handle*> engine_references)
+    const std::vector<storage_engine_reference*> engine_references)
 {
     for (const auto& engine_reference : engine_references)
     {
@@ -439,7 +439,7 @@ storage_engine::register_approved_engine_references(
 
 bool
 storage_engine::fence_engine_reference(
-    storage_engine_reference_handle* engine_reference)
+    storage_engine_reference* engine_reference)
 {
     return engine_reference != nullptr &&
            approved_references_.exists(engine_reference);

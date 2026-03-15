@@ -132,7 +132,7 @@ container::to_string() const
         generate_instances_string());
 }
 
-storage_engine_reference_handle*
+storage_engine_reference*
 container::get_engine_reference(
     const std::uint16_t collocation_index)
 {

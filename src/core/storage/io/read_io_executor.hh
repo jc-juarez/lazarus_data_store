@@ -41,7 +41,7 @@ public:
     status::status_code
     execute_get_operation(
         const std::uint16_t collocation_index,
-        storage_engine_reference_handle* engine_reference,
+        storage_engine_reference* engine_reference,
         const schemas::object_request& object_request,
         byte_stream& object_data);
 

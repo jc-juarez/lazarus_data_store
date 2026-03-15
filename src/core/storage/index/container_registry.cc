@@ -29,7 +29,7 @@ status::status_code
 container_registry::register_container_reference(
     const std::string& container_name,
     const std::uint16_t collocation_index,
-    storage_engine_reference_handle* engine_reference)
+    storage_engine_reference* engine_reference)
 {
     if (references_discovered_.find(engine_reference) != references_discovered_.end())
     {
@@ -121,13 +121,13 @@ container_registry::execute_integrity_validation(
     return status::success;
 }
 
-std::optional<std::vector<storage_engine_reference_handle*>>
+std::optional<std::vector<storage_engine_reference*>>
 container_registry::get_references(
     const std::string& container_name) const
 {
     if (references_map_.find(container_name) != references_map_.end())
     {
-        return std::make_optional<std::vector<storage_engine_reference_handle*>>(
+        return std::make_optional<std::vector<storage_engine_reference*>>(
             references_map_.at(container_name));
     }
 
@@ -136,7 +136,7 @@ container_registry::get_references(
 
 std::string
 container_registry::format_references_list(
-    const std::vector<storage_engine_reference_handle*>& references)
+    const std::vector<storage_engine_reference*>& references)
 {
     std::stringstream ss;
     ss << "{";

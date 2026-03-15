@@ -60,7 +60,7 @@ container_index::insert_container(
     return status;
 }
 
-storage_engine_reference_handle*
+storage_engine_reference*
 container_index::get_container_metadata_engine_reference() const
 {
     const std::shared_ptr<container> container =

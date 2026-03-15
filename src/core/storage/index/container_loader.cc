@@ -35,7 +35,7 @@ container_loader::container_loader(
 
 status::status_code
 container_loader::load_container_index(
-    std::unordered_map<std::string, storage_engine_reference_handle*>& metadata_partition_references,
+    std::unordered_map<std::string, storage_engine_reference*>& metadata_partition_references,
     container_registry& structured_partitions_registry)
 {
     if (metadata_partition_references.size() == 0u ||
@@ -87,7 +87,7 @@ container_loader::load_container_index(
         return status::containers_internal_metadata_lookup_failed;
     }
 
-    storage_engine_reference_handle* container_metadata_engine_reference =
+    storage_engine_reference* container_metadata_engine_reference =
         metadata_partition_references.at(k_containers_container_name_metadata_partition);
 
     //
@@ -177,12 +177,12 @@ container_loader::load_container_index(
 
 status::status_code
 container_loader::create_container_metadata_column_family(
-    std::unordered_map<std::string, storage_engine_reference_handle*>* metadata_partition_references)
+    std::unordered_map<std::string, storage_engine_reference*>* metadata_partition_references)
 {
     //
     // Create the object containers column family on the storage engine.
     //
-    storage_engine_reference_handle* container_metadata_engine_reference;
+    storage_engine_reference* container_metadata_engine_reference;
     status::status_code status = metadata_partition_.get_storage_engine().create_container(
         k_containers_container_name_metadata_partition,
         &container_metadata_engine_reference);
@@ -233,7 +233,7 @@ container_loader::create_container_metadata_column_family(
 
 status::status_code
 container_loader::index_containers_from_metadata_partition(
-    std::unordered_map<std::string, storage_engine_reference_handle*>& metadata_partition_references)
+    std::unordered_map<std::string, storage_engine_reference*>& metadata_partition_references)
 {
     for (auto& container_to_index : metadata_partition_references)
     {
@@ -302,7 +302,7 @@ container_loader::index_containers_from_structured_data_partitions(
     {
         const std::string& container_name = container_present_on_metadata.first;
         const byte_stream& container_raw_metadata = container_present_on_metadata.second;
-        const std::optional<std::vector<storage_engine_reference_handle*>> engine_references =
+        const std::optional<std::vector<storage_engine_reference*>> engine_references =
             structured_partitions_registry.get_references(container_name);
 
         if (engine_references == std::nullopt)
@@ -393,7 +393,7 @@ container_loader::scan_and_index_orphaned_containers(
     for (const auto& registry_entry : structured_partitions_registry)
     {
         const std::string& container_name = registry_entry.first;
-        const std::vector<storage_engine_reference_handle*>& engine_references = registry_entry.second;
+        const std::vector<storage_engine_reference*>& engine_references = registry_entry.second;
 
         if (containers_present_on_metadata.find(container_name) == containers_present_on_metadata.end())
         {
@@ -446,7 +446,7 @@ container_loader::scan_and_index_orphaned_containers(
 
 std::vector<container_instance>
 container_loader::convert_ordered_engine_references_to_container_instances(
-const std::vector<storage_engine_reference_handle*> storage_engine_references)
+const std::vector<storage_engine_reference*> storage_engine_references)
 {
     std::vector<container_instance> container_instances;
 

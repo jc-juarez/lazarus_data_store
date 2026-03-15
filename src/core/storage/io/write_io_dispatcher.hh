@@ -80,7 +80,7 @@ private:
     status::status_code
     execute_insert_operation(
         storage_engine_interface& partition_storage_engine,
-        storage_engine_reference_handle* engine_reference,
+        storage_engine_reference* engine_reference,
         const schemas::object_request& object_request);
 
     //
@@ -89,7 +89,7 @@ private:
     status::status_code
     execute_remove_operation(
         storage_engine_interface& partition_storage_engine,
-        storage_engine_reference_handle* engine_reference,
+        storage_engine_reference* engine_reference,
         const schemas::object_request& object_request);
 
     //

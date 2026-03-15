@@ -48,7 +48,7 @@ TEST_F(
     insert_container_success)
 {
     storage::container_bucket bucket{mock_storage_engine_};
-    storage::storage_engine_reference_handle* reference_handle{};
+    storage::storage_engine_reference* reference_handle{};
     const schemas::container_persistent_interface container_metadata =
         storage::container::create_container_persistent_metadata("Container");
     EXPECT_EQ(
@@ -61,7 +61,7 @@ TEST_F(
     insert_container_collision)
 {
     storage::container_bucket bucket{mock_storage_engine_};
-    storage::storage_engine_reference_handle* reference_handle{};
+    storage::storage_engine_reference* reference_handle{};
     const schemas::container_persistent_interface container_metadata1 =
         storage::container::create_container_persistent_metadata("Container");
     EXPECT_EQ(
@@ -83,7 +83,7 @@ TEST_F(
     insert_container_different_names)
 {
     storage::container_bucket bucket{mock_storage_engine_};
-    storage::storage_engine_reference_handle* reference_handle{};
+    storage::storage_engine_reference* reference_handle{};
     const schemas::container_persistent_interface container_metadata1 =
         storage::container::create_container_persistent_metadata("Container1");
     EXPECT_EQ(
@@ -101,7 +101,7 @@ TEST_F(
     get_container_present)
 {
     storage::container_bucket bucket{mock_storage_engine_};
-    storage::storage_engine_reference_handle* reference_handle{};
+    storage::storage_engine_reference* reference_handle{};
     const schemas::container_persistent_interface container_metadata =
         storage::container::create_container_persistent_metadata("Container");
     EXPECT_EQ(
@@ -133,7 +133,7 @@ TEST_F(
         containers.size(),
         0u);
 
-    storage::storage_engine_reference_handle* reference_handle{};
+    storage::storage_engine_reference* reference_handle{};
     const schemas::container_persistent_interface container_metadata1 =
         storage::container::create_container_persistent_metadata("Container1");
     EXPECT_EQ(
@@ -210,7 +210,7 @@ TEST_F(
     remove_container_present)
 {
     storage::container_bucket bucket{mock_storage_engine_};
-    storage::storage_engine_reference_handle* reference_handle{};
+    storage::storage_engine_reference* reference_handle{};
     const schemas::container_persistent_interface container_metadata =
         storage::container::create_container_persistent_metadata("Container");
     EXPECT_EQ(
@@ -232,7 +232,7 @@ TEST_F(
     remove_container_not_present)
 {
     storage::container_bucket bucket{mock_storage_engine_};
-    storage::storage_engine_reference_handle* reference_handle{};
+    storage::storage_engine_reference* reference_handle{};
     EXPECT_EQ(
         bucket.remove_container("Container"),
         status::container_not_exists);
@@ -247,7 +247,7 @@ TEST_F(
         bucket.get_number_containers(),
         0u);
 
-    storage::storage_engine_reference_handle* reference_handle{};
+    storage::storage_engine_reference* reference_handle{};
     const schemas::container_persistent_interface container_metadata1 =
         storage::container::create_container_persistent_metadata("Container1");
     bucket.insert_container(reference_handle, container_metadata1);

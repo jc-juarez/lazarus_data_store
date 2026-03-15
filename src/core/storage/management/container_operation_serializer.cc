@@ -312,7 +312,7 @@ container_operation_serializer::create_container_instances_on_data_partitions(
 
     for (auto& data_partition : data_partitions)
     {
-        storage_engine_reference_handle* container_storage_engine_reference;
+        storage_engine_reference* container_storage_engine_reference;
 
         status::status_code status = data_partition.get_storage_engine().create_container(
             container_name.c_str(),

@@ -51,7 +51,7 @@ public:
     register_container_reference(
         const std::string& container_name,
         const std::uint16_t collocation_index,
-        storage_engine_reference_handle* engine_reference);
+        storage_engine_reference* engine_reference);
 
     //
     // Validates the required integrity checks for the registered references on
@@ -64,7 +64,7 @@ public:
     //
     // Gets the list of container references for a given container.
     //
-    std::optional<std::vector<storage_engine_reference_handle*>>
+    std::optional<std::vector<storage_engine_reference*>>
     get_references(
         const std::string& container_name) const;
 
@@ -76,19 +76,19 @@ private:
     static
     std::string
     format_references_list(
-        const std::vector<storage_engine_reference_handle*>& references);
+        const std::vector<storage_engine_reference*>& references);
 
     //
     // Internal map for holding the container names and their respective references.
     //
-    std::unordered_map<std::string, std::vector<storage_engine_reference_handle*>> references_map_;
+    std::unordered_map<std::string, std::vector<storage_engine_reference*>> references_map_;
 
     //
     // Map to record all storage engine references.
     // This is used to find duplicates during container registration.
     // Maps a reference to a collocation index,
     //
-    std::unordered_map<storage_engine_reference_handle*, std::uint16_t> references_discovered_;
+    std::unordered_map<storage_engine_reference*, std::uint16_t> references_discovered_;
 };
 
 } // namespace storage.

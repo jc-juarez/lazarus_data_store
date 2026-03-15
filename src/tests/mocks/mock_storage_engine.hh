@@ -30,13 +30,13 @@ public:
         lazarus::status::status_code,
         start,
         ((const std::vector<std::string>&),
-        (std::unordered_map<std::string, storage::storage_engine_reference_handle*>*)),
+        (std::unordered_map<std::string, storage::storage_engine_reference*>*)),
         (override));
 
     MOCK_METHOD(
         status::status_code,
         insert_object,
-        (storage::storage_engine_reference_handle*,
+        (storage::storage_engine_reference*,
         const char*,
         const storage::byte_stream&),
         (override));
@@ -44,7 +44,7 @@ public:
     MOCK_METHOD(
         status::status_code,
         get_object,
-        (storage::storage_engine_reference_handle*,
+        (storage::storage_engine_reference*,
         const char*,
         storage::byte_stream*),
         (override));
@@ -53,13 +53,13 @@ public:
         status::status_code,
         create_container,
         (const char*,
-        storage::storage_engine_reference_handle**),
+        storage::storage_engine_reference**),
         (override));
 
     MOCK_METHOD(
         status::status_code,
         get_all_objects_from_container,
-        ((storage::storage_engine_reference_handle*),
+        ((storage::storage_engine_reference*),
         (std::unordered_map<std::string, storage::byte_stream>*)),
         (override));
 
@@ -72,20 +72,20 @@ public:
     MOCK_METHOD(
         status::status_code,
         close_container_storage_engine_reference,
-        (storage::storage_engine_reference_handle*),
+        (storage::storage_engine_reference*),
         (override));
 
     MOCK_METHOD(
         status::status_code,
         remove_object,
-        (storage::storage_engine_reference_handle*,
+        (storage::storage_engine_reference*,
         const char*),
         (override));
 
     MOCK_METHOD(
         status::status_code,
         remove_container,
-        (storage::storage_engine_reference_handle * ),
+        (storage::storage_engine_reference * ),
         (override));
 };
 

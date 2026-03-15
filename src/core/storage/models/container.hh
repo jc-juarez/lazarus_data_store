@@ -89,7 +89,7 @@ public:
     // Returns the corresponding storage engine reference for
     // a specific container instance given a collocation index lookup.
     //
-    storage_engine_reference_handle*
+    storage_engine_reference*
     get_engine_reference(
         const std::uint16_t collocation_index);
 

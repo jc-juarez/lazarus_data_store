@@ -49,7 +49,7 @@ public:
     status::status_code
     boot(
         const std::vector<std::string>& containers_names,
-        std::unordered_map<std::string, storage_engine_reference_handle*>& storage_engine_references_mapping);
+        std::unordered_map<std::string, storage_engine_reference*>& storage_engine_references_mapping);
 
     //
     // Fetches the existing object containers in the partition.

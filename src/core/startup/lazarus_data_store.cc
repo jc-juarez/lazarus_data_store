@@ -108,7 +108,7 @@ lazarus_data_store::start_data_store()
 status::status_code
 lazarus_data_store::bootstrap_storage_state()
 {
-    using references_mapping = std::unordered_map<std::string, storage::storage_engine_reference_handle*>;
+    using references_mapping = std::unordered_map<std::string, storage::storage_engine_reference*>;
 
     //
     // Before starting the server, boot the container
@@ -188,7 +188,7 @@ lazarus_data_store::boot_structured_data_partitions()
 
     for (auto& data_partition : data_partitions)
     {
-        std::unordered_map<std::string, storage::storage_engine_reference_handle*> structured_partitions_references;
+        std::unordered_map<std::string, storage::storage_engine_reference*> structured_partitions_references;
 
         status::status_code status = boot_data_partition(
             data_partition,
@@ -234,7 +234,7 @@ lazarus_data_store::boot_structured_data_partitions()
 status::status_code
 lazarus_data_store::boot_data_partition(
     storage::data_partition& data_partition,
-    std::unordered_map<std::string, storage::storage_engine_reference_handle*>& references_mapping)
+    std::unordered_map<std::string, storage::storage_engine_reference*>& references_mapping)
 {
     //
     // Fetch all persistent object containers from the filesystem.

@@ -53,7 +53,7 @@ public:
     //
     status::status_code
     insert_object(
-        storage_engine_reference_handle* container_storage_engine_reference,
+        storage_engine_reference* container_storage_engine_reference,
         const char* object_id,
         const byte_stream& object_data) override;
 
@@ -63,7 +63,7 @@ public:
     //
     status::status_code
     get_object(
-        storage_engine_reference_handle* container_storage_engine_reference,
+        storage_engine_reference* container_storage_engine_reference,
         const char* object_id,
         byte_stream* object_data) override;
 
@@ -74,7 +74,7 @@ public:
     status::status_code
     create_container(
         const char* container_name,
-        storage_engine_reference_handle** container_storage_engine_reference) override;
+        storage_engine_reference** container_storage_engine_reference) override;
 
     //
     // Gets all the objects from a specified object container.
@@ -82,7 +82,7 @@ public:
     //
     status::status_code
     get_all_objects_from_container(
-        storage_engine_reference_handle* container_storage_engine_reference,
+        storage_engine_reference* container_storage_engine_reference,
         std::unordered_map<std::string, byte_stream>* objects) override;
 
     //
@@ -90,14 +90,14 @@ public:
     //
     status::status_code
     close_container_storage_engine_reference(
-        storage_engine_reference_handle* container_storage_engine_reference) override;
+        storage_engine_reference* container_storage_engine_reference) override;
 
     //
     // Removes an object from a given object container.
     //
     status::status_code
     remove_object(
-        storage_engine_reference_handle* container_storage_engine_reference,
+        storage_engine_reference* container_storage_engine_reference,
         const char* object_id) override;
 
     //
@@ -105,14 +105,14 @@ public:
     //
     status::status_code
     remove_container(
-        storage_engine_reference_handle* container_storage_engine_reference) override;
+        storage_engine_reference* container_storage_engine_reference) override;
 
     //
     // Registers an engine reference into the approved set of references.
     //
     void
     register_approved_engine_references(
-        const std::vector<storage_engine_reference_handle*> engine_references) override;
+        const std::vector<storage_engine_reference*> engine_references) override;
 
     //
     // Validates whether the provided engine reference is part
@@ -121,7 +121,7 @@ public:
     //
     bool
     fence_engine_reference(
-        storage_engine_reference_handle* engine_reference) override;
+        storage_engine_reference* engine_reference) override;
 
 private:
 
@@ -135,7 +135,7 @@ private:
     // This implements the fencing logic for ensuring only approved engine references
     // can execute on this storage engine instance.
     //
-    common::concurrent_flat_map<storage_engine_reference_handle*, std::monostate> approved_references_;
+    common::concurrent_flat_map<storage_engine_reference*, std::monostate> approved_references_;
 
     //
     // Corresponding collocation index.

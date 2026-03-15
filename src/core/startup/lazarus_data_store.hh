@@ -112,7 +112,7 @@ private:
     status::status_code
     boot_data_partition(
         storage::data_partition& data_partition,
-        std::unordered_map<std::string, storage::storage_engine_reference_handle*>& references_mapping);
+        std::unordered_map<std::string, storage::storage_engine_reference*>& references_mapping);
 
     //
     // Session identifier.
