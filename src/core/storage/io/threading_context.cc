@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'threading_context.cc'
 // Author: jcjuarez
@@ -15,7 +15,7 @@
 
 #include "threading_context.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -26,4 +26,4 @@ threading_context::threading_context(
 {}
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

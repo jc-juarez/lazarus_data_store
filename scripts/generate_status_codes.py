@@ -1,5 +1,5 @@
 # ****************************************************
-# Lazarus Data Store
+# PandoraDB
 # Scripts
 # 'generate_status_code.py'
 # Author: jcjuarez
@@ -25,7 +25,7 @@ import argparse
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CONFIG_FILE = ROOT / "status_codes.yaml"
 SERVER_CPP_FILE = ROOT / "src/core/status/status.hh"
-SDK_PY_FILE = ROOT / "sdk/python/lazarus_client/lazarus_status_code.py"
+SDK_PY_FILE = ROOT / "sdk/python/pandora_client/pandora_status_code.py"
 
 def to_int(val):
     if isinstance(val, int):
@@ -77,7 +77,7 @@ def next_internal_code(codes):
 def cpp_header():
     return (
         "// ****************************************************\n"
-        "// Lazarus Data Store\n"
+        "// PandoraDB\n"
         "// Status\n"
         "// 'status.hh'\n"
         "// Author: Auto-Generated\n"
@@ -92,9 +92,9 @@ def cpp_header():
 def py_header():
     return (
         "# ****************************************************\n"
-        "# Lazarus Data Store\n"
+        "# PandoraDB\n"
         "# Status\n"
-        "# 'lazarus_status_code.py'\n"
+        "# 'pandora_status_code.py'\n"
         "# Author: Auto-Generated\n"
         "# Description:\n"
         "#      Status codes for error handling.\n"
@@ -110,7 +110,7 @@ def generate_server_cpp(codes):
         "#pragma once\n\n",
         '#include "status_code.hh"\n',
         "#include <drogon/drogon.h>\n\n",
-        "namespace lazarus\n",
+        "namespace pandora\n",
         "{\n",
         "namespace status\n",
         "{\n\n",
@@ -152,7 +152,7 @@ def generate_server_cpp(codes):
                 "}\n\n"
             )
     lines.append("} // namespace status.\n")
-    lines.append("} // namespace lazarus.")
+    lines.append("} // namespace pandora.")
     SERVER_CPP_FILE.parent.mkdir(parents=True, exist_ok=True)
     text = "".join(lines).rstrip("\n")
     SERVER_CPP_FILE.write_text(text)
@@ -162,7 +162,7 @@ def generate_sdk_python(codes):
     lines = [
         py_header(),
         "from enum import Enum\n\n",
-        "class LazarusStatusCode(Enum):\n",
+        "class PandoraDBStatusCode(Enum):\n",
         "\n",
     ]
     for i, c in enumerate(codes):
@@ -210,7 +210,7 @@ def regenerate_all():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Lazarus Data Store — Status Code Generator",
+        description="PandoraDB — Status Code Generator",
         epilog=(
             "Usage examples:\n"
             "  Add new code:    python3 scripts/generate_status_codes.py --add <name> --http <code> --desc <description>\n"

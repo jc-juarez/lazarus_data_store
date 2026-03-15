@@ -1,10 +1,10 @@
 # ****************************************************
-# Lazarus Data Store
+# PandoraDB
 # Scripts
 # 'build.dockerfile'
 # Author: jcjuarez
 # Description:
-#      Ubuntu base image for building lazarus.
+#      Ubuntu base image for building pandora.
 # ****************************************************
 
 FROM ubuntu:24.04

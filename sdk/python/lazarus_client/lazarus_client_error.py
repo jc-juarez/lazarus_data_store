@@ -1,49 +1,49 @@
 # ****************************************************
-# Lazarus Data Store
+# PandoraDB
 # SDK
-# 'lazarus_client_error.py'
+# 'pandora_client_error.py'
 # Author: jcjuarez
 # Description:
-#      Lazarus Python SDK client error exception.
+#      PandoraDB Python SDK client error exception.
 # ****************************************************
 
 from typing import Optional
-from .lazarus_status_code import LazarusStatusCode
+from .pandora_status_code import PandoraDBStatusCode
 
-class LazarusClientError(Exception):
+class PandoraDBClientError(Exception):
 
     def __init__(
             self,
             http_status_code: Optional[int],
-            lazarus_status_code: Optional[LazarusStatusCode],
+            pandora_status_code: Optional[PandoraDBStatusCode],
             details: str,
             host: str,
             port: int):
         self.http_status_code = http_status_code
-        if isinstance(lazarus_status_code, int):
+        if isinstance(pandora_status_code, int):
             try:
-                self.lazarus_status_code = LazarusStatusCode(lazarus_status_code)
+                self.pandora_status_code = PandoraDBStatusCode(pandora_status_code)
             except ValueError:
-                self.lazarus_status_code = lazarus_status_code
+                self.pandora_status_code = pandora_status_code
         else:
-            self.lazarus_status_code = lazarus_status_code
+            self.pandora_status_code = pandora_status_code
         self.details = details
         self.host = host
         self.port = port
 
     def __str__(
             self) -> str:
-        parts = ["LazarusClientError"]
+        parts = ["PandoraDBClientError"]
         if self.http_status_code is not None:
             parts.append(f"HttpStatusCode={self.http_status_code}")
-        if self.lazarus_status_code is not None:
-            if isinstance(self.lazarus_status_code, LazarusStatusCode):
+        if self.pandora_status_code is not None:
+            if isinstance(self.pandora_status_code, PandoraDBStatusCode):
                 parts.append(
-                    f"InternalStatusCode={self.lazarus_status_code.name}"
-                    f"(0x{self.lazarus_status_code.value:X})"
+                    f"InternalStatusCode={self.pandora_status_code.name}"
+                    f"(0x{self.pandora_status_code.value:X})"
                 )
             else:
-                parts.append(f"InternalStatusCode=0x{self.lazarus_status_code:X}")
+                parts.append(f"InternalStatusCode=0x{self.pandora_status_code:X}")
         parts.append(f"Details={self.details}")
         parts.append(f"Server={self.host}:{self.port}")
         return " ".join(parts)

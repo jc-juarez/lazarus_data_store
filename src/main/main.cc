@@ -5,12 +5,12 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Main
 // 'main.cc'
 // Author: jcjuarez
 // Description:
-//      Lazarus data store entry point. 
+//      PandoraDB entry point.
 // ****************************************************
 
 /*
@@ -32,5 +32,5 @@
 int main(int argc, char** argv)
 {
    const std::vector<std::string> args(argv, argv + argc);
-   return lazarus::init_system(args);
+   return pandora::init_system(args);
 }

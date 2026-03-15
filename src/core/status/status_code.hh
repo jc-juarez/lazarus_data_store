@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Status
 // 'status.hh'
 // Author: jcjuarez
@@ -17,7 +17,7 @@
 
 #include <cstdint>
 
-namespace lazarus::status
+namespace pandora::status
 {
 
 struct status_code
@@ -81,4 +81,4 @@ private:
     const char* name_;
 };
 
-} // namespace lazarus::status.
+} // namespace pandora::status.

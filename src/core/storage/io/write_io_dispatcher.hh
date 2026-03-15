@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'write_io_dispatcher.hh'
 // Author: jcjuarez
@@ -21,7 +21,7 @@
 #include "../../common/startable_interface.hh"
 #include <moodycamel/blockingconcurrentqueue.h>
 
-namespace lazarus::storage
+namespace pandora::storage
 {
 
 class cache_accessor;
@@ -113,4 +113,4 @@ private:
     std::jthread write_dispatcher_master_thread_;
 };
 
-} // namespace lazarus::storage.
+} // namespace pandora::storage.

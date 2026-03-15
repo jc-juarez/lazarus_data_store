@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Schemas
 // 'object_request.cc'
 // Author: jcjuarez
@@ -15,7 +15,7 @@
 
 #include "object_request.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace schemas
 {
@@ -124,4 +124,4 @@ object_request::get_optype() const
 }
 
 } // namespace schemas.
-} // namespace lazarus.
+} // namespace pandora.

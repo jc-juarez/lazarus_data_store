@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'container_registry.cc'
 // Author: jcjuarez
@@ -17,7 +17,7 @@
 #include "container_registry.hh"
 #include "../../startup/collocation_builder.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -169,4 +169,4 @@ container_registry::format_references_list(
 }
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

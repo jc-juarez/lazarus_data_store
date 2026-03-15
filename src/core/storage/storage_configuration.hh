@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'storage_configuration.hh'
 // Author: jcjuarez
@@ -20,7 +20,7 @@
 #include <cstdlib>
 #include <stdexcept>
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -61,7 +61,7 @@ struct storage_configuration
         }
 
         kv_store_path_ =
-            std::string(home_environment_variable) + "/lazarus/data";
+            std::string(home_environment_variable) + "/pandora/data";
     }
 
     //
@@ -134,4 +134,4 @@ struct storage_configuration
 };
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

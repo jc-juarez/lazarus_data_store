@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'read_io_executor.hh'
 // Author: jcjuarez
@@ -18,7 +18,7 @@
 #include "../../common/aliases.hh"
 #include "../../schemas/request-interfaces/object_request.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -54,4 +54,4 @@ private:
 };
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

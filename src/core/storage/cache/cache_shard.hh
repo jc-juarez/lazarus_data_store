@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'cache_shard.hh'
 // Author: jcjuarez
@@ -26,7 +26,7 @@
 #include "../../status/status.hh"
 #include "../../common/aliases.hh"
 
-namespace lazarus::storage
+namespace pandora::storage
 {
 
 class cache_shard
@@ -96,4 +96,4 @@ private:
     mutable std::mutex lock_;
 };
 
-} // namespace lazarus::storage.
+} // namespace pandora::storage.

@@ -1,6 +1,6 @@
-# ☄️ Lazarus Data Store
+# ☄️ PandoraDB
 
-Lazarus Data Store is a high performance object container data store HTTP server implemented in C++ for GNU/Linux. 
+PandoraDB is a high performance object container data store HTTP server implemented in C++ for GNU/Linux. 
 It’s designed for **speed, persistence, and simplicity**, built on top of RocksDB.
 
 ---
@@ -12,11 +12,11 @@ This software is licensed under the **Business Source License 1.1 (BSL)**.
 You may use, modify, and distribute this software for non-commercial and non-production use only.  
 Commercial or production use requires a license from the Licensor.
 
-Contact: [lazarusdatastore@gmail.com](mailto:lazarusdatastore@gmail.com)
+Contact: [pandoradatastore@gmail.com](mailto:pandoradatastore@gmail.com)
 
-## 🧩 What is Lazarus Data Store?
+## 🧩 What is PandoraDB?
 
-Lazarus DS is an **object container store**:
+PandoraDB is an **object container store**:
 
 - 📦 **Containers** act like logical buckets.
 - 🔑 Each container holds **objects** stored as `key → value` pairs (IDs → byte streams).
@@ -27,7 +27,7 @@ Lazarus DS is an **object container store**:
 
 ## 🏗️ Architecture
 
-Lazarus DS is split into three conceptual layers:
+PandoraDB is split into three conceptual layers:
 
 ### 🌐 HTTP Layer
 - Provides REST-style endpoints for containers and objects.
@@ -57,13 +57,13 @@ Lazarus DS is split into three conceptual layers:
 ## 🌐 HTTP API Overview
 
 **Containers**
-- `PUT    /lazarus/network/container_endpoint/` → create container
-- `DELETE /lazarus/network/container_endpoint/` → delete container
+- `PUT    /pandora/network/container_endpoint/` → create container
+- `DELETE /pandora/network/container_endpoint/` → delete container
 
 **Objects**
-- `POST   /lazarus/network/object_endpoint/` → insert object
-- `GET    /lazarus/network/object_endpoint/` → fetch object
-- `DELETE /lazarus/network/object_endpoint/` → remove object
+- `POST   /pandora/network/object_endpoint/` → insert object
+- `GET    /pandora/network/object_endpoint/` → fetch object
+- `DELETE /pandora/network/object_endpoint/` → remove object
 
 ---
 
@@ -74,9 +74,9 @@ A Python client lives in [`sdk/python`](./sdk/python).
 Quick example:
 
 ```python
-from lazarus_client import LazarusClient
+from pandora_client import PandoraDBClient
 
-client = LazarusClient(port=8080)
+client = PandoraDBClient(port=8080)
 
 client.create_container("users")
 client.insert_object("users", "user123", '{"name": "Alice"}')

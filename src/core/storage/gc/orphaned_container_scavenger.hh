@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'orphaned_container_scavenger.hh'
 // Author: jcjuarez
@@ -19,7 +19,7 @@
 #include <memory>
 #include "../models/container_instance.hh"
 
-namespace lazarus::storage
+namespace pandora::storage
 {
 
 class container;
@@ -59,4 +59,4 @@ private:
     container_index& container_index_;
 };
 
-} // namespace lazarus::storage.
+} // namespace pandora::storage.

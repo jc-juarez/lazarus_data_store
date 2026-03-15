@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'data_partition.hh'
 // Author: jcjuarez
@@ -22,7 +22,7 @@
 #include "../storage_configuration.hh"
 #include "storage_engine_interface.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -54,7 +54,7 @@ public:
     //
     // Fetches the existing object containers in the partition.
     // In case of a system crash, the underlying core engine ensures
-    // that all operations are written into the WAL entries, thus lazarus
+    // that all operations are written into the WAL entries, thus pandora
     // only acknowledges object container references that were successfully
     // recorded into the storage engine WAL.
     // This should be invoked before booting the partition.
@@ -117,4 +117,4 @@ private:
 };
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

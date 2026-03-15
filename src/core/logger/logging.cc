@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Logger
 // 'logging.cc'
 // Author: jcjuarez
@@ -15,7 +15,7 @@
 #include "logging.hh"
 #include <filesystem>
 
-namespace lazarus
+namespace pandora
 {
 namespace logger
 {
@@ -66,4 +66,4 @@ init_logger(
 }
 
 } // namespace logger.
-} // namespace lazarus.
+} // namespace pandora.

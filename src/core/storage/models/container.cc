@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'container.hh'
 // Author: jcjuarez
@@ -18,7 +18,7 @@
 #include "container.hh"
 #include "../io/storage_engine.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -152,4 +152,4 @@ container::get_container_instances()
 }
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

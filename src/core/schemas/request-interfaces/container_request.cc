@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Schemas
 // 'container_request.cc'
 // Author: jcjuarez
@@ -15,7 +15,7 @@
 
 #include "container_request.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace schemas
 {
@@ -73,4 +73,4 @@ container_request::get_optype() const
 }
 
 } // namespace schemas.
-} // namespace lazarus.
+} // namespace pandora.

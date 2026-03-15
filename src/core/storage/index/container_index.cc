@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'container_index.hh'
 // Author: jcjuarez
@@ -17,7 +17,7 @@
 #include "container_index.hh"
 #include "container_loader.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -162,4 +162,4 @@ container_index::get_associated_bucket_index(
 }
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

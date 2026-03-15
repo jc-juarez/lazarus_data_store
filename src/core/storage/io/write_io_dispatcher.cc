@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'write_io_dispatcher.cc'
 // Author: jcjuarez
@@ -22,7 +22,7 @@
 #include "../../startup/system_init.hh"
 #include "../../network/server/server.hh"
 
-namespace lazarus::storage
+namespace pandora::storage
 {
 
 write_io_dispatcher::write_io_dispatcher(
@@ -35,7 +35,7 @@ write_io_dispatcher::write_io_dispatcher(
 void
 write_io_dispatcher::start()
 {
-    TRACE_LOG(info, "Starting lazarus data store write IO dispatcher thread.");
+    TRACE_LOG(info, "Starting PandoraDB write IO dispatcher thread.");
 
     write_dispatcher_master_thread_ = std::jthread(
         &write_io_dispatcher::dispatch_write_io_tasks,
@@ -69,7 +69,7 @@ void
 write_io_dispatcher::dispatch_write_io_tasks(
     std::stop_token stop_token)
 {
-    pthread_setname_np(pthread_self(), "lazarus_write");
+    pthread_setname_np(pthread_self(), "pandora_write");
 
     //
     // This is the core tight loop for dispatching write io tasks.
@@ -83,7 +83,7 @@ write_io_dispatcher::dispatch_write_io_tasks(
         }
     }
 
-    TRACE_LOG(info, "Stopping lazarus data store write IO dispatcher thread.");
+    TRACE_LOG(info, "Stopping PandoraDB write IO dispatcher thread.");
 }
 
 void
@@ -231,4 +231,4 @@ write_io_dispatcher::execute_remove_operation(
     return status;
 }
 
-} // namespace lazarus::storage.
+} // namespace pandora::storage.

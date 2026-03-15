@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'threading_context.hh'
 // Author: jcjuarez
@@ -17,7 +17,7 @@
 
 #include <cstdint>
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -41,4 +41,4 @@ private:
 };
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

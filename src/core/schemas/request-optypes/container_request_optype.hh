@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Schemas
 // 'container_request_optype.hh'
 // Author: jcjuarez
@@ -16,7 +16,7 @@
 
 #include <cstdint>
 
-namespace lazarus
+namespace pandora
 {
 namespace schemas
 {
@@ -43,4 +43,4 @@ enum class container_request_optype : std::uint8_t
 };
 
 } // namespace schemas.
-} // namespace lazarus.
+} // namespace pandora.

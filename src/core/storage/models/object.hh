@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'object.hh'
 // Author: jcjuarez
@@ -16,7 +16,7 @@
 
 #include "../../common/aliases.hh"
 
-namespace lazarus::storage
+namespace pandora::storage
 {
 
 class object
@@ -73,4 +73,4 @@ private:
     std::string container_name_;
 };
 
-} // namespace lazarus::storage.
+} // namespace pandora::storage.

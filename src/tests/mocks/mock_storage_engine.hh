@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Tests
 // 'mock_storage_engine.hh'
 // Author: jcjuarez
@@ -17,7 +17,7 @@
 #include <gmock/gmock.h>
 #include "core/storage/io/storage_engine_interface.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace tests
 {
@@ -27,7 +27,7 @@ class mock_storage_engine : public storage::storage_engine_interface
 public:
 
     MOCK_METHOD(
-        lazarus::status::status_code,
+        pandora::status::status_code,
         start,
         ((const std::vector<std::string>&),
         (std::unordered_map<std::string, storage::storage_engine_reference*>*)),
@@ -90,4 +90,4 @@ public:
 };
 
 } // namespace tests.
-} // namespace lazarus.
+} // namespace pandora.

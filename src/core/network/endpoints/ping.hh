@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Network
 // 'ping.hh'
 // Author: jcjuarez
@@ -17,7 +17,7 @@
 #include "../../common/aliases.hh"
 #include <drogon/HttpController.h>
 
-namespace lazarus
+namespace pandora
 {
 namespace network
 {
@@ -34,7 +34,7 @@ public:
     ping() = default;
 
     METHOD_LIST_BEGIN
-        METHOD_ADD(ping::reply_to_ping, "", drogon::Get, "lazarus::network::logging_context_filter");
+        METHOD_ADD(ping::reply_to_ping, "", drogon::Get, "pandora::network::logging_context_filter");
     METHOD_LIST_END
 
     //
@@ -48,4 +48,4 @@ public:
 
 } // namespace endpoints.
 } // namespace network.
-} // namespace lazarus.
+} // namespace pandora.

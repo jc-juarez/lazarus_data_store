@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Network
 // 'logging_context_filter.hh'
 // Author: jcjuarez
@@ -17,7 +17,7 @@
 
 #include <drogon/HttpFilter.h>
 
-namespace lazarus
+namespace pandora
 {
 namespace network
 {
@@ -42,4 +42,4 @@ public:
 };
 
 } // namespace network.
-} // namespace lazarus.
+} // namespace pandora.

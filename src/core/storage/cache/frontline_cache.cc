@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'frontline_cache.hh'
 // Author: jcjuarez
@@ -16,7 +16,7 @@
 #include "frontline_cache.hh"
 #include "../index/container_index.hh"
 
-namespace lazarus::storage
+namespace pandora::storage
 {
 
 frontline_cache::frontline_cache(
@@ -112,4 +112,4 @@ frontline_cache::get_associated_cache_shard_index(
     return hasher_(object_id) % number_cache_shards_;
 }
 
-} // namespace lazarus::storage.
+} // namespace pandora::storage.

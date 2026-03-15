@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Network
 // 'create_container_request_handler.cc'
 // Author: jcjuarez
@@ -18,7 +18,7 @@
 #include "create_container_request_handler.hh"
 #include "../../../../storage/management/container_management_service.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace network
 {
@@ -50,4 +50,4 @@ create_container_request_handler::execute_operation(
 }
 
 } // namespace network.
-} // namespace lazarus.
+} // namespace pandora.

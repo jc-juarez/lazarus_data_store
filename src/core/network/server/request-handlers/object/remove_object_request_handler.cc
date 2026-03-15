@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Network
 // 'remove_object_request_handler.cc'
 // Author: jcjuarez
@@ -17,7 +17,7 @@
 #include "remove_object_request_handler.hh"
 #include "../../../../storage/management/object_management_service.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace network
 {
@@ -71,4 +71,4 @@ remove_object_request_handler::execute_operation(
 }
 
 } // namespace network.
-} // namespace lazarus.
+} // namespace pandora.

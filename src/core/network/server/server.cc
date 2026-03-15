@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Network
 // 'server.cc'
 // Author: jcjuarez
@@ -26,7 +26,7 @@
 #include "request-handlers/container/create_container_request_handler.hh"
 #include "request-handlers/container/remove_container_request_handler.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace network
 {
@@ -64,7 +64,7 @@ server::server(
 void
 server::start()
 {
-    TRACE_LOG(info, "Starting lazarus data store server. "
+    TRACE_LOG(info, "Starting PandoraDB server. "
         "Port={}, "
         "LogsDirectoryPath={}, "
         "NumThreads={}, "
@@ -80,7 +80,7 @@ server::start()
 void
 server::stop()
 {
-    TRACE_LOG(info, "Stopping lazarus data store server.");
+    TRACE_LOG(info, "Stopping PandoraDB server.");
 
     drogon::app().quit();
 }
@@ -127,4 +127,4 @@ server::send_response(
 }
 
 } // namespace network.
-} // namespace lazarus.
+} // namespace pandora.

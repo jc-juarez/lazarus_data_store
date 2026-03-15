@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'storage_engine.cc'
 // Author: jcjuarez
@@ -14,7 +14,7 @@
 
 #include "storage_engine.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -446,4 +446,4 @@ storage_engine::fence_engine_reference(
 }
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

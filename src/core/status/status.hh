@@ -1,5 +1,5 @@
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Status
 // 'status.hh'
 // Author: Auto-Generated
@@ -15,7 +15,7 @@
 #include "status_code.hh"
 #include <drogon/drogon.h>
 
-namespace lazarus
+namespace pandora
 {
 namespace status
 {
@@ -280,4 +280,4 @@ status_code_definition(
     static_cast<drogon::HttpStatusCode>(500));
 
 } // namespace status.
-} // namespace lazarus.
+} // namespace pandora.

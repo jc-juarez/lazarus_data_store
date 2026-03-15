@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'cache_accessor.cc'
 // Author: jcjuarez
@@ -16,7 +16,7 @@
 #include "cache_accessor.hh"
 #include "frontline_cache.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -71,4 +71,4 @@ cache_accessor::remove_object_from_cache(
 {}
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

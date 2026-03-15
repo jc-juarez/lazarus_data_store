@@ -1,12 +1,12 @@
 # ****************************************************
-# Lazarus Data Store
+# PandoraDB
 # SDK
 # '__init__.py'
 # Author: jcjuarez
 # Description:
-#      Lazarus Python SDK client module root.
+#      PandoraDB Python SDK client module root.
 # ****************************************************
 
-from .lazarus_client import LazarusClient
-from .lazarus_status_code import LazarusStatusCode
-from .lazarus_client_error import LazarusClientError
+from .pandora_client import PandoraDBClient
+from .pandora_status_code import PandoraDBStatusCode
+from .pandora_client_error import PandoraDBClientError

@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'collocation_builder.cc'
 // Author: jcjuarez
@@ -21,7 +21,7 @@
 #include "../storage/io/data_partition_provider.hh"
 #include "../storage/io/threading_context_provider.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -97,4 +97,4 @@ collocation_builder::generate_collocation_topology(
 }
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

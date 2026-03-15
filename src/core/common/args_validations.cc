@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Common
 // 'args_validations.cc'
 // Author: jcjuarez
@@ -18,7 +18,7 @@
 #include <filesystem>
 #include "args_validations.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace common
 {
@@ -38,7 +38,7 @@ validate_process_args(
     if (args_count != max_args_count)
     {
         throw std::runtime_error(std::format(
-        "Invalid number of process arguments provided for starting lazarus. "
+        "Invalid number of process arguments provided for starting pandora. "
         "ArgsCount={}, "
         "MaxArgsCount={}.",
         args_count,
@@ -50,13 +50,13 @@ validate_process_args(
     if (config_file_path.empty())
     {
         throw std::runtime_error(
-        "Provided configuration file path for starting lazarus is empty");
+        "Provided configuration file path for starting pandora is empty");
     }
 
     if (!std::filesystem::exists(config_file_path))
     {
         throw std::runtime_error(std::format(
-        "Provided configuration file path for starting lazarus not found in the filesystem. "
+        "Provided configuration file path for starting pandora not found in the filesystem. "
         "ConfigFilePath={}.",
         config_file_path));
     }
@@ -64,11 +64,11 @@ validate_process_args(
     if (!std::filesystem::is_regular_file(config_file_path))
     {
         throw std::runtime_error(std::format(
-        "Provided configuration file path for starting lazarus is not a file. "
+        "Provided configuration file path for starting pandora is not a file. "
         "ConfigFilePath={}.",
         config_file_path));
     }
 }
 
 } // namespace common.
-} // namespace lazarus.
+} // namespace pandora.

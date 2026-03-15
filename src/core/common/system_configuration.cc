@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Common
 // 'system_configuration.cc'
 // Author: jcjuarez
@@ -17,7 +17,7 @@
 #include <fstream>
 #include "system_configuration.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace common
 {
@@ -31,7 +31,7 @@ system_configuration::load_configuration_from_file(
     if (!config_file.is_open())
     {
         throw std::runtime_error(std::format(
-            "Failed to open the provided configuration file path for starting lazarus. "
+            "Failed to open the provided configuration file path for starting pandora. "
             "ConfigFilePath={}.",
             config_file_path));
     }
@@ -178,4 +178,4 @@ system_configuration::load_server_configuration(
 }
 
 } // namespace common.
-} // namespace lazarus.
+} // namespace pandora.

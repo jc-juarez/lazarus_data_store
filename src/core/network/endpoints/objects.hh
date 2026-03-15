@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Network
 // 'objects.hh'
 // Author: jcjuarez
@@ -18,7 +18,7 @@
 #include "../server/server.hh"
 #include <drogon/HttpController.h>
 
-namespace lazarus
+namespace pandora
 {
 namespace network
 {
@@ -43,9 +43,9 @@ public:
         std::unique_ptr<remove_object_request_handler> remove_object_request_handler);
 
     METHOD_LIST_BEGIN
-    METHOD_ADD(objects::insert_object, "", drogon::Post, "lazarus::network::logging_context_filter");
-    METHOD_ADD(objects::get_object, "", drogon::Get, "lazarus::network::logging_context_filter");
-    METHOD_ADD(objects::remove_object, "", drogon::Delete, "lazarus::network::logging_context_filter");
+    METHOD_ADD(objects::insert_object, "", drogon::Post, "pandora::network::logging_context_filter");
+    METHOD_ADD(objects::get_object, "", drogon::Get, "pandora::network::logging_context_filter");
+    METHOD_ADD(objects::remove_object, "", drogon::Delete, "pandora::network::logging_context_filter");
     METHOD_LIST_END
 
     //
@@ -92,4 +92,4 @@ private:
 
 } // namespace endpoints.
 } // namespace network.
-} // namespace lazarus.
+} // namespace pandora.

@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'cache_shard.cc'
 // Author: jcjuarez
@@ -15,7 +15,7 @@
 
 #include "cache_shard.hh"
 
-namespace lazarus::storage
+namespace pandora::storage
 {
 
 using container_object_id_pair = std::pair<std::string, std::string>;
@@ -136,4 +136,4 @@ cache_shard::get(
     return std::make_optional<byte_stream>(map_object_iterator->second->second);
 }
 
-} // namespace lazarus::storage.
+} // namespace pandora::storage.

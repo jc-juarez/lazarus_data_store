@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'io_dispatcher_interface.hh'
 // Author: jcjuarez
@@ -17,7 +17,7 @@
 #include "../models/object_io_task.hh"
 #include "../../common/interface.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -44,4 +44,4 @@ public:
 };
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

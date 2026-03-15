@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'collocation_resolver.cc'
 // Author: jcjuarez
@@ -16,7 +16,7 @@
 #include <xxhash.h>
 #include "collocation_resolver.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -47,4 +47,4 @@ collocation_resolver::hash_key(
 }
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

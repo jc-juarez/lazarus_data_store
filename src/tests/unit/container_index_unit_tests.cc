@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Tests
 // 'container_index_unit_tests.hh'
 // Author: jcjuarez
@@ -18,7 +18,7 @@
 #include "core/storage/models/container.hh"
 #include "core/storage/index/container_index.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace tests
 {
@@ -61,4 +61,4 @@ TEST_F(
 }
 
 } // namespace tests.
-} // namespace lazarus.
+} // namespace pandora.

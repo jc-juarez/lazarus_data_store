@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'container_index.hh'
 // Author: jcjuarez
@@ -24,7 +24,7 @@
 #include "../../status/status.hh"
 #include "container_persistent_interface.pb.h"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -140,4 +140,4 @@ private:
 };
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

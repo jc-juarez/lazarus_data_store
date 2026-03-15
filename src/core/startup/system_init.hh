@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'collocation_builder.hh'
 // Author: jcjuarez
@@ -21,7 +21,7 @@
 #include "../common/system_configuration.hh"
 #include "../logger/logger_configuration.hh"
 
-namespace lazarus
+namespace pandora
 {
 
 //
@@ -78,4 +78,4 @@ void
 signal_handler(
     std::int32_t signal);
 
-} // namespace lazarus.
+} // namespace pandora.

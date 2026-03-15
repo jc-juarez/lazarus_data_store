@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Common
 // 'aliases.hh'
 // Author: jcjuarez
@@ -20,11 +20,11 @@
 #include <drogon/drogon.h>
 #include "../logger/logging.hh"
 
-namespace lazarus
+namespace pandora
 {
 
 //
-// lazarus namespace.
+// pandora namespace.
 //
 using exit_code = std::int32_t;
 
@@ -49,4 +49,4 @@ using storage_engine_reference = rocksdb::ColumnFamilyHandle;
 using storage_engine_write_batch = rocksdb::WriteBatch;
 }
 
-} // namespace lazarus.
+} // namespace pandora.
