@@ -14,7 +14,6 @@
 // ****************************************************
 
 #include "server.hh"
-#include <spdlog/spdlog.h>
 #include "../endpoints/ping.hh"
 #include "../endpoints/objects.hh"
 #include "logging_context_filter.hh"

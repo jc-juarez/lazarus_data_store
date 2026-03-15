@@ -13,7 +13,6 @@
 //      against the frontline cache.
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "cache_accessor.hh"
 #include "frontline_cache.hh"
 

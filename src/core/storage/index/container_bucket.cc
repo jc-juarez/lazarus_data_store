@@ -12,7 +12,6 @@
 //      Fundamental structure for storing containers.
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "container_bucket.hh"
 
 namespace lazarus::storage

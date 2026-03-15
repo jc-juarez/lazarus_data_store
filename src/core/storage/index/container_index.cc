@@ -14,7 +14,6 @@
 // ****************************************************
 
 #include <cassert>
-#include <spdlog/spdlog.h>
 #include "container_index.hh"
 #include "container_loader.hh"
 

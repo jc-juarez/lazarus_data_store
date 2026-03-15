@@ -12,7 +12,6 @@
 //      Management service for object operations.
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "../index/container_index.hh"
 #include "../cache/frontline_cache.hh"
 #include "../io/read_io_dispatcher.hh"

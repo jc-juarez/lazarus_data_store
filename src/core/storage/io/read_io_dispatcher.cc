@@ -13,7 +13,6 @@
 //      Implemented as a thread pool dispatcher.
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 #include "read_io_dispatcher.hh"
 #include "read_io_executor.hh"

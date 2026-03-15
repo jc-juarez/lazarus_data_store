@@ -14,7 +14,6 @@
 // ****************************************************
 
 #include "../../server.hh"
-#include <spdlog/spdlog.h>
 #include "remove_object_request_handler.hh"
 #include "../../../../storage/management/object_management_service.hh"
 

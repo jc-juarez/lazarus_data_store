@@ -13,7 +13,6 @@
 //      found on the filesystem into the index.
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "container_index.hh"
 #include "container_loader.hh"
 #include "container_registry.hh"

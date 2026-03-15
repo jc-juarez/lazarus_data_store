@@ -12,7 +12,6 @@
 //      Core storage engine for handling IO operations. 
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 
 namespace lazarus

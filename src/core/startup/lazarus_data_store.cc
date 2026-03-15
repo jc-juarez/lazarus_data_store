@@ -12,7 +12,6 @@
 //      Lazarus data store root object. 
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "../common/aliases.hh"
 #include "lazarus_data_store.hh"
 #include "../network/server/server.hh"
@@ -20,7 +19,6 @@
 #include "../storage/io/data_partition.hh"
 #include "../common/startable_interface.hh"
 #include "../storage/io/read_io_executor.hh"
-#include <spdlog/sinks/rotating_file_sink.h>
 #include "../storage/cache/cache_accessor.hh"
 #include "../storage/index/container_index.hh"
 #include "../storage/cache/frontline_cache.hh"

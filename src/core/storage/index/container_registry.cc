@@ -14,7 +14,6 @@
 // ****************************************************
 
 #include <unordered_set>
-#include <spdlog/spdlog.h>
 #include "container_registry.hh"
 #include "../../startup/collocation_builder.hh"
 

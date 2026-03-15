@@ -13,8 +13,6 @@
 //      operations.
 // ****************************************************
 
-#include <rocksdb/db.h>
-#include <spdlog/spdlog.h>
 #include "../io/data_partition.hh"
 #include "../gc/garbage_collector.hh"
 #include "../index/container_index.hh"

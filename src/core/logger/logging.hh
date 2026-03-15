@@ -15,12 +15,24 @@
 #pragma once
 
 #include <string>
+#include <spdlog/async.h>
 #include <spdlog/spdlog.h>
+#include "logger_configuration.hh"
+#include "../common/uuid_utilities.hh"
+#include <spdlog/sinks/rotating_file_sink.h>
 
 namespace lazarus
 {
 namespace logger
 {
+
+//
+// Initializes the global logger to be used by the system.
+//
+void
+init_logger(
+    const boost::uuids::uuid session_id,
+    const logger_configuration& logger_config);
 
 struct context
 {

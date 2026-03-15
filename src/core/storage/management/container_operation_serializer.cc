@@ -13,7 +13,6 @@
 //      in a serialized manner. 
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "../io/storage_engine.hh"
 #include "../io/data_partition.hh"
 #include "../index/container_index.hh"

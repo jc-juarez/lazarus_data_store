@@ -13,7 +13,6 @@
 //      objects from the server context within shards.
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "frontline_cache.hh"
 #include "../index/container_index.hh"
 

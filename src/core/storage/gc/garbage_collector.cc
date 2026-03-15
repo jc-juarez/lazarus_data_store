@@ -14,7 +14,6 @@
 // ****************************************************
 
 #include <chrono>
-#include <spdlog/spdlog.h>
 #include "garbage_collector.hh"
 #include "../io/storage_engine.hh"
 #include "../index/container_index.hh"

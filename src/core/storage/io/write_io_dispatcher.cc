@@ -14,7 +14,6 @@
 //      batching IO dispatcher.
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "write_io_dispatcher.hh"
 #include "../../common/aliases.hh"
 #include "../cache/cache_accessor.hh"

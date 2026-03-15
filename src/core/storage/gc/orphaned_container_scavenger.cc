@@ -13,7 +13,6 @@
 //      both the storage engine and metadata table.
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "../models/container.hh"
 #include "../index/container_index.hh"
 #include "orphaned_container_scavenger.hh"

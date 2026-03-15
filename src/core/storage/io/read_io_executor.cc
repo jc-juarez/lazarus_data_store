@@ -12,7 +12,6 @@
 //      Executes an object IO task against the engine.
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "read_io_executor.hh"
 #include "data_partition_provider.hh"
 

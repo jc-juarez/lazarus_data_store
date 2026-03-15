@@ -16,7 +16,6 @@
 
 #include <format>
 #include "container.hh"
-#include <spdlog/spdlog.h>
 #include "../io/storage_engine.hh"
 
 namespace lazarus

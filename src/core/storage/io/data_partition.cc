@@ -12,7 +12,6 @@
 //      Data storage partition instance for IO access.
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "rocksdb/table.h"
 #include "data_partition.hh"
 #include "storage_engine.hh"
