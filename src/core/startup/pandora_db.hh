@@ -4,12 +4,12 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Main
-// 'lazarus_data_store.hh'
+// 'pandora_db.hh'
 // Author: jcjuarez
 // Description:
-//      Lazarus data store root object. 
+//      PandoraDB root object.
 // ****************************************************
 
 #pragma once
@@ -26,7 +26,7 @@
 #include "../network/server/server_configuration.hh"
 #include "../storage/index/container_registry.hh"
 
-namespace lazarus
+namespace pandora
 {
 
 namespace network
@@ -54,16 +54,16 @@ class container_management_service;
 }
 
 //
-// Lazarus system root object.
+// PandoraDB system root object.
 //
-class lazarus_data_store
+class pandora_db
 {
 public:
 
     //
     // Constructor.
     //
-    lazarus_data_store(
+    pandora_db(
         const boost::uuids::uuid session_id,
         std::unique_ptr<storage::data_partition> metadata_partition,
         std::unique_ptr<storage::collocation_resolver> collocation_resolver,
@@ -82,7 +82,7 @@ public:
         std::unique_ptr<storage::container_loader> container_loader);
 
     //
-    // Start the lazarus data store system.
+    // Start the PandoraDB system.
     //
     status::status_code
     start_data_store();
@@ -195,4 +195,4 @@ private:
     std::unique_ptr<storage::container_loader> container_loader_;
 };
 
-} // namespace lazarus.
+} // namespace pandora.

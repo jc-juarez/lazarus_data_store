@@ -1,5 +1,5 @@
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // 
 // 'shutdown_orchestrator.cc'
 // Author: jcjuarez

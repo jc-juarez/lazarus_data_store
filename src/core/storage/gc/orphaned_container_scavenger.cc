@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'orphaned_container_scavenger.cc'
 // Author: jcjuarez
@@ -17,7 +17,7 @@
 #include "../index/container_index.hh"
 #include "orphaned_container_scavenger.hh"
 
-namespace lazarus::storage
+namespace pandora::storage
 {
 
 orphaned_container_scavenger::orphaned_container_scavenger(
@@ -177,4 +177,4 @@ orphaned_container_scavenger::delete_container_instances_from_data_partitions(
     return status::success;
 }
 
-} // namespace lazarus::storage.
+} // namespace pandora::storage.

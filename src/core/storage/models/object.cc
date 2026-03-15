@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'object.cc'
 // Author: jcjuarez
@@ -14,7 +14,7 @@
 
 #include "object.hh"
 
-namespace lazarus::storage
+namespace pandora::storage
 {
 
 object::object(
@@ -51,4 +51,4 @@ object::get_container_name()
     return container_name_;
 }
 
-} // namespace lazarus::storage.
+} // namespace pandora::storage.

@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'read_io_executor.cc'
 // Author: jcjuarez
@@ -15,7 +15,7 @@
 #include "read_io_executor.hh"
 #include "data_partition_provider.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -67,4 +67,4 @@ read_io_executor::execute_get_operation(
 }
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

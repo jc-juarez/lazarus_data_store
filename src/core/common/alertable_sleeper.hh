@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Common
 // 'alertable_sleeper.hh'
 // Author: jcjuarez
@@ -20,7 +20,7 @@
 #include <stop_token>
 #include <condition_variable>
 
-namespace lazarus::common
+namespace pandora::common
 {
 
 class alertable_sleeper
@@ -53,4 +53,4 @@ private:
     std::condition_variable_any condition_variable_;
 };
 
-} // namespace lazarus::common.
+} // namespace pandora::common.

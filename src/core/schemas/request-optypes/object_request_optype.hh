@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Schemas
 // 'object_request_optype.hh'
 // Author: jcjuarez
@@ -16,7 +16,7 @@
 
 #include <cstdint>
 
-namespace lazarus::schemas
+namespace pandora::schemas
 {
 
 //
@@ -45,4 +45,4 @@ enum class object_request_optype : std::uint8_t
     remove = 3
 };
 
-} // namespace lazarus::schemas.
+} // namespace pandora::schemas.

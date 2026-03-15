@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Network
 // 'containers.hh'
 // Author: jcjuarez
@@ -19,7 +19,7 @@
 #include <drogon/HttpController.h>
 #include "../server/logging_context_filter.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace network
 {
@@ -42,8 +42,8 @@ public:
         std::unique_ptr<remove_container_request_handler> remove_container_request_handler);
 
     METHOD_LIST_BEGIN
-    METHOD_ADD(containers::create_container, "", drogon::Post, "lazarus::network::logging_context_filter");
-    METHOD_ADD(containers::remove_container, "", drogon::Delete, "lazarus::network::logging_context_filter");
+    METHOD_ADD(containers::create_container, "", drogon::Post, "pandora::network::logging_context_filter");
+    METHOD_ADD(containers::remove_container, "", drogon::Delete, "pandora::network::logging_context_filter");
     METHOD_LIST_END
 
     //
@@ -77,4 +77,4 @@ private:
 
 } // namespace endpoints.
 } // namespace network.
-} // namespace lazarus.
+} // namespace pandora.

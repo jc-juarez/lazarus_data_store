@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'garbage_collector.hh'
 // Author: jcjuarez
@@ -22,7 +22,7 @@
 #include "orphaned_container_scavenger.hh"
 #include "../../common/alertable_sleeper.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -102,4 +102,4 @@ private:
 };
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

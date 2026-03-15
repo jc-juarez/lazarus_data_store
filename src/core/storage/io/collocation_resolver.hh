@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'collocation_resolver.hh'
 // Author: jcjuarez
@@ -18,7 +18,7 @@
 #include <string>
 #include <cstdint>
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -58,4 +58,4 @@ private:
 };
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

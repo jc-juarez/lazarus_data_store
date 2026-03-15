@@ -1,14 +1,14 @@
 # ****************************************************
-# Lazarus Data Store
+# PandoraDB
 # Build
 # 'CMakeLists.txt'
 # Author: jcjuarez
 # Description:
-#      Root CMake for Lazarus Data Store.
+#      Root CMake for PandoraDB.
 # ****************************************************
 
 cmake_minimum_required(VERSION 3.28)
-project(lazarus)
+project(pandora)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_BUILD_TYPE Debug)
@@ -44,7 +44,7 @@ set(PROTO_FILES
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 
 set(SOURCE_FILES
-        src/core/startup/lazarus_data_store.cc
+        src/core/startup/pandora_db.cc
         src/core/network/server/server.cc
         src/core/network/endpoints/containers.cc
         src/core/network/endpoints/objects.cc
@@ -133,15 +133,15 @@ set(SOURCE_FILES
         src/core/logger/logging.cc
 )
 
-# Lazarus core library.
-add_library(lazarus_core ${SOURCE_FILES} ${PROTO_SRCS})
-target_include_directories(lazarus_core PRIVATE
+# PandoraDB core library.
+add_library(pandora_core ${SOURCE_FILES} ${PROTO_SRCS})
+target_include_directories(pandora_core PRIVATE
         build/
         ${CMAKE_CURRENT_BINARY_DIR}
         ${JSONCPP_INCLUDE_DIR}
 )
 target_link_libraries(
-        lazarus_core PUBLIC
+        pandora_core PUBLIC
         Drogon::Drogon
         ${Protobuf_LIBRARIES}
         spdlog::spdlog
@@ -152,25 +152,25 @@ target_link_libraries(
         xxhash
 )
 
-# Lazarus executable.
-add_executable(lazarus src/main/main.cc)
-target_link_libraries(lazarus PRIVATE lazarus_core)
+# PandoraDB executable.
+add_executable(pandora src/main/main.cc)
+target_link_libraries(pandora PRIVATE pandora_core)
 
-# Lazarus tests.
-add_executable(lazarus_tests
+# PandoraDB tests.
+add_executable(pandora_tests
         src/tests/mocks/mock_storage_engine.hh
         src/tests/unit/container_index_unit_tests.cc
         src/tests/unit/container_bucket_unit_tests.cc
 )
-target_include_directories(lazarus_tests PRIVATE
+target_include_directories(pandora_tests PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_BINARY_DIR}
 )
-target_link_libraries(lazarus_tests PRIVATE
-        lazarus_core
+target_link_libraries(pandora_tests PRIVATE
+        pandora_core
         GTest::gtest_main
         GTest::gmock
 )
 
 include(GoogleTest)
-gtest_discover_tests(lazarus_tests)
+gtest_discover_tests(pandora_tests)

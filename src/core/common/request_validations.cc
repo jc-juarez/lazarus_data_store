@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Common
 // 'request_validations.cc'
 // Author: jcjuarez
@@ -14,7 +14,7 @@
 
 #include "request_validations.hh"
 
-namespace lazarus::common::request_validations
+namespace pandora::common::request_validations
 {
 
 status::status_code
@@ -92,4 +92,4 @@ validate_object_data(
     return status::success;
 }
 
-} // namespace lazarus::common::request_validations.
+} // namespace pandora::common::request_validations.

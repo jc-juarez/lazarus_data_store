@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'container_loader.cc'
 // Author: jcjuarez
@@ -19,7 +19,7 @@
 #include "../io/data_partition.hh"
 #include "../io/data_partition_provider.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -591,4 +591,4 @@ container_loader::validate_container_engine_references(
 }
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

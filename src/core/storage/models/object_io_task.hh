@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'object_io_task.hh'
 // Author: jcjuarez
@@ -21,7 +21,7 @@
 #include "../../common/uuid_utilities.hh"
 #include "../../schemas/request-interfaces/object_request.hh"
 
-namespace lazarus::storage
+namespace pandora::storage
 {
 
 class object_io_task
@@ -73,4 +73,4 @@ private:
     const boost::uuids::uuid id_;
 };
 
-} // namespace lazarus::storage.
+} // namespace pandora::storage.

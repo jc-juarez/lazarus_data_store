@@ -1,5 +1,5 @@
 # ****************************************************
-# Lazarus Data Store
+# PandoraDB
 # Scripts
 # 'pre-build.sh'
 # Author: jcjuarez
@@ -10,8 +10,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BUILD_IMAGE_NAME_AMD64="build-ubuntu-lazarus-amd64"
-BUILD_IMAGE_NAME_ARM64="build-ubuntu-lazarus-arm64"
+BUILD_IMAGE_NAME_AMD64="build-ubuntu-pandora-amd64"
+BUILD_IMAGE_NAME_ARM64="build-ubuntu-pandora-arm64"
 BUILD_DOCKERFILE="scripts/build.dockerfile"
 
 echo "[PRE-BUILD] Checking for Docker build image: ${BUILD_IMAGE_NAME_AMD64}"

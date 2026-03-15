@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'container_bucket.hh'
 // Author: jcjuarez
@@ -18,7 +18,7 @@
 #include "../../status/status.hh"
 #include "../../common/concurrent_flat_map.hh"
 
-namespace lazarus::storage
+namespace pandora::storage
 {
 
 class container_bucket
@@ -93,4 +93,4 @@ private:
     common::concurrent_flat_map<std::string, std::shared_ptr<container>> container_bucket_map_;
 };
 
-} // namespace lazarus::storage.
+} // namespace pandora::storage.

@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Network
 // 'object_request_handler.hh'
 // Author: jcjuarez
@@ -19,7 +19,7 @@
 #include "../../../../common/aliases.hh"
 #include "../../../../schemas/request-interfaces/object_request.hh"
 
-namespace lazarus
+namespace pandora
 {
 
 namespace storage
@@ -68,4 +68,4 @@ protected:
 };
 
 } // namespace network.
-} // namespace lazarus.
+} // namespace pandora.

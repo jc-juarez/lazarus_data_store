@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'object_management_service.cc'
 // Author: jcjuarez
@@ -20,7 +20,7 @@
 #include "../io/collocation_resolver.hh"
 #include "../../common/request_validations.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -277,4 +277,4 @@ object_management_service::is_object_request_read_io_operation(
 }
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

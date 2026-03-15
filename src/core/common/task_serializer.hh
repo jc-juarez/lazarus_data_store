@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Common
 // 'task_serializer.hh'
 // Author: jcjuarez
@@ -17,7 +17,7 @@
 
 #include <boost/asio.hpp>
 
-namespace lazarus::common
+namespace pandora::common
 {
 
 class task_serializer
@@ -46,4 +46,4 @@ private:
     boost::asio::thread_pool serializer_thread_pool_;
 };
 
-} // namespace lazarus::common.
+} // namespace pandora::common.

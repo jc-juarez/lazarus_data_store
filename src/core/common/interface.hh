@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Common
 // 'interface.hh'
 // Author: jcjuarez
@@ -15,7 +15,7 @@
 
 #pragma once
 
-namespace lazarus
+namespace pandora
 {
 namespace common
 {
@@ -26,4 +26,4 @@ struct interface
 };
 
 } // namespace common.
-} // namespace lazarus.
+} // namespace pandora.

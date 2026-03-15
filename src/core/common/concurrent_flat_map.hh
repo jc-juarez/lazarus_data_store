@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Common
 // 'concurrent_flat_map.hh'
 // Author: jcjuarez
@@ -20,7 +20,7 @@
 #include <shared_mutex>
 #include <absl/container/flat_hash_map.h>
 
-namespace lazarus
+namespace pandora
 {
 namespace common
 {
@@ -217,4 +217,4 @@ private:
 };
 
 } // namespace common.
-} // namespace lazarus.
+} // namespace pandora.

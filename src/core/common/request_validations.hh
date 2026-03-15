@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Schemas
 // 'request_validations.hh'
 // Author: jcjuarez
@@ -19,7 +19,7 @@
 #include "../status/status.hh"
 #include "../storage/storage_configuration.hh"
 
-namespace lazarus::common::request_validations
+namespace pandora::common::request_validations
 {
 
 //
@@ -46,4 +46,4 @@ validate_object_data(
     const storage::byte_stream& object_data,
     const storage::storage_configuration& storage_configuration);
 
-} // namespace lazarus::common::request_validations.
+} // namespace pandora::common::request_validations.

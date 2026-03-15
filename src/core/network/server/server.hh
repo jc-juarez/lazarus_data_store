@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Network
 // 'server.hh'
 // Author: jcjuarez
@@ -21,7 +21,7 @@
 #include "../../common/aliases.hh"
 #include "server_configuration.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace network
 {
@@ -102,4 +102,4 @@ private:
 };
 
 } // namespace network.
-} // namespace lazarus.
+} // namespace pandora.

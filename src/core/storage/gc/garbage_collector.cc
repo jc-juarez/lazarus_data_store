@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'garbage_collector.cc'
 // Author: jcjuarez
@@ -21,7 +21,7 @@
 #include "../../startup/system_init.hh"
 #include "orphaned_container_scavenger.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -39,7 +39,7 @@ garbage_collector::garbage_collector(
 void
 garbage_collector::start()
 {
-    TRACE_LOG(info, "Starting lazarus data store garbage collector thread.");
+    TRACE_LOG(info, "Starting PandoraDB garbage collector thread.");
 
     garbage_collector_thread_ = std::jthread(
         &garbage_collector::execute_garbage_collection,
@@ -51,7 +51,7 @@ void
 garbage_collector::execute_garbage_collection(
     std::stop_token stop_token)
 {
-    pthread_setname_np(pthread_self(), "lazarus_gc");
+    pthread_setname_np(pthread_self(), "pandora_gc");
 
     while (!stop_token.stop_requested())
     {
@@ -87,7 +87,7 @@ garbage_collector::execute_garbage_collection(
         }
     }
 
-    TRACE_LOG(info, "Stopping lazarus data store garbage collector thread.");
+    TRACE_LOG(info, "Stopping PandoraDB garbage collector thread.");
 }
 
 void
@@ -122,4 +122,4 @@ garbage_collector::cleanup_orphaned_containers()
 }
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

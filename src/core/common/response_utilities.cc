@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Common
 // 'response_utilities.cc'
 // Author: jcjuarez
@@ -16,7 +16,7 @@
 #include "nlohmann/json.hpp"
 #include "response_utilities.hh"
 
-namespace lazarus::common::response_utilities
+namespace pandora::common::response_utilities
 {
 
 std::string
@@ -38,4 +38,4 @@ generate_server_json_response(
     return response_body.dump();
 }
 
-} // namespace lazarus::common::response_utilities.
+} // namespace pandora::common::response_utilities.

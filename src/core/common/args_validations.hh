@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Common
 // 'args_validations.hh'
 // Author: jcjuarez
@@ -16,7 +16,7 @@
 
 #include <vector>
 
-namespace lazarus
+namespace pandora
 {
 namespace common
 {
@@ -35,4 +35,4 @@ validate_process_args(
     const std::vector<std::string>& args);
 
 } // namespace common.
-} // namespace lazarus.
+} // namespace pandora.

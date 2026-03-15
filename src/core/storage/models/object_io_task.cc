@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'object_io_task.cc'
 // Author: jcjuarez
@@ -16,7 +16,7 @@
 
 #include "object_io_task.hh"
 
-namespace lazarus::storage
+namespace pandora::storage
 {
 
 object_io_task::object_io_task(
@@ -40,4 +40,4 @@ object_io_task::object_io_task(
       id_{std::move(other.id_)}
 {}
 
-} // namespace lazarus::storage.
+} // namespace pandora::storage.

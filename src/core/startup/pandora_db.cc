@@ -4,16 +4,15 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Main
-// 'lazarus_data_store.cc'
+// 'pandora_db.cc'
 // Author: jcjuarez
 // Description:
-//      Lazarus data store root object. 
+//      PandoraDB root object.
 // ****************************************************
 
-#include "../common/aliases.hh"
-#include "lazarus_data_store.hh"
+#include "pandora_db.hh"
 #include "../network/server/server.hh"
 #include "../common/args_validations.hh"
 #include "../storage/io/data_partition.hh"
@@ -31,10 +30,10 @@
 #include "../storage/management/container_management_service.hh"
 #include "../storage/management/container_operation_serializer.hh"
 
-namespace lazarus
+namespace pandora
 {
 
-lazarus_data_store::lazarus_data_store(
+pandora_db::pandora_db(
     const boost::uuids::uuid session_id,
     std::unique_ptr<storage::data_partition> metadata_partition,
     std::unique_ptr<storage::collocation_resolver> collocation_resolver,
@@ -70,7 +69,7 @@ lazarus_data_store::lazarus_data_store(
 {}
 
 status::status_code
-lazarus_data_store::start_data_store()
+pandora_db::start_data_store()
 {
     status::status_code status = bootstrap_storage_state();
 
@@ -106,7 +105,7 @@ lazarus_data_store::start_data_store()
 }
 
 status::status_code
-lazarus_data_store::bootstrap_storage_state()
+pandora_db::bootstrap_storage_state()
 {
     using references_mapping = std::unordered_map<std::string, storage::storage_engine_reference*>;
 
@@ -168,7 +167,7 @@ lazarus_data_store::bootstrap_storage_state()
 std::expected<
     storage::container_registry,
     status::status_code>
-lazarus_data_store::boot_structured_data_partitions()
+pandora_db::boot_structured_data_partitions()
 {
     //
     // Keep track of all container names and their respective
@@ -232,7 +231,7 @@ lazarus_data_store::boot_structured_data_partitions()
 }
 
 status::status_code
-lazarus_data_store::boot_data_partition(
+pandora_db::boot_data_partition(
     storage::data_partition& data_partition,
     std::unordered_map<std::string, storage::storage_engine_reference*>& references_mapping)
 {
@@ -275,4 +274,4 @@ lazarus_data_store::boot_data_partition(
     return status::success;
 }
 
-} // namespace lazarus.
+} // namespace pandora.

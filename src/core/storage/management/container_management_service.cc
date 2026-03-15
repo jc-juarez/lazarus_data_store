@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'container_management_service.cc'
 // Author: jcjuarez
@@ -22,7 +22,7 @@
 #include "container_persistent_interface.pb.h"
 #include "../../common/request_validations.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -189,4 +189,4 @@ container_management_service::validate_container_remove_request(
 }
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

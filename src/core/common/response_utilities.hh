@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Common
 // 'response_utilities.hh'
 // Author: jcjuarez
@@ -19,7 +19,7 @@
 #include "aliases.hh"
 #include <unordered_map>
 
-namespace lazarus::common::response_utilities
+namespace pandora::common::response_utilities
 {
 
 //
@@ -32,4 +32,4 @@ generate_server_json_response(
     const std::uint32_t internal_status_code,
     network::response_fields* response_fields);
 
-} // namespace lazarus::common::response_utilities.
+} // namespace pandora::common::response_utilities.

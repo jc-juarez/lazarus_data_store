@@ -1,20 +1,20 @@
 # ****************************************************
-# Lazarus Data Store
+# PandoraDB
 # SDK
-# 'lazarus_client.py'
+# 'pandora_client.py'
 # Author: jcjuarez
 # Description:
-#      Lazarus Python SDK client implementation.
+#      PandoraDB Python SDK client implementation.
 # ****************************************************
 
 import requests
 from typing import Any
-from .lazarus_client_error import LazarusClientError
+from .pandora_client_error import PandoraDBClientError
 
-# Python client for the Lazarus Data Store.
-class LazarusClient:
+# Python client for the PandoraDB.
+class PandoraDBClient:
 
-    # Value for the Lazarus dedicated success status code.
+    # Value for the PandoraDB dedicated success status code.
     SUCCESS_INTERNAL_STATUS_CODE: int = 0
     # Expected internal status code string literal in the server response.
     INTERNAL_STATUS_CODE_RESPONSE_STRING: str = "internal_status_code"
@@ -39,13 +39,13 @@ class LazarusClient:
             timeout: int = 10):
         self.host = host
         self.port = port
-        self.base_url = f"http://{host}:{port}/lazarus/network"
+        self.base_url = f"http://{host}:{port}/pandora/network"
         self.timeout = timeout
         self.session = requests.Session()
 
-    # Sends a request to the Lazarus Data Store server.
+    # Sends a request to the PandoraDB server.
     # Returns the parsed response object on success, or
-    # yields LazarusClientError on failure.
+    # yields PandoraDBClientError on failure.
     def _request(
             self,
             method: str,
@@ -56,7 +56,7 @@ class LazarusClient:
         try:
             response = self.session.request(method, url, timeout=self.timeout, **kwargs)
             response.raise_for_status()
-            # By default, the lazarus server always responds in Json
+            # By default, the pandora server always responds in Json
             # format, so try to convert the response back into such format.
             try:
                 response_object = response.json()
@@ -66,10 +66,10 @@ class LazarusClient:
                 if internal_status_code != self.SUCCESS_INTERNAL_STATUS_CODE:
                     # This situation indicates a non-handled HTTP error while
                     # the server still returned a failed internal status code.
-                    raise LazarusClientError(
+                    raise PandoraDBClientError(
                         response.status_code,
                         internal_status_code,
-                        "Lazarus Data Store returned an error.",
+                        "PandoraDB returned an error.",
                         self.host,
                         self.port) from None
                 # If no exception was thrown, and the internal status code
@@ -78,10 +78,10 @@ class LazarusClient:
             except (ValueError, TypeError, KeyError):
                 # This situation is not expected since the server should
                 # always reply back with a well-formed response.
-                raise LazarusClientError(
+                raise PandoraDBClientError(
                     None,
                     None,
-                    f"Failed to parse the response from Lazarus Data Store. Response={response.text}.",
+                    f"Failed to parse the response from PandoraDB. Response={response.text}.",
                     self.host,
                     self.port) from None
         except requests.exceptions.HTTPError:
@@ -91,27 +91,27 @@ class LazarusClient:
                 internal_status_code = int(
                     response_object.get(self.INTERNAL_STATUS_CODE_RESPONSE_STRING),
                     base=0)
-                raise LazarusClientError(
+                raise PandoraDBClientError(
                     response.status_code,
                     internal_status_code,
-                    "Lazarus Data Store returned an error.",
+                    "PandoraDB returned an error.",
                     self.host,
                     self.port) from None
             except (ValueError, TypeError, KeyError) as e:
                 # This situation is not expected since the server should
                 # always reply back with a well-formed response.
-                raise LazarusClientError(
+                raise PandoraDBClientError(
                     None,
                     None,
-                    f"Failed to parse the response from Lazarus Data Store. Response={response.text}.",
+                    f"Failed to parse the response from PandoraDB. Response={response.text}.",
                     self.host,
                     self.port) from None
         except requests.exceptions.RequestException:
             # This indicates a failure with the request processing.
-            raise LazarusClientError(
+            raise PandoraDBClientError(
                 None,
                 None,
-                "Failed to send the request to Lazarus Data Store.",
+                "Failed to send the request to PandoraDB.",
                 self.host,
                 self.port) from None
 
@@ -119,7 +119,7 @@ class LazarusClient:
     # Container operations.
     # ------------------------
     # Executes a create operation for a container.
-    # Yields LazarusClientError on failure.
+    # Yields PandoraDBClientError on failure.
     def create_container(
             self,
             container_name: str) -> None:
@@ -129,7 +129,7 @@ class LazarusClient:
             json={self.CONTAINER_NAME_STRING: container_name})
 
     # Executes a remove operation for a container.
-    # Yields LazarusClientError on failure.
+    # Yields PandoraDBClientError on failure.
     def remove_container(
             self,
             container_name: str) -> None:
@@ -142,7 +142,7 @@ class LazarusClient:
     # Object operations.
     # ------------------------
     # Executes an insert operation for an object.
-    # Yields LazarusClientError on failure.
+    # Yields PandoraDBClientError on failure.
     def insert_object(
             self, container_name: str,
             object_id: str,
@@ -158,7 +158,7 @@ class LazarusClient:
             json=payload)
 
     # Executes a remove operation for an object.
-    # Yields LazarusClientError on failure.
+    # Yields PandoraDBClientError on failure.
     def remove_object(
             self,
             container_name: str,
@@ -174,7 +174,7 @@ class LazarusClient:
 
     # Executes a get operation for an object.
     # Returns the value for the object on success,
-    # or yields LazarusClientError on failure.
+    # or yields PandoraDBClientError on failure.
     def get_object(
             self,
             container_name: str,
@@ -190,10 +190,10 @@ class LazarusClient:
         # Expect a Json response with an "object_data" field
         # which corresponds to the response for the operation.
         if not isinstance(result, dict) or self.OBJECT_DATA_STRING not in result:
-            raise LazarusClientError(
+            raise PandoraDBClientError(
                 None,
                 None,
-                f"Response from Lazarus Data Store is missing the '{self.OBJECT_DATA_STRING}' field.",
+                f"Response from PandoraDB is missing the '{self.OBJECT_DATA_STRING}' field.",
                 self.host,
                 self.port) from None
         return result[self.OBJECT_DATA_STRING]
@@ -209,5 +209,5 @@ class LazarusClient:
                 "GET",
                 self.PING_ENDPOINT)
             return True
-        except LazarusClientError:
+        except PandoraDBClientError:
             return False

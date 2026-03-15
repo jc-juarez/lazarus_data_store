@@ -1,5 +1,5 @@
 # *************************************
-# Lazarus Data Store
+# PandoraDB
 # Tests
 # 'CMakeLists.txt'
 # Author: jcjuarez
@@ -20,7 +20,7 @@ target_link_libraries(container_bucket_test
         PRIVATE
         GTest::gtest_main
         GTest::gmock
-        lazarus_core
+        pandora_core
 )
 
 include(GoogleTest)

@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Network
 // 'ping.cc'
 // Author: jcjuarez
@@ -15,7 +15,7 @@
 #include "ping.hh"
 #include "../server/server.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace network
 {
@@ -34,4 +34,4 @@ ping::reply_to_ping(
 
 } // namespace endpoints.
 } // namespace network.
-} // namespace lazarus.
+} // namespace pandora.

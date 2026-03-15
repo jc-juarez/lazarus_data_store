@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Logger
 // 'logging.hh'
 // Author: jcjuarez
@@ -21,7 +21,7 @@
 #include "../common/uuid_utilities.hh"
 #include <spdlog/sinks/rotating_file_sink.h>
 
-namespace lazarus
+namespace pandora
 {
 namespace logger
 {
@@ -40,7 +40,7 @@ struct context
 };
 
 } // namespace logger.
-} // namespace lazarus.
+} // namespace pandora.
 
 //
 // Global scope access.
@@ -48,7 +48,7 @@ struct context
 #define TRACE_LOG(level, fmt, ...)                                   \
 do                                                                   \
 {                                                                    \
-    const auto& ctx = lazarus::logger::context::request_id;          \
+    const auto& ctx = pandora::logger::context::request_id;          \
     if (ctx.empty())                                                 \
     {                                                                \
         spdlog::level(fmt, ##__VA_ARGS__);                           \

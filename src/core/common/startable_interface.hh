@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Common
 // 'startable_interface.hh'
 // Author: jcjuarez
@@ -17,7 +17,7 @@
 
 #include "interface.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace common
 {
@@ -35,4 +35,4 @@ public:
 };
 
 } // namespace common.
-} // namespace lazarus.
+} // namespace pandora.

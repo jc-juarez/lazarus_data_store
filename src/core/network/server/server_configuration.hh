@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Network
 // 'server_configuration.hh'
 // Author: jcjuarez
@@ -18,7 +18,7 @@
 #include <string>
 #include <cstdint>
 
-namespace lazarus
+namespace pandora
 {
 namespace network
 {
@@ -50,10 +50,10 @@ struct server_configuration
         }
 
         server_logs_directory_path_ =
-            std::string(home_environment_variable) + "/lazarus/server/server-logs";
+            std::string(home_environment_variable) + "/pandora/server/server-logs";
 
         server_uploads_parent_directory_path_ =
-            std::string(home_environment_variable) + "/lazarus/server";
+            std::string(home_environment_variable) + "/pandora/server";
     }
 
     //
@@ -83,4 +83,4 @@ struct server_configuration
 };
 
 } // namespace network.
-} // namespace lazarus.
+} // namespace pandora.

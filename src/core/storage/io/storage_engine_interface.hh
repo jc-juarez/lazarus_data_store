@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'storage_engine.hh'
 // Author: jcjuarez
@@ -21,7 +21,7 @@
 #include "../../common/interface.hh"
 #include "../storage_configuration.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -126,4 +126,4 @@ public:
 };
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

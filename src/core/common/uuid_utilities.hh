@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Common
 // 'uuid_utilities.hh'
 // Author: jcjuarez
@@ -18,7 +18,7 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 
-namespace lazarus
+namespace pandora
 {
 namespace common
 {
@@ -39,4 +39,4 @@ uuid_to_string(
 }
 
 } // namespace common.
-} // namespace lazarus.
+} // namespace pandora.

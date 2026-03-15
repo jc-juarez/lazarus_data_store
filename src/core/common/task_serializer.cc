@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Common
 // 'task_serializer.cc'
 // Author: jcjuarez
@@ -15,11 +15,11 @@
 
 #include "task_serializer.hh"
 
-namespace lazarus::common
+namespace pandora::common
 {
 
 task_serializer::task_serializer()
     : serializer_thread_pool_{1u} // Must always be a single-threaded task queue.
 {}
 
-} // namespace lazarus::common.
+} // namespace pandora::common.

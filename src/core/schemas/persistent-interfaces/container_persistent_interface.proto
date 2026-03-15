@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Schemas
 // 'container_persistent_interface.proto'
 // Author: jcjuarez
@@ -14,7 +14,7 @@
 
 syntax = "proto3";
 
-package lazarus.schemas;
+package pandora.schemas;
 
 message container_persistent_interface
 {

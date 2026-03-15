@@ -1,10 +1,10 @@
 # ****************************************************
-# Lazarus Data Store
+# PandoraDB
 # Scripts
 # 'runtime-arm64.dockerfile'
 # Author: jcjuarez
 # Description:
-#      AMD64 Ubuntu base image for running lazarus.
+#      AMD64 Ubuntu base image for running pandora.
 # ****************************************************
 
 FROM ubuntu:24.04
@@ -27,11 +27,11 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-COPY cmake-build-docker-debug-amd64/lazarus /usr/local/bin/lazarus
+COPY cmake-build-docker-debug-amd64/pandora /usr/local/bin/pandora
 COPY config.json /app/config.json
 
 RUN useradd -ms /bin/bash runtime
 USER runtime
 WORKDIR /home/runtime
 
-ENTRYPOINT ["/usr/local/bin/lazarus", "/app/config.json"]
+ENTRYPOINT ["/usr/local/bin/pandora", "/app/config.json"]

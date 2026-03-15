@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'data_partition_table.cc'
 // Author: jcjuarez
@@ -15,7 +15,7 @@
 #include "storage_engine.hh"
 #include "data_partition_table.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace storage
 {
@@ -51,4 +51,4 @@ data_partition_table::get_all_partitions()
 }
 
 } // namespace storage.
-} // namespace lazarus.
+} // namespace pandora.

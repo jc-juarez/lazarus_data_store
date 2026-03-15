@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Common
 // 'alertable_sleeper.hh'
 // Author: jcjuarez
@@ -16,7 +16,7 @@
 #include <chrono>
 #include "alertable_sleeper.hh"
 
-namespace lazarus::common
+namespace pandora::common
 {
 
 alertable_sleeper::alertable_sleeper()
@@ -35,4 +35,4 @@ alertable_sleeper::wait_for_and_alert_if_stopped(
         [&stop_token] { return stop_token.stop_requested(); });
 }
 
-} // namespace lazarus::common.
+} // namespace pandora::common.

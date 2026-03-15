@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'container_bucket.cc'
 // Author: jcjuarez
@@ -14,7 +14,7 @@
 
 #include "container_bucket.hh"
 
-namespace lazarus::storage
+namespace pandora::storage
 {
 
 container_bucket::container_bucket()
@@ -117,4 +117,4 @@ container_bucket::get_number_containers() const
     return container_bucket_map_.get_size();
 }
 
-} // namespace lazarus::storage.
+} // namespace pandora::storage.

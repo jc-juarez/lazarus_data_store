@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Network
 // 'logging_context_filter.cc'
 // Author: jcjuarez
@@ -17,7 +17,7 @@
 #include "logging_context_filter.hh"
 #include "../../common/uuid_utilities.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace network
 {
@@ -41,4 +41,4 @@ logging_context_filter::doFilter(
 }
 
 } // namespace network.
-} // namespace lazarus.
+} // namespace pandora.

@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'read_io_dispatcher.hh'
 // Author: jcjuarez
@@ -18,7 +18,7 @@
 #include "read_io_dispatcher.hh"
 #include "../cache/cache_accessor.hh"
 
-namespace lazarus::storage
+namespace pandora::storage
 {
 
 read_io_dispatcher::read_io_dispatcher(
@@ -143,4 +143,4 @@ read_io_dispatcher::execute_read_io_task(
     }
 }
 
-} // namespace lazarus::storage.
+} // namespace pandora::storage.

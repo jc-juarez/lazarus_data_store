@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Schemas
 // 'container_request.hh'
 // Author: jcjuarez
@@ -20,7 +20,7 @@
 #include <drogon/HttpController.h>
 #include "../request-optypes/container_request_optype.hh"
 
-namespace lazarus
+namespace pandora
 {
 namespace schemas
 {
@@ -78,4 +78,4 @@ private:
 };
 
 } // namespace schemas.
-} // namespace lazarus.
+} // namespace pandora.
