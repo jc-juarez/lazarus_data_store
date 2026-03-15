@@ -13,11 +13,9 @@
 //      Implemented as a thread pool dispatcher.
 // ****************************************************
 
-#include <latch>
-#include <format>
 #include "storage_engine.hh"
-#include "read_io_dispatcher.hh"
 #include "read_io_executor.hh"
+#include "read_io_dispatcher.hh"
 #include "../cache/cache_accessor.hh"
 
 namespace lazarus::storage
@@ -30,29 +28,7 @@ read_io_dispatcher::read_io_dispatcher(
     : object_io_executor_{object_io_executor},
       cache_accessor_{cache_accessor},
       read_io_thread_pool_{number_read_io_threads}
-{
-    /*std::latch ready{number_read_io_threads};
-    std::latch release(1u);
-
-    for (std::size_t index = 0; index < number_read_io_threads; ++index)
-    {
-        boost::asio::post(read_io_thread_pool_,
-            [&ready, &release, index]()
-            {
-                const std::string thread_name = std::format(
-                    "lazarus_read_{}",
-                    index);
-
-                pthread_setname_np(pthread_self(), thread_name.c_str());
-
-                ready.count_down();
-                release.wait();
-            });
-    }
-
-    ready.wait();
-    release.count_down();*/
-}
+{}
 
 void
 read_io_dispatcher::enqueue_io_task(
