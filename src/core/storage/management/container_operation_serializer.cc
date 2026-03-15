@@ -17,7 +17,6 @@
 #include "../io/data_partition.hh"
 #include "../index/container_index.hh"
 #include "../../network/server/server.hh"
-#include "../../common/uuid_utilities.hh"
 #include "../io/data_partition_provider.hh"
 #include "container_operation_serializer.hh"
 
@@ -33,7 +32,16 @@ container_operation_serializer::container_operation_serializer(
     : metadata_partition_{metadata_partition},
       data_partition_provider_{data_partition_provider},
       container_index_{container_index}
-{}
+{
+    //
+    // Name the serializer thread.
+    //
+    container_operations_serializer_.enqueue_serialized_task(
+        []()
+        {
+            pthread_setname_np(pthread_self(), "lazarus_serial");
+        });
+}
 
 void
 container_operation_serializer::enqueue_container_operation(

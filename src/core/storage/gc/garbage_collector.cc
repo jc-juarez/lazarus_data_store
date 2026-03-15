@@ -14,6 +14,7 @@
 // ****************************************************
 
 #include <chrono>
+#include <pthread.h>
 #include "garbage_collector.hh"
 #include "../io/storage_engine.hh"
 #include "../index/container_index.hh"
@@ -50,6 +51,8 @@ void
 garbage_collector::execute_garbage_collection(
     std::stop_token stop_token)
 {
+    pthread_setname_np(pthread_self(), "lazarus_gc");
+
     while (!stop_token.stop_requested())
     {
         TRACE_LOG(info, "Starting garbage collection iteration. "

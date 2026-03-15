@@ -14,8 +14,8 @@
 //      batching IO dispatcher.
 // ****************************************************
 
+#include <pthread.h>
 #include "write_io_dispatcher.hh"
-#include "../../common/aliases.hh"
 #include "../cache/cache_accessor.hh"
 #include "data_partition_provider.hh"
 #include "storage_engine_interface.hh"
@@ -69,6 +69,8 @@ void
 write_io_dispatcher::dispatch_write_io_tasks(
     std::stop_token stop_token)
 {
+    pthread_setname_np(pthread_self(), "lazarus_write");
+
     //
     // This is the core tight loop for dispatching write io tasks.
     //
