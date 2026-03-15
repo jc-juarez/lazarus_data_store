@@ -31,7 +31,7 @@ read_io_dispatcher::read_io_dispatcher(
       cache_accessor_{cache_accessor},
       read_io_thread_pool_{number_read_io_threads}
 {
-    std::latch ready{number_read_io_threads};
+    /*std::latch ready{number_read_io_threads};
     std::latch release(1u);
 
     for (std::size_t index = 0; index < number_read_io_threads; ++index)
@@ -51,7 +51,7 @@ read_io_dispatcher::read_io_dispatcher(
     }
 
     ready.wait();
-    release.count_down();
+    release.count_down();*/
 }
 
 void

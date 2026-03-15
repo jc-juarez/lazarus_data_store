@@ -93,11 +93,6 @@ private:
         const schemas::object_request& object_request);
 
     //
-    // Long-running write io dispatcher master thread.
-    //
-    std::jthread write_dispatcher_master_thread_;
-
-    //
     // Lock-free and blocking queue for processing write IO operations.
     //
     moodycamel::BlockingConcurrentQueue<std::unique_ptr<object_io_task>> write_io_tasks_queue_;
@@ -111,6 +106,11 @@ private:
     // Reference for the cache accessor.
     //
     cache_accessor& cache_accessor_;
+
+    //
+    // Long-running write io dispatcher master thread.
+    //
+    std::jthread write_dispatcher_master_thread_;
 };
 
 } // namespace lazarus::storage.

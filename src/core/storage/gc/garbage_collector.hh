@@ -80,11 +80,6 @@ private:
     std::unique_ptr<orphaned_container_scavenger> orphaned_container_scavenger_;
 
     //
-    // Long-running garbage collector thread handle.
-    //
-    std::jthread garbage_collector_thread_;
-
-    //
     // Configuration for the storage subsystem.
     //
     const storage_configuration storage_configuration_;
@@ -99,6 +94,11 @@ private:
     // Alertable sleeper for stopping midway sleep cycles.
     //
     common::alertable_sleeper alertable_sleeper_;
+
+    //
+    // Long-running garbage collector thread handle.
+    //
+    std::jthread garbage_collector_thread_;
 };
 
 } // namespace storage.

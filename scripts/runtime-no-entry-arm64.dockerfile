@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y \
     libuuid1 \
     nlohmann-json3-dev \
     file \
+    libabsl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
