@@ -12,7 +12,6 @@
 //      Lazarus data store root object. 
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "../common/aliases.hh"
 #include "lazarus_data_store.hh"
 #include "../network/server/server.hh"
@@ -20,7 +19,6 @@
 #include "../storage/io/data_partition.hh"
 #include "../common/startable_interface.hh"
 #include "../storage/io/read_io_executor.hh"
-#include <spdlog/sinks/rotating_file_sink.h>
 #include "../storage/cache/cache_accessor.hh"
 #include "../storage/index/container_index.hh"
 #include "../storage/cache/frontline_cache.hh"
@@ -78,7 +76,7 @@ lazarus_data_store::start_data_store()
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to initialize the core storage state during startup. "
+        TRACE_LOG(critical, "Failed to initialize the core storage state during startup. "
             "Status={:#x}.",
             status);
 
@@ -110,7 +108,7 @@ lazarus_data_store::start_data_store()
 status::status_code
 lazarus_data_store::bootstrap_storage_state()
 {
-    using references_mapping = std::unordered_map<std::string, storage::storage_engine_reference_handle*>;
+    using references_mapping = std::unordered_map<std::string, storage::storage_engine_reference*>;
 
     //
     // Before starting the server, boot the container
@@ -123,7 +121,7 @@ lazarus_data_store::bootstrap_storage_state()
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to boot container metadata partition during the system startup. "
+        TRACE_LOG(critical, "Failed to boot container metadata partition during the system startup. "
             "Status={:#x}.",
             status);
 
@@ -138,7 +136,7 @@ lazarus_data_store::bootstrap_storage_state()
 
     if (!boot_result)
     {
-        spdlog::critical("Failed to boot structured data partitions during the system startup. "
+        TRACE_LOG(critical, "Failed to boot structured data partitions during the system startup. "
             "Status={:#x}.",
             boot_result.error());
 
@@ -157,7 +155,7 @@ lazarus_data_store::bootstrap_storage_state()
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to load and populate the container index during the system startup. "
+        TRACE_LOG(critical, "Failed to load and populate the container index during the system startup. "
             "Status={:#x}.",
             status);
 
@@ -190,7 +188,7 @@ lazarus_data_store::boot_structured_data_partitions()
 
     for (auto& data_partition : data_partitions)
     {
-        std::unordered_map<std::string, storage::storage_engine_reference_handle*> structured_partitions_references;
+        std::unordered_map<std::string, storage::storage_engine_reference*> structured_partitions_references;
 
         status::status_code status = boot_data_partition(
             data_partition,
@@ -198,7 +196,7 @@ lazarus_data_store::boot_structured_data_partitions()
 
         if (status::failed(status))
         {
-            spdlog::critical("Failed to boot structured data partition on CollocationIndex={}. "
+            TRACE_LOG(critical, "Failed to boot structured data partition on CollocationIndex={}. "
                 "Status={:#x}.",
                 data_partition.get_collocation_index(),
                 status);
@@ -218,7 +216,7 @@ lazarus_data_store::boot_structured_data_partitions()
 
             if (status::failed(status))
             {
-                spdlog::critical("Failed to register ContainerName={} for CollocationIndex={} "
+                TRACE_LOG(critical, "Failed to register ContainerName={} for CollocationIndex={} "
                     "on the container registry. "
                     "Status={:#x}.",
                     reference_entry.first,
@@ -236,7 +234,7 @@ lazarus_data_store::boot_structured_data_partitions()
 status::status_code
 lazarus_data_store::boot_data_partition(
     storage::data_partition& data_partition,
-    std::unordered_map<std::string, storage::storage_engine_reference_handle*>& references_mapping)
+    std::unordered_map<std::string, storage::storage_engine_reference*>& references_mapping)
 {
     //
     // Fetch all persistent object containers from the filesystem.
@@ -250,7 +248,7 @@ lazarus_data_store::boot_data_partition(
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to fetch data partition object containers from disk during the system startup. "
+        TRACE_LOG(critical, "Failed to fetch data partition object containers from disk during the system startup. "
             "Status={:#x}.",
             status);
 
@@ -267,7 +265,7 @@ lazarus_data_store::boot_data_partition(
 
     if (status::failed(status))
     {
-        spdlog::critical("Failed to boot data partition during the system startup. "
+        TRACE_LOG(critical, "Failed to boot data partition during the system startup. "
             "Status={:#x}.",
             status);
 

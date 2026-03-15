@@ -18,6 +18,7 @@
 #include <functional>
 #include <rocksdb/db.h>
 #include <drogon/drogon.h>
+#include "../logger/logging.hh"
 
 namespace lazarus
 {
@@ -44,7 +45,7 @@ namespace storage
 {
 using byte = char;
 using byte_stream = std::string;
-using storage_engine_reference_handle = rocksdb::ColumnFamilyHandle;
+using storage_engine_reference = rocksdb::ColumnFamilyHandle;
 using storage_engine_write_batch = rocksdb::WriteBatch;
 }
 

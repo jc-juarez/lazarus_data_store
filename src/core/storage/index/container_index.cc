@@ -14,7 +14,6 @@
 // ****************************************************
 
 #include <cassert>
-#include <spdlog/spdlog.h>
 #include "container_index.hh"
 #include "container_loader.hh"
 
@@ -25,7 +24,7 @@ namespace storage
 
 container_index::container_index(
     const std::uint16_t number_container_buckets)
-    : container_index_table_{number_container_buckets, container_bucket{}},
+    : container_index_table_{number_container_buckets},
       number_container_buckets_{number_container_buckets},
       number_containers_{0u}
 {
@@ -61,7 +60,7 @@ container_index::insert_container(
     return status;
 }
 
-storage_engine_reference_handle*
+storage_engine_reference*
 container_index::get_container_metadata_engine_reference() const
 {
     const std::shared_ptr<container> container =

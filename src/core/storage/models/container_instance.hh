@@ -28,7 +28,7 @@ struct container_instance
     container_instance(
         const std::uint16_t collocation_index,
         storage_engine_interface& storage_engine,
-        storage_engine_reference_handle* storage_engine_reference)
+        storage_engine_reference* storage_engine_reference)
         : collocation_index_{collocation_index},
           storage_engine_{storage_engine},
           storage_engine_reference_{storage_engine_reference}
@@ -47,7 +47,7 @@ struct container_instance
     //
     // Pointer to the associated column family for the object container.
     //
-    storage_engine_reference_handle* const storage_engine_reference_;
+    storage_engine_reference* const storage_engine_reference_;
 };
 
 } // namespace storage.

@@ -46,7 +46,7 @@ public:
     virtual
     status::status_code
     insert_object(
-        storage_engine_reference_handle* container_storage_engine_reference,
+        storage_engine_reference* container_storage_engine_reference,
         const char* object_id,
         const byte_stream& object_data) = 0;
 
@@ -57,7 +57,7 @@ public:
     virtual
     status::status_code
     get_object(
-        storage_engine_reference_handle* container_storage_engine_reference,
+        storage_engine_reference* container_storage_engine_reference,
         const char* object_id,
         byte_stream* object_data) = 0;
 
@@ -69,7 +69,7 @@ public:
     status::status_code
     create_container(
         const char* container_name,
-        storage_engine_reference_handle** container_storage_engine_reference) = 0;
+        storage_engine_reference** container_storage_engine_reference) = 0;
 
     //
     // Gets all the objects from a specified object container.
@@ -78,7 +78,7 @@ public:
     virtual
     status::status_code
     get_all_objects_from_container(
-        storage_engine_reference_handle* container_storage_engine_reference,
+        storage_engine_reference* container_storage_engine_reference,
         std::unordered_map<std::string, byte_stream>* objects) = 0;
 
     //
@@ -87,7 +87,7 @@ public:
     virtual
     status::status_code
     close_container_storage_engine_reference(
-        storage_engine_reference_handle* container_storage_engine_reference) = 0;
+        storage_engine_reference* container_storage_engine_reference) = 0;
 
     //
     // Removes an object from a given object container.
@@ -95,7 +95,7 @@ public:
     virtual
     status::status_code
     remove_object(
-        storage_engine_reference_handle* container_storage_engine_reference,
+        storage_engine_reference* container_storage_engine_reference,
         const char* object_id) = 0;
 
     //
@@ -104,15 +104,25 @@ public:
     virtual
     status::status_code
     remove_container(
-        storage_engine_reference_handle* container_storage_engine_reference) = 0;
+        storage_engine_reference* container_storage_engine_reference) = 0;
 
     //
-    // Executes a batch of write operations (insert/remove) for objects.
+    // Registers an engine reference into the approved set of references.
     //
     virtual
-    status::status_code
-    execute_objects_write_batch(
-        storage_engine_write_batch& write_batch) = 0;
+    void
+    register_approved_engine_references(
+        const std::vector<storage_engine_reference*> engine_references) = 0;
+
+    //
+    // Validates whether the provided engine reference is part
+    // of the approved set of engine references for this engine instance.
+    // Returns true if it is approved, false otherwise.
+    //
+    virtual
+    bool
+    fence_engine_reference(
+        storage_engine_reference* engine_reference) = 0;
 };
 
 } // namespace storage.

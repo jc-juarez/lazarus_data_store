@@ -13,8 +13,6 @@
 //      operations.
 // ****************************************************
 
-#include <rocksdb/db.h>
-#include <spdlog/spdlog.h>
 #include "../io/data_partition.hh"
 #include "../gc/garbage_collector.hh"
 #include "../index/container_index.hh"
@@ -67,7 +65,7 @@ container_management_service::validate_container_operation_request(
         // Not logging the container name as to avoid potential
         // large-buffer attacks in case the name is too big.
         //
-        spdlog::error("Object container operation will be failed as the "
+        TRACE_LOG(error, "Object container operation will be failed as the "
             "object container name is invalid. "
             "Optype={}, "
             "ObjectContainerNameSizeInBytes={}, "
@@ -99,7 +97,7 @@ container_management_service::validate_container_operation_request(
         }
         default:
         {
-            spdlog::error("Invalid optype received for container operation. "
+            TRACE_LOG(error, "Invalid optype received for container operation. "
                 "Optype={}, "
                 "ObjectContainerName={}.",
                 static_cast<std::uint8_t>(container_request.get_optype()),
@@ -126,7 +124,7 @@ container_management_service::validate_container_create_request(
         //
         // Fail fast in case the object container already exists.
         //
-        spdlog::error("Object container creation will be failed as the "
+        TRACE_LOG(error, "Object container creation will be failed as the "
             "object container is in a non-creatable state. "
             "Optype={}, "
             "ObjectContainerName={}, "
@@ -145,7 +143,7 @@ container_management_service::validate_container_create_request(
         // The total number of object containers present on the
         // system exceeds the limit. Fail the new creation operation.
         //
-        spdlog::error("Object container creation will be failed as the "
+        TRACE_LOG(error, "Object container creation will be failed as the "
             "current number of object containers exceeds the limit. "
             "Optype={}, "
             "ObjectContainerName={}, "
@@ -175,7 +173,7 @@ container_management_service::validate_container_remove_request(
         //
         // Fail fast in case the object container does not exist.
         //
-        spdlog::error("Object container removal will be failed as the "
+        TRACE_LOG(error, "Object container removal will be failed as the "
             "object container is in a non-deletable state. "
             "Optype={}, "
             "ObjectContainerName={}, "

@@ -13,7 +13,6 @@
 //      both the storage engine and metadata table.
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "../models/container.hh"
 #include "../index/container_index.hh"
 #include "orphaned_container_scavenger.hh"
@@ -38,7 +37,7 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
         // No object containers present.
         // Nothing to do here.
         //
-        spdlog::info("No object containers found during garbage collection. "
+        TRACE_LOG(info, "No object containers found during garbage collection. "
             "ContainerBucketIndexBeingTraversed={}, "
             "GarbageCollectorCurrentIteration={}.",
             container_bucket_index,
@@ -47,7 +46,7 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
         return;
     }
 
-    spdlog::info("Found object containers during garbage collection. "
+    TRACE_LOG(info, "Found object containers during garbage collection. "
         "NumberObjectContainers={}, "
         "ContainerBucketIndexBeingTraversed={}, "
         "GarbageCollectorCurrentIteration={}.",
@@ -69,7 +68,7 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
         //
         if (container->is_deleted())
         {
-            spdlog::info("Found orphaned object container during garbage collection. "
+            TRACE_LOG(info, "Found orphaned object container during garbage collection. "
                 "Attempting to delete it. "
                 "ObjectContainerMetadata={}, "
                 "ContainerBucketIndexBeingTraversed={}, "
@@ -86,7 +85,7 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
                 //
                 // Object container deletion failed in the storage engine; skip entry.
                 //
-                spdlog::error("Failed to remove object container from the data partitions. "
+                TRACE_LOG(error, "Failed to remove object container from the data partitions. "
                     "ObjectContainerMetadata={}, "
                     "ContainerBucketIndexBeingTraversed={}, "
                     "GarbageCollectorCurrentIteration={}, "
@@ -108,7 +107,7 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
 
             if (status::failed(status))
             {
-                spdlog::error("Failed to remove object container from the index metadata table. "
+                TRACE_LOG(error, "Failed to remove object container from the index metadata table. "
                     "ObjectContainerMetadata={}, "
                     "ContainerBucketIndexBeingTraversed={}, "
                     "GarbageCollectorCurrentIteration={}, "
@@ -122,7 +121,7 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
             {
                 ++number_cleaned_up_containers;
 
-                spdlog::info("Object container has been successfully deleted from the storage "
+                TRACE_LOG(info, "Object container has been successfully deleted from the storage "
                     "engine and the index metadata table. Memory will be freed after all references are dropped. "
                     "ObjectContainerMetadata={}, "
                     "ContainerBucketIndexBeingTraversed={}, "
@@ -136,7 +135,7 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
 
     if (number_cleaned_up_containers == 0)
     {
-        spdlog::info("No orphaned object containers cleaned up during garbage collection. "
+        TRACE_LOG(info, "No orphaned object containers cleaned up during garbage collection. "
             "ContainerBucketIndexBeingTraversed={}, "
             "GarbageCollectorCurrentIteration={}.",
             container_bucket_index,
@@ -144,7 +143,7 @@ orphaned_container_scavenger::cleanup_orphaned_containers(
     }
     else
     {
-        spdlog::info("Successfully cleaned up orphaned object containers found during garbage collection. "
+        TRACE_LOG(info, "Successfully cleaned up orphaned object containers found during garbage collection. "
             "NumberObjectContainersCleanedUp={}, "
             "ContainerBucketIndexBeingTraversed={}, "
             "GarbageCollectorCurrentIteration={}.",
@@ -165,7 +164,7 @@ orphaned_container_scavenger::delete_container_instances_from_data_partitions(
 
         if (status::failed(status))
         {
-            spdlog::error("Failed to remove object container from the data partition. "
+            TRACE_LOG(error, "Failed to remove object container from the data partition. "
                 "DataPartitionCollocationIndex={}, "
                 "StorageEngineReference={}.",
                 container_instance.collocation_index_,

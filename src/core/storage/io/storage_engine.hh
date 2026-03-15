@@ -23,6 +23,7 @@
 #include "../../common/aliases.hh"
 #include "../storage_configuration.hh"
 #include "storage_engine_interface.hh"
+#include "../../common/concurrent_flat_map.hh"
 
 namespace lazarus
 {
@@ -52,7 +53,7 @@ public:
     //
     status::status_code
     insert_object(
-        storage_engine_reference_handle* container_storage_engine_reference,
+        storage_engine_reference* container_storage_engine_reference,
         const char* object_id,
         const byte_stream& object_data) override;
 
@@ -62,7 +63,7 @@ public:
     //
     status::status_code
     get_object(
-        storage_engine_reference_handle* container_storage_engine_reference,
+        storage_engine_reference* container_storage_engine_reference,
         const char* object_id,
         byte_stream* object_data) override;
 
@@ -73,7 +74,7 @@ public:
     status::status_code
     create_container(
         const char* container_name,
-        storage_engine_reference_handle** container_storage_engine_reference) override;
+        storage_engine_reference** container_storage_engine_reference) override;
 
     //
     // Gets all the objects from a specified object container.
@@ -81,7 +82,7 @@ public:
     //
     status::status_code
     get_all_objects_from_container(
-        storage_engine_reference_handle* container_storage_engine_reference,
+        storage_engine_reference* container_storage_engine_reference,
         std::unordered_map<std::string, byte_stream>* objects) override;
 
     //
@@ -89,14 +90,14 @@ public:
     //
     status::status_code
     close_container_storage_engine_reference(
-        storage_engine_reference_handle* container_storage_engine_reference) override;
+        storage_engine_reference* container_storage_engine_reference) override;
 
     //
     // Removes an object from a given object container.
     //
     status::status_code
     remove_object(
-        storage_engine_reference_handle* container_storage_engine_reference,
+        storage_engine_reference* container_storage_engine_reference,
         const char* object_id) override;
 
     //
@@ -104,14 +105,23 @@ public:
     //
     status::status_code
     remove_container(
-        storage_engine_reference_handle* container_storage_engine_reference) override;
+        storage_engine_reference* container_storage_engine_reference) override;
 
     //
-    // Executes a batch of write operations (insert/remove) for objects.
+    // Registers an engine reference into the approved set of references.
     //
-    status::status_code
-    execute_objects_write_batch(
-        storage_engine_write_batch& write_batch) override;
+    void
+    register_approved_engine_references(
+        const std::vector<storage_engine_reference*> engine_references) override;
+
+    //
+    // Validates whether the provided engine reference is part
+    // of the approved set of engine references for this engine instance.
+    // Returns true if it is approved, false otherwise.
+    //
+    bool
+    fence_engine_reference(
+        storage_engine_reference* engine_reference) override;
 
 private:
 
@@ -119,6 +129,13 @@ private:
     // Main handle for the underlying storage backend key-value persistent store.
     //
     std::unique_ptr<rocksdb::DB> persistent_store_;
+
+    //
+    // Container for storing the engine references associated to this data partition.
+    // This implements the fencing logic for ensuring only approved engine references
+    // can execute on this storage engine instance.
+    //
+    common::concurrent_flat_map<storage_engine_reference*, std::monostate> approved_references_;
 
     //
     // Corresponding collocation index.

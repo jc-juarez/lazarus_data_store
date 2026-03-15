@@ -61,7 +61,7 @@ struct storage_configuration
         }
 
         kv_store_path_ =
-            std::string(home_environment_variable) + "/lazarus/lazarus-ds";
+            std::string(home_environment_variable) + "/lazarus/data";
     }
 
     //

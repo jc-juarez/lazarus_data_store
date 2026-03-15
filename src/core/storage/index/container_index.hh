@@ -57,7 +57,7 @@ public:
     // Gets the storage engine reference of the
     // object containers internal metadata column family.
     //
-    storage_engine_reference_handle*
+    storage_engine_reference*
     get_container_metadata_engine_reference() const;
 
     //

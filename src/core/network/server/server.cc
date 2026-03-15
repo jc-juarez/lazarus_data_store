@@ -14,12 +14,12 @@
 // ****************************************************
 
 #include "server.hh"
-#include <spdlog/spdlog.h>
 #include "../endpoints/ping.hh"
 #include "../endpoints/objects.hh"
+#include "logging_context_filter.hh"
 #include "../endpoints/containers.hh"
-#include "../../storage/cache/frontline_cache.hh"
 #include "../../common/response_utilities.hh"
+#include "../../storage/cache/frontline_cache.hh"
 #include "request-handlers/object/get_object_request_handler.hh"
 #include "request-handlers/object/insert_object_request_handler.hh"
 #include "request-handlers/object/remove_object_request_handler.hh"
@@ -45,7 +45,9 @@ server::server(
          .setLogLevel(trantor::Logger::kInfo)
          .addListener(server_config_.server_listener_ip_address_, server_config_.port_number_)
          .setThreadNum(server_config_.server_number_threads_)
-         .disableSigtermHandling();
+         .disableSigtermHandling()
+         .setUploadPath(server_config_.server_uploads_parent_directory_path_)
+         .registerFilter(std::make_shared<logging_context_filter>());
 
     //
     // Register all needed endpoints for the server
@@ -62,7 +64,7 @@ server::server(
 void
 server::start()
 {
-    spdlog::info("Starting lazarus data store server. "
+    TRACE_LOG(info, "Starting lazarus data store server. "
         "Port={}, "
         "LogsDirectoryPath={}, "
         "NumThreads={}, "
@@ -78,7 +80,7 @@ server::start()
 void
 server::stop()
 {
-    spdlog::info("Stopping lazarus data store server.");
+    TRACE_LOG(info, "Stopping lazarus data store server.");
 
     drogon::app().quit();
 }

@@ -100,6 +100,14 @@ private:
         const std::string& container_name);
 
     //
+    // Marks the provided engine references as
+    // approved across the corresponding data partitions.
+    //
+    void
+    mark_engine_references_as_approved(
+        const std::vector<container_instance>& container_instances);
+
+    //
     // Serializer task queue for executing object container operations serially.
     //
     common::task_serializer container_operations_serializer_;

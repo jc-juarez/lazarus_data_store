@@ -13,6 +13,7 @@
 //      collocation index to be used by providers.
 // ****************************************************
 
+#include <xxhash.h>
 #include "collocation_resolver.hh"
 
 namespace lazarus
@@ -27,9 +28,22 @@ collocation_resolver::collocation_resolver(
 
 std::uint16_t
 collocation_resolver::get_collocation_index_for_key(
-    const std::string& object_key)
+    const std::string& object_key) const
 {
-    return hasher_(object_key) % number_data_collocations_;
+    return static_cast<std::uint16_t>(
+        hash_key(object_key) % number_data_collocations_);
+}
+
+std::uint64_t
+collocation_resolver::hash_key(
+    const std::string& key)
+{
+    //
+    // Do not change.
+    // Using stable and deterministic hashing.
+    // This will yield a universal persistent result.
+    //
+    return XXH3_64bits(key.data(), key.size());
 }
 
 } // namespace storage.

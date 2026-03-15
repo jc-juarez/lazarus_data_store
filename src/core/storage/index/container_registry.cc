@@ -14,7 +14,6 @@
 // ****************************************************
 
 #include <unordered_set>
-#include <spdlog/spdlog.h>
 #include "container_registry.hh"
 #include "../../startup/collocation_builder.hh"
 
@@ -30,7 +29,7 @@ status::status_code
 container_registry::register_container_reference(
     const std::string& container_name,
     const std::uint16_t collocation_index,
-    storage_engine_reference_handle* engine_reference)
+    storage_engine_reference* engine_reference)
 {
     if (references_discovered_.find(engine_reference) != references_discovered_.end())
     {
@@ -39,7 +38,7 @@ container_registry::register_container_reference(
         // an inconsistent state given every reference for every container across each
         // data partition should be different.
         //
-        spdlog::critical("Found duplicate engine reference in the container registry. "
+        TRACE_LOG(critical, "Found duplicate engine reference in the container registry. "
             "ContainerName={}, "
             "DuplicateEngineReference={}, "
             "CurrentCollocationIndex={}, "
@@ -75,7 +74,7 @@ container_registry::execute_integrity_validation(
 {
     if (references_map_.find(container_name) == references_map_.end())
     {
-        spdlog::critical("Unknown container name to the container registry. "
+        TRACE_LOG(critical, "Unknown container name to the container registry. "
             "ContainerName={}.",
             container_name);
 
@@ -89,7 +88,7 @@ container_registry::execute_integrity_validation(
     auto& container_references = references_map_.at(container_name);
     if (container_references.size() != collocation_builder::k_number_collocations)
     {
-        spdlog::critical("Container contains unexpected number of storage engine references. "
+        TRACE_LOG(critical, "Container contains unexpected number of storage engine references. "
             "ContainerName={}, "
             "ExpectedNumEngineReferences={}, "
             "FoundNumEngineReferences={}.",
@@ -109,7 +108,7 @@ container_registry::execute_integrity_validation(
     {
         if (reference == nullptr)
         {
-            spdlog::critical("Container is not present on all filesystem structured data partitions. "
+            TRACE_LOG(critical, "Container is not present on all filesystem structured data partitions. "
                 "ContainerName={}, "
                 "ContainerFilesystemLayout={}.",
                 container_name,
@@ -122,13 +121,13 @@ container_registry::execute_integrity_validation(
     return status::success;
 }
 
-std::optional<std::vector<storage_engine_reference_handle*>>
+std::optional<std::vector<storage_engine_reference*>>
 container_registry::get_references(
     const std::string& container_name) const
 {
     if (references_map_.find(container_name) != references_map_.end())
     {
-        return std::make_optional<std::vector<storage_engine_reference_handle*>>(
+        return std::make_optional<std::vector<storage_engine_reference*>>(
             references_map_.at(container_name));
     }
 
@@ -137,7 +136,7 @@ container_registry::get_references(
 
 std::string
 container_registry::format_references_list(
-    const std::vector<storage_engine_reference_handle*>& references)
+    const std::vector<storage_engine_reference*>& references)
 {
     std::stringstream ss;
     ss << "{";

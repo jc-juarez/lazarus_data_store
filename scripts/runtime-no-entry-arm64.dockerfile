@@ -1,10 +1,10 @@
 # ****************************************************
 # Lazarus Data Store
 # Scripts
-# 'runtime-arm64.dockerfile'
+# 'runtime-no-entry-arm64.dockerfile'
 # Author: jcjuarez
 # Description:
-#      AMD64 Ubuntu base image for running lazarus.
+#      ARM64 Ubuntu base image for running lazarus.
 # ****************************************************
 
 FROM ubuntu:24.04
@@ -21,17 +21,16 @@ RUN apt-get update && apt-get install -y \
     libuuid1 \
     nlohmann-json3-dev \
     file \
-    libasan8 \
     libabsl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY cmake-build-docker-debug-amd64/lazarus /usr/local/bin/lazarus
+COPY cmake-build-docker-debug-arm64/lazarus /usr/local/bin/lazarus
 COPY config.json /app/config.json
 
 RUN useradd -ms /bin/bash runtime
 USER runtime
 WORKDIR /home/runtime
 
-ENTRYPOINT ["/usr/local/bin/lazarus", "/app/config.json"]
+CMD ["/bin/bash"]

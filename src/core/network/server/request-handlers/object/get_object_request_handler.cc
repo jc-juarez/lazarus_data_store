@@ -14,7 +14,6 @@
 // ****************************************************
 
 #include "../../server.hh"
-#include <spdlog/spdlog.h>
 #include "get_object_request_handler.hh"
 #include "../../../../storage/management/object_management_service.hh"
 
@@ -34,7 +33,7 @@ get_object_request_handler::execute_operation(
     std::shared_ptr<storage::container> container,
     server_response_callback&& response_callback)
 {
-    spdlog::info("Read object request received. "
+    TRACE_LOG(info, "Read object request received. "
         "Optype={}, "
         "ObjectId={}, "
         "ObjectContainerName={}.",
@@ -53,7 +52,7 @@ get_object_request_handler::execute_operation(
 
     if (object_data.has_value())
     {
-        spdlog::info("Frontline cache has the requested object for get object operation. Completing request. "
+        TRACE_LOG(info, "Frontline cache has the requested object for get object operation. Completing request. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}.",
@@ -84,7 +83,7 @@ get_object_request_handler::execute_operation(
 
     if (status::failed(status))
     {
-        spdlog::error("Failed to enqueue object get request operation. "
+        TRACE_LOG(error, "Failed to enqueue object get request operation. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}, "

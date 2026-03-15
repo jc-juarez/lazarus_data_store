@@ -47,7 +47,7 @@ public:
     //
     status::status_code
     load_container_index(
-        std::unordered_map<std::string, storage_engine_reference_handle*>& metadata_partition_references,
+        std::unordered_map<std::string, storage_engine_reference*>& metadata_partition_references,
         container_registry& structured_partitions_registry);
 
     //
@@ -69,14 +69,14 @@ private:
     //
     status::status_code
     create_container_metadata_column_family(
-        std::unordered_map<std::string, storage_engine_reference_handle*>* storage_engine_references_mapping);
+        std::unordered_map<std::string, storage_engine_reference*>* storage_engine_references_mapping);
 
     //
     // Indexes the container metadata partition containers.
     //
     status::status_code
     index_containers_from_metadata_partition(
-        std::unordered_map<std::string, storage_engine_reference_handle*>& metadata_partition_references);
+        std::unordered_map<std::string, storage_engine_reference*>& metadata_partition_references);
 
     //
     // Indexes the structured data partition containers known to the persistent container metadata.
@@ -100,7 +100,20 @@ private:
     //
     std::vector<container_instance>
     convert_ordered_engine_references_to_container_instances(
-        const std::vector<storage_engine_reference_handle*> storage_engine_references);
+        const std::vector<storage_engine_reference*> storage_engine_references);
+
+    //
+    // Validates the correctness of the engine references for each container loaded.
+    //
+    status::status_code
+    validate_loaded_engine_references();
+
+    //
+    // Validates the engine references for a given container.
+    //
+    status::status_code
+    validate_container_engine_references(
+        std::shared_ptr<container> container);
 
     //
     // Max number of expected containers for the metadata partition.

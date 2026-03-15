@@ -45,14 +45,6 @@ init_global_dependencies(
     const common::system_configuration& system_config);
 
 //
-// Initializes the global logger to be used by the system.
-//
-void
-init_logger(
-    const boost::uuids::uuid session_id,
-    const logger::logger_configuration logger_config);
-
-//
 // Wires-up all dependencies and starts the system.
 //
 status::status_code

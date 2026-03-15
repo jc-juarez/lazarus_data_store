@@ -14,7 +14,6 @@
 // ****************************************************
 
 #include "../../server.hh"
-#include <spdlog/spdlog.h>
 #include "remove_object_request_handler.hh"
 #include "../../../../storage/management/object_management_service.hh"
 
@@ -34,7 +33,7 @@ remove_object_request_handler::execute_operation(
     std::shared_ptr<storage::container> container,
     server_response_callback&& response_callback)
 {
-    spdlog::info("Remove object request received. "
+    TRACE_LOG(info, "Remove object request received. "
         "Optype={}, "
         "ObjectId={}, "
         "ObjectContainerName={}.",
@@ -55,7 +54,7 @@ remove_object_request_handler::execute_operation(
 
     if (status::failed(status))
     {
-        spdlog::error("Failed to enqueue object remove request operation. "
+        TRACE_LOG(error, "Failed to enqueue object remove request operation. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}, "

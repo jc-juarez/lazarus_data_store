@@ -14,7 +14,6 @@
 // ****************************************************
 
 #include "../../server.hh"
-#include <spdlog/spdlog.h>
 #include "insert_object_request_handler.hh"
 #include "../../../../storage/management/object_management_service.hh"
 
@@ -34,7 +33,7 @@ insert_object_request_handler::execute_operation(
     std::shared_ptr<storage::container> container,
     server_response_callback&& response_callback)
 {
-    spdlog::info("Insert object request received. "
+    TRACE_LOG(info, "Insert object request received. "
         "Optype={}, "
         "ObjectId={}, "
         "ObjectContainerName={}.",
@@ -55,7 +54,7 @@ insert_object_request_handler::execute_operation(
 
     if (status::failed(status))
     {
-        spdlog::error("Failed to enqueue object insert request operation. "
+        TRACE_LOG(error, "Failed to enqueue object insert request operation. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}, "

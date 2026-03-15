@@ -12,13 +12,10 @@
 //      Fundamental structure for storing containers.
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "container_bucket.hh"
 
 namespace lazarus::storage
 {
-
-using index_table_type = tbb::concurrent_hash_map<std::string, std::shared_ptr<container>>;
 
 container_bucket::container_bucket()
     : index_{0u}
@@ -44,62 +41,51 @@ container_bucket::insert_container(
     // Likewise, the container should hold a reference to the list of its respective storage
     // engines for closing its references upon destruction.
     //
-    if (container_bucket_map_.emplace(
+    if (container_bucket_map_.exists(container_persistent_metadata.name()))
+    {
+        //
+        // Reaching this point is a critical error as no other thread
+        // should have reached this point before for inserting the same key.
+        //
+        return status::container_insertion_collision;
+    }
+
+    container_bucket_map_.insert(
         container_persistent_metadata.name(),
         std::make_shared<container>(
             container_persistent_metadata,
-            container_instances)))
-    {
-        //
-        // Key did not exist and metadata register was successful.
-        // Exit execution.
-        //
-        spdlog::info("Inserted container to the bucket map. "
-            "ContainerName={}, "
-            "ContainerBucketIndex={}.",
-            container_persistent_metadata.name().c_str(),
-            index_);
-
-        return status::success;
-    }
+            container_instances));
 
     //
-    // Reaching this point is a critical error as no other thread
-    // should have reached this point before for inserting the same key.
+    // Key did not exist and metadata register was successful.
+    // Exit execution.
     //
-    return status::container_insertion_collision;
+    TRACE_LOG(info, "Inserted container to the bucket map. "
+        "ContainerName={}, "
+        "ContainerBucketIndex={}.",
+        container_persistent_metadata.name().c_str(),
+        index_);
+
+    return status::success;
 }
 
 std::shared_ptr<container>
 container_bucket::get_container(
     const std::string& container_name) const
 {
-    index_table_type::const_accessor accessor;
-
-    if (container_bucket_map_.find(
-        accessor,
-        container_name))
-    {
-        //
-        // Object container present in the bucket map.
-        //
-        return accessor->second;
-    }
-
-    //
-    // Not present in the bucket map; unknown object container.
-    //
-    return nullptr;
+    auto container = container_bucket_map_.get(container_name);
+    return container.has_value() ? container.value() : nullptr;
 }
 
 std::vector<std::shared_ptr<container>>
 container_bucket::get_all_containers() const
 {
     std::vector<std::shared_ptr<container>> containers;
+    auto bucket_entries = container_bucket_map_.get_all();
 
-    for (const auto& entry : container_bucket_map_)
+    for (auto& container_entry : bucket_entries)
     {
-        containers.push_back(entry.second);
+        containers.emplace_back(container_entry.second);
     }
 
     return containers;
@@ -109,30 +95,26 @@ status::status_code
 container_bucket::remove_container(
     const std::string& container_name)
 {
-    index_table_type::accessor accessor;
-
-    if (container_bucket_map_.find(
-        accessor,
-        container_name))
+    if (!container_bucket_map_.exists(container_name))
     {
-        container_bucket_map_.erase(accessor);
-
-        spdlog::info("Deleted object container reference from the bucket map. "
-            "ContainerName={}, "
-            "ContainerBucketIndex={}.",
-            container_name.c_str(),
-            index_);
-
-        return status::success;
+        return status::container_not_exists;
     }
 
-    return status::container_not_exists;
+    container_bucket_map_.erase(container_name);
+
+    TRACE_LOG(info, "Deleted object container reference from the bucket map. "
+        "ContainerName={}, "
+        "ContainerBucketIndex={}.",
+        container_name.c_str(),
+        index_);
+
+    return status::success;
 }
 
 std::size_t
 container_bucket::get_number_containers() const
 {
-    return container_bucket_map_.size();
+    return container_bucket_map_.get_size();
 }
 
 } // namespace lazarus::storage.

@@ -1,7 +1,7 @@
 # ****************************************************
 # Lazarus Data Store
 # Scripts
-# 'runtime-arm64.dockerfile'
+# 'runtime-no-entry-arm64.dockerfile'
 # Author: jcjuarez
 # Description:
 #      AMD64 Ubuntu base image for running lazarus.
@@ -34,4 +34,4 @@ RUN useradd -ms /bin/bash runtime
 USER runtime
 WORKDIR /home/runtime
 
-ENTRYPOINT ["/usr/local/bin/lazarus", "/app/config.json"]
+CMD ["/bin/bash"]

@@ -14,7 +14,6 @@
 // ****************************************************
 
 #include "../../server.hh"
-#include <spdlog/spdlog.h>
 #include "remove_container_request_handler.hh"
 #include "../../../../storage/management/container_management_service.hh"
 
@@ -33,7 +32,7 @@ remove_container_request_handler::execute_operation(
     schemas::container_request&& container_request,
     server_response_callback&& response_callback)
 {
-    spdlog::info("Remove object container request received. "
+    TRACE_LOG(info, "Remove container request received. "
         "Optype={}, "
         "ObjectContainerName={}.",
         static_cast<std::uint8_t>(container_request.get_optype()),

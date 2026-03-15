@@ -16,7 +16,6 @@
 
 #include <format>
 #include "container.hh"
-#include <spdlog/spdlog.h>
 #include "../io/storage_engine.hh"
 
 namespace lazarus
@@ -34,7 +33,7 @@ container::container(
 
 container::~container()
 {
-    spdlog::info("Removing last object container reference from memory. "
+    TRACE_LOG(info, "Removing last object container reference from memory. "
         "ObjectContainerMetadata={}.",
         to_string());
 
@@ -53,7 +52,7 @@ container::~container()
 
             if (status::failed(status))
             {
-                spdlog::warn("Failed to close container storage engine reference. "
+                TRACE_LOG(warn, "Failed to close container storage engine reference. "
                     "ObjectContainerMetadata={}, "
                     "DataPartitionCollocationIndex={}, "
                     "StorageEngineReference={}.",
@@ -133,7 +132,7 @@ container::to_string() const
         generate_instances_string());
 }
 
-storage_engine_reference_handle*
+storage_engine_reference*
 container::get_engine_reference(
     const std::uint16_t collocation_index)
 {

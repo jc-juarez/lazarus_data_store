@@ -53,7 +53,7 @@ TEST_F(
     insert_container_success)
 {
     storage::container_index index{num_container_buckets_, mock_storage_engine_};
-    storage::storage_engine_reference_handle* reference_handle{};
+    storage::storage_engine_reference* reference_handle{};
     schemas::container_persistent_interface container_metadata{};
     EXPECT_EQ(
         index.insert_container(reference_handle, container_metadata),

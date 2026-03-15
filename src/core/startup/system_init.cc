@@ -14,14 +14,11 @@
 
 #include <csignal>
 #include "system_init.hh"
-#include <spdlog/async.h>
-#include <spdlog/spdlog.h>
 #include "lazarus_data_store.hh"
 #include "collocation_builder.hh"
 #include "../network/server/server.hh"
 #include "../common/args_validations.hh"
 #include "../storage/io/data_partition.hh"
-#include <spdlog/sinks/rotating_file_sink.h>
 #include "../storage/io/read_io_executor.hh"
 #include "../storage/cache/cache_accessor.hh"
 #include "../storage/io/read_io_dispatcher.hh"
@@ -83,7 +80,7 @@ init_system(
         //
         status = status::fail;
 
-        spdlog::critical("Exception thrown in the data store startup path. Terminating the data store. "
+        TRACE_LOG(critical, "Exception thrown in the data store startup path. Terminating the data store. "
             "Exception={}",
             exception.what());
     }
@@ -104,52 +101,9 @@ init_global_dependencies(
     //
     // Initialize the logger to be used by the system.
     //
-    init_logger(
+    logger::init_logger(
         session_id,
         system_config.logger_configuration_);
-}
-
-void
-init_logger(
-    const boost::uuids::uuid session_id,
-    const logger::logger_configuration logger_config)
-{
-    spdlog::init_thread_pool(
-        logger_config.queue_size_bytes_,
-        1u /* thread_count */);
-
-    const std::string current_session_logs_directory =
-    logger_config.logging_session_directory_prefix_ + "-" + common::uuid_to_string(session_id);
-    const std::filesystem::path logging_session_directory_path =
-    std::filesystem::path(logger_config.logs_directory_path_) / current_session_logs_directory / logger_config.log_file_prefix_;
-
-    auto logger = spdlog::rotating_logger_mt<spdlog::async_factory>(
-        logger_config.component_name_,
-        logging_session_directory_path.string(),
-        logger_config.max_log_file_size_bytes_,
-        logger_config.max_number_files_for_session_);
-
-    spdlog::set_default_logger(logger);
-    spdlog::flush_on(spdlog::level::critical);
-    spdlog::flush_every(std::chrono::milliseconds(logger_config.flush_frequency_ms_));
-
-    spdlog::info("Logger has been initialized successfully. "
-        "LogsDirectoryPath={}, "
-        "ComponentName={}, "
-        "QueueSizeBytes={}, "
-        "MaxLogFileSizeBytes={}, "
-        "MaxNumberFilesForSession={}, "
-        "FlushFrequencyMs={}, "
-        "LogFilePrefix={}, "
-        "LoggingSessionDirectoryPrefix={}.",
-        logger_config.logs_directory_path_ ,
-        logger_config.component_name_ ,
-        logger_config.queue_size_bytes_ ,
-        logger_config.max_log_file_size_bytes_ ,
-        logger_config.max_number_files_for_session_ ,
-        logger_config.flush_frequency_ms_ ,
-        logger_config.log_file_prefix_ ,
-        logger_config.logging_session_directory_prefix_);
 }
 
 status::status_code
@@ -334,7 +288,7 @@ void
 signal_handler(
     std::int32_t signal)
 {
-    spdlog::info("Termination signal received. Requesting system stop.");
+    TRACE_LOG(info, "Termination signal received. Requesting system stop.");
     network::server::stop();
     stop_source.request_stop();
 }

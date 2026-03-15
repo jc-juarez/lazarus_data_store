@@ -12,7 +12,6 @@
 //      Core storage engine for handling IO operations. 
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "storage_engine.hh"
 
 namespace lazarus
@@ -35,29 +34,59 @@ storage_engine::set_persistent_store(
 
 status::status_code
 storage_engine::insert_object(
-    storage_engine_reference_handle* container_storage_engine_reference,
+    storage_engine_reference* container_storage_engine_reference,
     const char* object_id,
     const byte_stream& object_data)
 {
-    const rocksdb::Status status = persistent_store_->Put(
+    if (!fence_engine_reference(container_storage_engine_reference))
+    {
+        status::status_code status = status::storage_engine_reference_not_approved;
+        TRACE_LOG(error, "Insert object operation is invalid since "
+            "engine reference is not approved for the storage engine. "
+            "ObjectId={}, "
+            "EngineReference={}, "
+            "EngineReferenceID={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}, "
+            "Status={:#x}.",
+            object_id,
+            static_cast<void*>(container_storage_engine_reference),
+            container_storage_engine_reference->GetID(),
+            container_storage_engine_reference->GetName(),
+            collocation_index_,
+            status);
+
+        return status;
+    }
+
+    const rocksdb::Status engine_status = persistent_store_->Put(
         rocksdb::WriteOptions(),
         container_storage_engine_reference,
         object_id,
         object_data);
 
-    if (!status.ok())
+    if (!engine_status.ok())
     {
-        spdlog::error("Failed to insert object into the specified object container. "
+        status::status_code status = status::object_insertion_failed;
+        TRACE_LOG(error, "Failed to insert object into the specified object container. "
             "ObjectId={}, "
-            "ObjectContainerStorageEngineReference={}, "
+            "EngineReference={}, "
+            "EngineReferenceID={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}, "
             "StorageEngineCode={}, "
-            "StorageEngineSubCode={}.",
+            "StorageEngineSubCode={}, "
+            "Status={:#x}.",
             object_id,
             static_cast<void*>(container_storage_engine_reference),
-            static_cast<std::uint32_t>(status.code()),
-            static_cast<std::uint32_t>(status.subcode()));
+            container_storage_engine_reference->GetID(),
+            container_storage_engine_reference->GetName(),
+            collocation_index_,
+            static_cast<std::uint32_t>(engine_status.code()),
+            static_cast<std::uint32_t>(engine_status.subcode()),
+            status);
         
-        return status::object_insertion_failed;
+        return status;
     }
 
     return status::success;
@@ -65,29 +94,59 @@ storage_engine::insert_object(
 
 status::status_code
 storage_engine::get_object(
-    storage_engine_reference_handle* container_storage_engine_reference,
+    storage_engine_reference* container_storage_engine_reference,
     const char* object_id,
     byte_stream* object_data)
 {
-    const rocksdb::Status status = persistent_store_->Get(
+    if (!fence_engine_reference(container_storage_engine_reference))
+    {
+        status::status_code status = status::storage_engine_reference_not_approved;
+        TRACE_LOG(error, "Get object operation is invalid since "
+            "engine reference is not approved for the storage engine. "
+            "ObjectId={}, "
+            "EngineReference={}, "
+            "EngineReferenceID={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}, "
+            "Status={:#x}.",
+            object_id,
+            static_cast<void*>(container_storage_engine_reference),
+            container_storage_engine_reference->GetID(),
+            container_storage_engine_reference->GetName(),
+            collocation_index_,
+            status);
+
+        return status;
+    }
+
+    const rocksdb::Status engine_status = persistent_store_->Get(
         rocksdb::ReadOptions(),
         container_storage_engine_reference,
         object_id,
         object_data);
 
-    if (!status.ok())
+    if (!engine_status.ok())
     {
-        spdlog::error("Failed to retrieve object from the specified object container. "
+        status::status_code status = status::object_retrieval_failed;
+        TRACE_LOG(error, "Failed to retrieve object from the specified object container. "
             "ObjectId={}, "
-            "ObjectContainerStorageEngineReference={}, "
+            "EngineReference={}, "
+            "EngineReferenceID={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}, "
             "StorageEngineCode={}, "
-            "StorageEngineSubCode={}.",
+            "StorageEngineSubCode={}, "
+            "Status={:#x}.",
             object_id,
             static_cast<void*>(container_storage_engine_reference),
-            static_cast<std::uint32_t>(status.code()),
-            static_cast<std::uint32_t>(status.subcode()));
+            container_storage_engine_reference->GetID(),
+            container_storage_engine_reference->GetName(),
+            collocation_index_,
+            static_cast<std::uint32_t>(engine_status.code()),
+            static_cast<std::uint32_t>(engine_status.subcode()),
+            status);
         
-        return status::object_retrieval_failed;
+        return status;
     }
 
     return status::success;
@@ -96,29 +155,34 @@ storage_engine::get_object(
 status::status_code
 storage_engine::create_container(
     const char* container_name,
-    storage_engine_reference_handle** container_storage_engine_reference)
+    storage_engine_reference** container_storage_engine_reference)
 {
-    const rocksdb::Status status = persistent_store_->CreateColumnFamily(
+    const rocksdb::Status engine_status = persistent_store_->CreateColumnFamily(
         rocksdb::ColumnFamilyOptions(),
         container_name,
         container_storage_engine_reference);
 
-    if (!status.ok())
+    if (!engine_status.ok())
     {
         //
         // On failure, nullify the reference.
         //
         container_storage_engine_reference = nullptr;
 
-        spdlog::error("Failed to create the specified object container. "
-            "ObjectContainerName={}, "
+        status::status_code status = status::container_creation_failed;
+        TRACE_LOG(error, "Failed to create the specified object container. "
+            "ContainerName={}, "
             "StorageEngineCode={}, "
-            "StorageEngineSubCode={}.",
+            "StorageEngineSubCode={}, "
+            "CollocationIndex={}, "
+            "Status={:#x}.",
             container_name,
-            static_cast<std::uint32_t>(status.code()),
-            static_cast<std::uint32_t>(status.subcode()));
+            static_cast<std::uint32_t>(engine_status.code()),
+            static_cast<std::uint32_t>(engine_status.subcode()),
+            collocation_index_,
+            status);
 
-        return status::container_creation_failed;
+        return status;
     }
 
     return status::success;
@@ -126,9 +190,28 @@ storage_engine::create_container(
 
 status::status_code
 storage_engine::get_all_objects_from_container(
-    storage_engine_reference_handle* container_storage_engine_reference,
+    storage_engine_reference* container_storage_engine_reference,
     std::unordered_map<std::string, byte_stream>* objects)
 {
+    if (!fence_engine_reference(container_storage_engine_reference))
+    {
+        status::status_code status = status::storage_engine_reference_not_approved;
+        TRACE_LOG(error, "Get all objects operation is invalid since "
+            "engine reference is not approved for the storage engine. "
+            "EngineReference={}, "
+            "EngineReferenceID={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}, "
+            "Status={:#x}.",
+            static_cast<void*>(container_storage_engine_reference),
+            container_storage_engine_reference->GetID(),
+            container_storage_engine_reference->GetName(),
+            collocation_index_,
+            status);
+
+        return status;
+    }
+
     rocksdb::ReadOptions read_options;
     std::unique_ptr<rocksdb::Iterator> it(persistent_store_->NewIterator(
         read_options,
@@ -149,19 +232,28 @@ storage_engine::get_all_objects_from_container(
     // If an error occurred, it will only be discovered after the storage
     // iteration, so error handling must be handled post iterator traversal.
     //
-    const rocksdb::Status status = it->status();
+    const rocksdb::Status engine_status = it->status();
 
-    if (!status.ok())
+    if (!engine_status.ok())
     {
-        spdlog::error("Failed to retrieve all objects inside the specified object container. "
-            "ObjectContainerStorageEngineReference={}, "
+        status::status_code status = status::objects_retrieval_from_container_failed;
+        TRACE_LOG(error, "Failed to retrieve all objects inside the specified object container. "
+            "EngineReference={}, "
+            "EngineReferenceID={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}, "
             "StorageEngineCode={}, "
-            "StorageEngineSubCode={}.",
+            "StorageEngineSubCode={}, "
+            "Status={:#x}.",
             static_cast<void*>(container_storage_engine_reference),
-            static_cast<std::uint32_t>(status.code()),
-            static_cast<std::uint32_t>(status.subcode()));
+            container_storage_engine_reference->GetID(),
+            container_storage_engine_reference->GetName(),
+            collocation_index_,
+            static_cast<std::uint32_t>(engine_status.code()),
+            static_cast<std::uint32_t>(engine_status.subcode()),
+            status);
 
-        return status::objects_retrieval_from_container_failed;
+        return status;
     }
 
     return status::success;
@@ -169,50 +261,114 @@ storage_engine::get_all_objects_from_container(
 
 status::status_code
 storage_engine::close_container_storage_engine_reference(
-    storage_engine_reference_handle* container_storage_engine_reference)
+    storage_engine_reference* container_storage_engine_reference)
 {
-    const rocksdb::Status status = persistent_store_->DestroyColumnFamilyHandle(
+    if (!fence_engine_reference(container_storage_engine_reference))
+    {
+        status::status_code status = status::storage_engine_reference_not_approved;
+        TRACE_LOG(error, "Close engine reference operation is invalid since "
+            "engine reference is not approved for the storage engine. "
+            "EngineReference={}, "
+            "EngineReferenceID={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}, "
+            "Status={:#x}.",
+            static_cast<void*>(container_storage_engine_reference),
+            container_storage_engine_reference->GetID(),
+            container_storage_engine_reference->GetName(),
+            collocation_index_,
+            status);
+
+        return status;
+    }
+
+    const rocksdb::Status engine_status = persistent_store_->DestroyColumnFamilyHandle(
         container_storage_engine_reference);
 
-    if (!status.ok())
+    if (!engine_status.ok())
     {
-        spdlog::error("Failed to close storage engine reference. "
-            "ObjectContainerStorageEngineReference={}, "
+        status::status_code status = status::storage_engine_reference_close_failed;
+        TRACE_LOG(error, "Failed to close storage engine reference. "
+            "EngineReference={}, "
+            "EngineReferenceID={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}, "
             "StorageEngineCode={}, "
-            "StorageEngineSubCode={}.",
+            "StorageEngineSubCode={}, "
+            "Status={:#x}.",
             static_cast<void*>(container_storage_engine_reference),
-            static_cast<std::uint32_t>(status.code()),
-            static_cast<std::uint32_t>(status.subcode()));
+            container_storage_engine_reference->GetID(),
+            container_storage_engine_reference->GetName(),
+            collocation_index_,
+            static_cast<std::uint32_t>(engine_status.code()),
+            static_cast<std::uint32_t>(engine_status.subcode()),
+            status);
 
-        return status::storage_engine_reference_close_failed;
+        return status;
     }
+
+    //
+    // At this point, we are now safe to delete the approved reference for
+    // fencing purposes.
+    //
+    approved_references_.erase(container_storage_engine_reference);
 
     return status::success;
 }
 
 status::status_code
 storage_engine::remove_object(
-    storage_engine_reference_handle* container_storage_engine_reference,
+    storage_engine_reference* container_storage_engine_reference,
     const char* object_id)
 {
-    const rocksdb::Status status = persistent_store_->Delete(
+    if (!fence_engine_reference(container_storage_engine_reference))
+    {
+        status::status_code status = status::storage_engine_reference_not_approved;
+        TRACE_LOG(error, "Remove object operation is invalid since "
+            "engine reference is not approved for the storage engine. "
+            "ObjectId={}, "
+            "EngineReference={}, "
+            "EngineReferenceID={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}, "
+            "Status={:#x}.",
+            object_id,
+            static_cast<void*>(container_storage_engine_reference),
+            container_storage_engine_reference->GetID(),
+            container_storage_engine_reference->GetName(),
+            collocation_index_,
+            status);
+
+        return status;
+    }
+
+    const rocksdb::Status engine_status = persistent_store_->Delete(
         rocksdb::WriteOptions(),
         container_storage_engine_reference,
         object_id);
 
-    if (!status.ok())
+    if (!engine_status.ok())
     {
-        spdlog::error("Failed to remove object from the specified object container. "
-            "ObjectContainerStorageEngineReference={}, "
+        status::status_code status = status::object_deletion_failed;
+        TRACE_LOG(error, "Failed to remove object from the specified object container. "
             "ObjectId={}, "
+            "EngineReference={}, "
+            "EngineReferenceID={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}, "
             "StorageEngineCode={}, "
-            "StorageEngineSubCode={}.",
-            static_cast<void*>(container_storage_engine_reference),
+            "StorageEngineSubCode={}, "
+            "Status={:#x}.",
             object_id,
-            static_cast<std::uint32_t>(status.code()),
-            static_cast<std::uint32_t>(status.subcode()));
+            static_cast<void*>(container_storage_engine_reference),
+            container_storage_engine_reference->GetID(),
+            container_storage_engine_reference->GetName(),
+            collocation_index_,
+            static_cast<std::uint32_t>(engine_status.code()),
+            static_cast<std::uint32_t>(engine_status.subcode()),
+            status);
 
-        return status::object_deletion_failed;
+        return status;
     }
 
     return status::success;
@@ -220,47 +376,73 @@ storage_engine::remove_object(
 
 status::status_code
 storage_engine::remove_container(
-    storage_engine_reference_handle* container_storage_engine_reference)
+    storage_engine_reference* container_storage_engine_reference)
 {
-    const rocksdb::Status status = persistent_store_->DropColumnFamily(
+    if (!fence_engine_reference(container_storage_engine_reference))
+    {
+        status::status_code status = status::storage_engine_reference_not_approved;
+        TRACE_LOG(error, "Remove container operation is invalid since "
+            "engine reference is not approved for the storage engine. "
+            "EngineReference={}, "
+            "EngineReferenceID={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}, "
+            "Status={:#x}.",
+            static_cast<void*>(container_storage_engine_reference),
+            container_storage_engine_reference->GetID(),
+            container_storage_engine_reference->GetName(),
+            collocation_index_,
+            status);
+
+        return status;
+    }
+
+    const rocksdb::Status engine_status = persistent_store_->DropColumnFamily(
         container_storage_engine_reference);
 
-    if (!status.ok())
+    if (!engine_status.ok())
     {
-        spdlog::error("Failed to remove object container from the storage engine. "
-            "ObjectContainerStorageEngineReference={}, "
+        status::status_code status = status::container_storage_engine_deletion_failed;
+        TRACE_LOG(error, "Failed to remove object container from the storage engine. "
+            "EngineReference={}, "
+            "EngineReferenceID={}, "
+            "ContainerName={}, "
+            "CollocationIndex={}, "
             "StorageEngineCode={}, "
-            "StorageEngineSubCode={}.",
+            "StorageEngineSubCode={}, "
+            "Status={:#x}.",
             static_cast<void*>(container_storage_engine_reference),
-            static_cast<std::uint32_t>(status.code()),
-            static_cast<std::uint32_t>(status.subcode()));
+            container_storage_engine_reference->GetID(),
+            container_storage_engine_reference->GetName(),
+            collocation_index_,
+            static_cast<std::uint32_t>(engine_status.code()),
+            static_cast<std::uint32_t>(engine_status.subcode()),
+            status);
 
-        return status::container_storage_engine_deletion_failed;
+        return status;
     }
 
     return status::success;
 }
 
-status::status_code
-storage_engine::execute_objects_write_batch(
-    storage_engine_write_batch& write_batch)
+void
+storage_engine::register_approved_engine_references(
+    const std::vector<storage_engine_reference*> engine_references)
 {
-    const rocksdb::Status status = persistent_store_->Write(
-        rocksdb::WriteOptions(),
-        &write_batch);
-
-    if (!status.ok())
+    for (const auto& engine_reference : engine_references)
     {
-        spdlog::error("Failed to execute objects write batch operation. "
-            "StorageEngineCode={}, "
-            "StorageEngineSubCode={}.",
-            static_cast<std::uint32_t>(status.code()),
-            static_cast<std::uint32_t>(status.subcode()));
-
-        return status::object_write_batch_failed;
+        approved_references_.insert(
+            engine_reference,
+            std::monostate{});
     }
+}
 
-    return status::success;
+bool
+storage_engine::fence_engine_reference(
+    storage_engine_reference* engine_reference)
+{
+    return engine_reference != nullptr &&
+           approved_references_.exists(engine_reference);
 }
 
 } // namespace storage.

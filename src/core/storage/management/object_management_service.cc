@@ -12,7 +12,6 @@
 //      Management service for object operations.
 // ****************************************************
 
-#include <spdlog/spdlog.h>
 #include "../index/container_index.hh"
 #include "../cache/frontline_cache.hh"
 #include "../io/read_io_dispatcher.hh"
@@ -61,7 +60,7 @@ object_management_service::validate_object_operation_request(
     //
     if (!is_object_operation_optype_valid(object_request.get_optype()))
     {
-        spdlog::error("Invalid optype received for object operation. "
+        TRACE_LOG(error, "Invalid optype received for object operation. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}.",
@@ -90,7 +89,7 @@ object_management_service::validate_request_parameters(
         // Not logging the parameters as to avoid potential
         // large-buffer attacks in case the parameters are too big.
         //
-        spdlog::error("Object operation will be failed as the "
+        TRACE_LOG(error, "Object operation will be failed as the "
             "object container name is invalid. "
             "Optype={}, "
             "ObjectContainerNameSizeInBytes={}, "
@@ -115,7 +114,7 @@ object_management_service::validate_request_parameters(
         // Not logging the parameters as to avoid potential
         // large-buffer attacks in case the parameters are too big.
         //
-        spdlog::error("Object operation will be failed as the "
+        TRACE_LOG(error, "Object operation will be failed as the "
             "object ID is invalid. "
             "Optype={}, "
             "ObjectIdSizeInBytes={}, "
@@ -142,7 +141,7 @@ object_management_service::validate_request_parameters(
             // Not logging the parameters as to avoid potential
             // large-buffer attacks in case the parameters are too big.
             //
-            spdlog::error("Object operation will be failed as the "
+            TRACE_LOG(error, "Object operation will be failed as the "
                 "object data stream is invalid. "
                 "Optype={}, "
                 "ObjectDataStreamSizeInBytes={}, "
@@ -179,7 +178,7 @@ object_management_service::orchestrate_concurrent_write_request(
     //
     if (!is_object_request_write_io_operation(object_request.get_optype()))
     {
-        spdlog::error("Invalid write request optype for object operation. "
+        TRACE_LOG(error, "Invalid write request optype for object operation. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}.",
@@ -217,7 +216,7 @@ object_management_service::orchestrate_concurrent_read_request(
     //
     if (!is_object_request_read_io_operation(object_request.get_optype()))
     {
-        spdlog::error("Invalid read request optype for object operation. "
+        TRACE_LOG(error, "Invalid read request optype for object operation. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}.",

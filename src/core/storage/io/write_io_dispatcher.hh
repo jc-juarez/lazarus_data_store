@@ -80,7 +80,7 @@ private:
     status::status_code
     execute_insert_operation(
         storage_engine_interface& partition_storage_engine,
-        storage_engine_reference_handle* engine_reference,
+        storage_engine_reference* engine_reference,
         const schemas::object_request& object_request);
 
     //
@@ -89,13 +89,8 @@ private:
     status::status_code
     execute_remove_operation(
         storage_engine_interface& partition_storage_engine,
-        storage_engine_reference_handle* engine_reference,
+        storage_engine_reference* engine_reference,
         const schemas::object_request& object_request);
-
-    //
-    // Long-running write io dispatcher master thread.
-    //
-    std::jthread write_dispatcher_master_thread_;
 
     //
     // Lock-free and blocking queue for processing write IO operations.
@@ -111,6 +106,11 @@ private:
     // Reference for the cache accessor.
     //
     cache_accessor& cache_accessor_;
+
+    //
+    // Long-running write io dispatcher master thread.
+    //
+    std::jthread write_dispatcher_master_thread_;
 };
 
 } // namespace lazarus::storage.

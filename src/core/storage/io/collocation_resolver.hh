@@ -39,14 +39,17 @@ public:
     //
     std::uint16_t
     get_collocation_index_for_key(
-        const std::string& object_key);
+        const std::string& object_key) const;
 
 private:
 
     //
-    // Hasher for routing an object key to its respective data collocation.
+    // Returns the hash for a key using the core hashing algorithm.
     //
-    std::hash<std::string> hasher_;
+    static
+    std::uint64_t
+    hash_key(
+        const std::string& key);
 
     //
     // Number of data collocations in the system.

@@ -249,5 +249,35 @@ status_code_definition(
     0x80000021,
     static_cast<drogon::HttpStatusCode>(500));
 
+// Engine reference is not approved for the storage engine instance.
+status_code_definition(
+    storage_engine_reference_not_approved,
+    0x80000022,
+    static_cast<drogon::HttpStatusCode>(500));
+
+// Found null engine reference for non-orphaned container.
+status_code_definition(
+    null_engine_reference_non_orphaned_container,
+    0x80000023,
+    static_cast<drogon::HttpStatusCode>(500));
+
+// Storage engine reference unexpectedly referenced with a storage engine.
+status_code_definition(
+    storage_engine_reference_unexpectedly_approved,
+    0x80000024,
+    static_cast<drogon::HttpStatusCode>(500));
+
+// Unexpected storage engine instance.
+status_code_definition(
+    unexpected_storage_engine,
+    0x80000025,
+    static_cast<drogon::HttpStatusCode>(500));
+
+// Unexpected null engine reference.
+status_code_definition(
+    null_storage_engine_reference,
+    0x80000026,
+    static_cast<drogon::HttpStatusCode>(500));
+
 } // namespace status.
 } // namespace lazarus.

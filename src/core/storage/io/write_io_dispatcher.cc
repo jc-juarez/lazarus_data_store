@@ -14,9 +14,8 @@
 //      batching IO dispatcher.
 // ****************************************************
 
-#include <spdlog/spdlog.h>
+#include <pthread.h>
 #include "write_io_dispatcher.hh"
-#include "../../common/aliases.hh"
 #include "../cache/cache_accessor.hh"
 #include "data_partition_provider.hh"
 #include "storage_engine_interface.hh"
@@ -36,7 +35,7 @@ write_io_dispatcher::write_io_dispatcher(
 void
 write_io_dispatcher::start()
 {
-    spdlog::info("Starting lazarus data store write IO dispatcher thread.");
+    TRACE_LOG(info, "Starting lazarus data store write IO dispatcher thread.");
 
     write_dispatcher_master_thread_ = std::jthread(
         &write_io_dispatcher::dispatch_write_io_tasks,
@@ -70,6 +69,8 @@ void
 write_io_dispatcher::dispatch_write_io_tasks(
     std::stop_token stop_token)
 {
+    pthread_setname_np(pthread_self(), "lazarus_write");
+
     //
     // This is the core tight loop for dispatching write io tasks.
     //
@@ -82,7 +83,7 @@ write_io_dispatcher::dispatch_write_io_tasks(
         }
     }
 
-    spdlog::info("Stopping lazarus data store write IO dispatcher thread.");
+    TRACE_LOG(info, "Stopping lazarus data store write IO dispatcher thread.");
 }
 
 void
@@ -123,7 +124,7 @@ write_io_dispatcher::execute_write_io_task(
             // This should never happen given this should have been
             // taken care of before enqueuing the task to the thread pool.
             //
-            spdlog::critical("Invalid write request optype for object "
+            TRACE_LOG(critical, "Invalid write request optype for object "
                 "operation scheduled in the write IO thread pool. "
                 "Optype={}, "
                 "ObjectId={}, "
@@ -160,7 +161,7 @@ write_io_dispatcher::execute_write_io_task(
 status::status_code
 write_io_dispatcher::execute_insert_operation(
     storage_engine_interface& partition_storage_engine,
-    storage_engine_reference_handle* engine_reference,
+    storage_engine_reference* engine_reference,
     const schemas::object_request& object_request)
 {
     status::status_code status = partition_storage_engine.insert_object(
@@ -170,7 +171,7 @@ write_io_dispatcher::execute_insert_operation(
 
     if (status::succeeded(status))
     {
-        spdlog::info("Object insertion succeeded. "
+        TRACE_LOG(info, "Object insertion succeeded. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}.",
@@ -180,7 +181,7 @@ write_io_dispatcher::execute_insert_operation(
     }
     else
     {
-        spdlog::error("Object insertion failed. "
+        TRACE_LOG(error, "Object insertion failed. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}, "
@@ -197,7 +198,7 @@ write_io_dispatcher::execute_insert_operation(
 status::status_code
 write_io_dispatcher::execute_remove_operation(
     storage_engine_interface& partition_storage_engine,
-    storage_engine_reference_handle* engine_reference,
+    storage_engine_reference* engine_reference,
     const schemas::object_request& object_request)
 {
     status::status_code status = partition_storage_engine.remove_object(
@@ -206,7 +207,7 @@ write_io_dispatcher::execute_remove_operation(
 
     if (status::succeeded(status))
     {
-        spdlog::info("Object removal succeeded. "
+        TRACE_LOG(info, "Object removal succeeded. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}.",
@@ -216,7 +217,7 @@ write_io_dispatcher::execute_remove_operation(
     }
     else
     {
-        spdlog::error("Object removal failed. "
+        TRACE_LOG(error, "Object removal failed. "
             "Optype={}, "
             "ObjectId={}, "
             "ObjectContainerName={}, "

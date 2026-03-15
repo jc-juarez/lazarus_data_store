@@ -17,6 +17,7 @@
 
 #include "../server/server.hh"
 #include <drogon/HttpController.h>
+#include "../server/logging_context_filter.hh"
 
 namespace lazarus
 {
@@ -41,8 +42,8 @@ public:
         std::unique_ptr<remove_container_request_handler> remove_container_request_handler);
 
     METHOD_LIST_BEGIN
-    METHOD_ADD(containers::create_container, "", drogon::Post);
-    METHOD_ADD(containers::remove_container, "", drogon::Delete);
+    METHOD_ADD(containers::create_container, "", drogon::Post, "lazarus::network::logging_context_filter");
+    METHOD_ADD(containers::remove_container, "", drogon::Delete, "lazarus::network::logging_context_filter");
     METHOD_LIST_END
 
     //
