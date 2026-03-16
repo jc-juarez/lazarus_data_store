@@ -30,12 +30,12 @@ struct logger_configuration
     // Specifies the default values to be used by the logger.
     //
     logger_configuration()
-        : component_name_{"PandoraDBDataStore"},
+        : component_name_{"PandoraDB"},
           queue_size_bytes_{32 * 1'024u},
           max_log_file_size_bytes_{10u * 1'024u * 1'024u},
           max_number_files_for_session_{100u},
           flush_frequency_ms_{1'000u},
-          log_file_prefix_{"pandora_ds.log"},
+          log_file_prefix_{"pandora_db.log"},
           logging_session_directory_prefix_{"pandora-logs"}
     {
         //

@@ -34,6 +34,12 @@ init_logger(
     const boost::uuids::uuid session_id,
     const logger_configuration& logger_config);
 
+//
+// Generates the timestamp for the current time in YYYY_MM_DD_hh_mm format.
+//
+std::string
+generate_log_directory_time_prefix();
+
 struct context
 {
     static thread_local std::string request_id;
