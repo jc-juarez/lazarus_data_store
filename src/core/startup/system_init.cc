@@ -208,7 +208,7 @@ start_system(
     //
     // Initialize all core dependencies of the data store.
     //
-    pandora_db pandora_ds{
+    pandora_db pandora_db{
         std::move(session_id),
         std::move(metadata_partition),
         std::move(collocation_resolver),
@@ -230,7 +230,7 @@ start_system(
     // Start the data store system. This will start the core
     // storage engine and the main server for handling data requests.
     //
-    return pandora_ds.start_data_store();
+    return pandora_db.start_data_store();
 }
 
 common::system_configuration
