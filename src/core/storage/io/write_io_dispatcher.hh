@@ -60,6 +60,12 @@ public:
     void
     wait_for_stop() override;
 
+    //
+    // Gets the number of write IO threads.
+    //
+    std::uint32_t
+    get_num_io_threads() override;
+
 private:
 
     //

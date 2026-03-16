@@ -23,9 +23,6 @@ namespace pandora
 namespace storage
 {
 
-class threading_context;
-class collocation_resolver;
-
 class threading_context_provider
 {
 public:
@@ -39,15 +36,33 @@ public:
     //
     // Provides access to a specific data partition by collocation index lookup.
     //
-    std::shared_ptr<threading_context>
+    threading_context&
     get_context_by_collocation(
         const std::uint16_t collocation_index);
 
     //
-    // Returns a list with all data partitions in the system.
+    // Starts all write IO dispatcher threads.
     //
-    std::vector<std::shared_ptr<threading_context>>
-    get_all_contexts();
+    void
+    start_write_io_dispatching();
+
+    //
+    // Gets the total number of threading contexts.
+    //
+    std::uint16_t
+    get_num_contexts();
+
+    //
+    // Gets the total number of read IO threads across all contexts.
+    //
+    std::uint32_t
+    get_num_read_io_threads();
+
+    //
+    // Gets the total number of write IO threads across all contexts.
+    //
+    std::uint32_t
+    get_num_write_io_threads();
 
 private:
 

@@ -13,6 +13,7 @@
 // ****************************************************
 
 #include "threading_context.hh"
+#include "io_dispatcher_interface.hh"
 #include "threading_context_table.hh"
 #include "threading_context_provider.hh"
 
@@ -26,17 +27,35 @@ threading_context_provider::threading_context_provider(
     : contexts_table_{std::move(threading_context_table)}
 {}
 
-std::shared_ptr<threading_context>
+threading_context&
 threading_context_provider::get_context_by_collocation(
     const std::uint16_t collocation_index)
 {
     return contexts_table_->get_threading_context(collocation_index);
 }
 
-std::vector<std::shared_ptr<threading_context>>
-threading_context_provider::get_all_contexts()
+void
+threading_context_provider::start_write_io_dispatching()
 {
-    return contexts_table_->get_all_contexts();
+    contexts_table_->start_write_io_dispatching();
+}
+
+std::uint16_t
+threading_context_provider::get_num_contexts()
+{
+    return contexts_table_->get_num_contexts();
+}
+
+std::uint32_t
+threading_context_provider::get_num_read_io_threads()
+{
+    return contexts_table_->get_num_read_io_threads();
+}
+
+std::uint32_t
+threading_context_provider::get_num_write_io_threads()
+{
+    return contexts_table_->get_num_write_io_threads();
 }
 
 } // namespace storage.

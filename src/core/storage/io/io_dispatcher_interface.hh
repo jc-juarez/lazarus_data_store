@@ -41,6 +41,13 @@ public:
     virtual
     void
     wait_for_stop() = 0;
+
+    //
+    // Gets the corresponding number of IO threads used by the dispatcher.
+    //
+    virtual
+    std::uint32_t
+    get_num_io_threads() = 0;
 };
 
 } // namespace storage.

@@ -16,7 +16,6 @@
 #include "../network/server/server.hh"
 #include "../common/args_validations.hh"
 #include "../storage/io/data_partition.hh"
-#include "../common/startable_interface.hh"
 #include "../storage/io/read_io_executor.hh"
 #include "../storage/cache/cache_accessor.hh"
 #include "../storage/index/container_index.hh"
@@ -44,10 +43,7 @@ pandora_db::pandora_db(
     std::unique_ptr<storage::object_management_service> object_management_service,
     std::unique_ptr<storage::garbage_collector> garbage_collector,
     std::unique_ptr<storage::container_index> container_index,
-    std::unique_ptr<storage::io_dispatcher_interface> write_io_task_dispatcher,
-    std::unique_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher,
     std::unique_ptr<storage::frontline_cache> frontline_cache,
-    std::unique_ptr<storage::read_io_executor> object_io_executor,
     std::unique_ptr<storage::cache_accessor> cache_accessor,
     std::unique_ptr<storage::container_loader> container_loader)
     : session_id_{session_id}
@@ -60,10 +56,7 @@ pandora_db::pandora_db(
     , object_management_service_{std::move(object_management_service)}
     , garbage_collector_{std::move(garbage_collector)}
     , container_index_{std::move(container_index)}
-    , write_io_task_dispatcher_{std::move(write_io_task_dispatcher)}
-    , read_io_task_dispatcher_{std::move(read_io_task_dispatcher)}
     , frontline_cache_{std::move(frontline_cache)}
-    , object_io_executor_{std::move(object_io_executor)}
     , cache_accessor_{std::move(cache_accessor)}
     , container_loader_{std::move(container_loader)}
 {}
@@ -90,10 +83,9 @@ pandora_db::start_data_store()
     garbage_collector_->start();
 
     //
-    // Start the core write IO dispatcher master thread.
+    // Start the core write IO dispatcher master threads.
     //
-    auto write_io_dispatcher = dynamic_cast<common::startable_interface*>(write_io_task_dispatcher_.get());
-    write_io_dispatcher->start();
+    threading_context_provider_->start_write_io_dispatching();
 
     //
     // Start the server for handling incoming data requests.

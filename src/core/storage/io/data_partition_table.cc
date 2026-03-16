@@ -50,5 +50,14 @@ data_partition_table::get_all_partitions()
     return partitions_;
 }
 
+//
+// Returns the total number of data partitions.
+//
+std::uint16_t
+data_partition_table::get_num_data_partitions()
+{
+    return partitions_.size();
+}
+
 } // namespace storage.
 } // namespace pandora.

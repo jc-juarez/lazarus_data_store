@@ -35,7 +35,7 @@ public:
     //
     read_io_dispatcher(
         const std::uint32_t number_read_io_threads,
-        read_io_executor& object_io_executor,
+        std::unique_ptr<read_io_executor> read_io_executor,
         cache_accessor& cache_accessor);
 
     //
@@ -52,6 +52,12 @@ public:
     //
     void
     wait_for_stop() override;
+
+    //
+    // Gets the number of read IO threads.
+    //
+    std::uint32_t
+    get_num_io_threads() override;
 
 private:
 
@@ -79,12 +85,17 @@ private:
     //
     // Object IO executor handle.
     //
-    read_io_executor& object_io_executor_;
+    std::unique_ptr<read_io_executor> read_io_executor_;
 
     //
     // Cache accessor handle.
     //
     cache_accessor& cache_accessor_;
+
+    //
+    // Number of read IO threads.
+    //
+    const std::uint32_t num_read_io_threads_;
 };
 
 } // namespace pandora::common.

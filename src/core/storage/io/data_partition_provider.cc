@@ -39,5 +39,11 @@ data_partition_provider::get_all_partitions()
     return partitions_table_->get_all_partitions();
 }
 
+std::uint16_t
+data_partition_provider::get_num_data_partitions()
+{
+    return partitions_table_->get_num_data_partitions();
+}
+
 } // namespace storage.
 } // namespace pandora.

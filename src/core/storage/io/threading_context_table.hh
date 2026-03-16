@@ -16,13 +16,12 @@
 
 #include <vector>
 #include <memory>
+#include "threading_context.hh"
 
 namespace pandora
 {
 namespace storage
 {
-
-class threading_context;
 
 class threading_context_table
 {
@@ -38,21 +37,41 @@ public:
     //
     void
     append_context(
-        const std::uint16_t collocation_index);
+        const std::uint16_t collocation_index,
+        std::unique_ptr<io_dispatcher_interface> read_io_dispatcher,
+        std::unique_ptr<io_dispatcher_interface> write_io_dispatcher);
 
     //
     // Returns a reference to a threading context.
     // This API is meant to be only be consumed by the threading context provider.
     //
-    std::shared_ptr<threading_context>
+    threading_context&
     get_threading_context(
         const std::uint16_t collocation_index);
 
     //
-    // Returns a list with all threading contexts in the system.
+    // Starts all write IO dispatcher threads.
     //
-    std::vector<std::shared_ptr<threading_context>>
-    get_all_contexts();
+    void
+    start_write_io_dispatching();
+
+    //
+    // Gets the total number of threading contexts.
+    //
+    std::uint16_t
+    get_num_contexts();
+
+    //
+    // Gets the total number of read IO threads across all contexts.
+    //
+    std::uint32_t
+    get_num_read_io_threads();
+
+    //
+    // Gets the total number of write IO threads across all contexts.
+    //
+    std::uint32_t
+    get_num_write_io_threads();
 
 private:
 
@@ -67,7 +86,7 @@ private:
     // |   TC_0   |   TC_1   |   TC_2   |   TC_3   | ... |   TC_N   |
     // --------------------------------------------------------------
     //
-    std::vector<std::shared_ptr<threading_context>> threading_contexts_;
+    std::vector<threading_context> threading_contexts_;
 };
 
 } // namespace storage.
