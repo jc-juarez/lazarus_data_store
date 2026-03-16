@@ -30,6 +30,7 @@ class frontline_cache;
 class collocation_resolver;
 class io_dispatcher_interface;
 class io_dispatcher_interface;
+class threading_context_provider;
 
 //
 // Core storage access interface.
@@ -44,8 +45,7 @@ public:
     object_management_service(
         const storage_configuration& storage_configuration,
         container_index& container_index,
-        io_dispatcher_interface& write_request_dispatcher,
-        io_dispatcher_interface& read_request_dispatcher,
+        threading_context_provider& threading_context_provider,
         frontline_cache& frontline_cache,
         collocation_resolver& collocation_resolver);
 
@@ -134,14 +134,9 @@ private:
     container_index& container_index_;
 
     //
-    // Handle for the write request dispatcher component.
+    // Handle for the threading contexts provider component.
     //
-    io_dispatcher_interface& write_io_task_dispatcher_;
-
-    //
-    // Handle for the read request dispatcher component.
-    //
-    io_dispatcher_interface& read_io_task_dispatcher_;
+    threading_context_provider& threading_context_provider_;
 
     //
     // Frontline cache handle.

@@ -14,11 +14,11 @@
 
 #include "../index/container_index.hh"
 #include "../cache/frontline_cache.hh"
-#include "../io/read_io_dispatcher.hh"
-#include "../io/write_io_dispatcher.hh"
 #include "object_management_service.hh"
 #include "../io/collocation_resolver.hh"
+#include "../io/io_dispatcher_interface.hh"
 #include "../../common/request_validations.hh"
+#include "../io/threading_context_provider.hh"
 
 namespace pandora
 {
@@ -28,14 +28,12 @@ namespace storage
 object_management_service::object_management_service(
     const storage_configuration& storage_configuration,
     container_index& container_index,
-    io_dispatcher_interface& write_request_dispatcher,
-    io_dispatcher_interface& read_request_dispatcher,
+    threading_context_provider& threading_context_provider,
     frontline_cache& frontline_cache,
     collocation_resolver& collocation_resolver)
     : storage_configuration_{storage_configuration},
       container_index_{container_index},
-      write_io_task_dispatcher_{write_request_dispatcher},
-      read_io_task_dispatcher_{read_request_dispatcher},
+      threading_context_provider_{threading_context_provider},
       frontline_cache_{frontline_cache},
       collocation_resolver_{collocation_resolver}
 {}
@@ -192,13 +190,17 @@ object_management_service::orchestrate_concurrent_write_request(
     //
     // Create the long-lived write IO task to be dispatched down to the storage engine.
     //
+    const std::uint16_t collocation_index = collocation_resolver_.get_collocation_index_for_key(
+        object_request.get_object_id());
     object_io_task write_io_task {
-        collocation_resolver_.get_collocation_index_for_key(object_request.get_object_id()),
+        collocation_index,
         std::move(object_request),
         std::move(container),
         std::move(response_callback)};
 
-    write_io_task_dispatcher_.enqueue_io_task(
+    io_dispatcher_interface& write_io_dispatcher =
+        threading_context_provider_.get_context_by_collocation(collocation_index).get_write_io_dispatcher();
+    write_io_dispatcher.enqueue_io_task(
         std::move(write_io_task));
 
     return status::success;
@@ -230,13 +232,17 @@ object_management_service::orchestrate_concurrent_read_request(
     //
     // Create the long-lived read IO task to be dispatched down to the storage engine.
     //
+    const std::uint16_t collocation_index = collocation_resolver_.get_collocation_index_for_key(
+        object_request.get_object_id());
     object_io_task read_io_task {
-        collocation_resolver_.get_collocation_index_for_key(object_request.get_object_id()),
+        collocation_index,
         std::move(object_request),
         std::move(container),
         std::move(response_callback)};
 
-    read_io_task_dispatcher_.enqueue_io_task(
+    io_dispatcher_interface& read_io_dispatcher =
+        threading_context_provider_.get_context_by_collocation(collocation_index).get_read_io_dispatcher();
+    read_io_dispatcher.enqueue_io_task(
         std::move(read_io_task));
 
     return status::success;

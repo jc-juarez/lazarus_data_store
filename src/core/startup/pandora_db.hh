@@ -74,10 +74,7 @@ public:
         std::unique_ptr<storage::object_management_service> object_management_service,
         std::unique_ptr<storage::garbage_collector> garbage_collector,
         std::unique_ptr<storage::container_index> container_index,
-        std::unique_ptr<storage::io_dispatcher_interface> write_io_task_dispatcher,
-        std::unique_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher,
         std::unique_ptr<storage::frontline_cache> frontline_cache,
-        std::unique_ptr<storage::read_io_executor> object_io_executor,
         std::unique_ptr<storage::cache_accessor> cache_accessor,
         std::unique_ptr<storage::container_loader> container_loader);
 
@@ -165,24 +162,9 @@ private:
     std::unique_ptr<storage::container_index> container_index_;
 
     //
-    // Write request dispatcher handle.
-    //
-    std::unique_ptr<storage::io_dispatcher_interface> write_io_task_dispatcher_;
-
-    //
-    // Read request dispatcher handle.
-    //
-    std::unique_ptr<storage::io_dispatcher_interface> read_io_task_dispatcher_;
-
-    //
     // Frontline cache handle.
     //
     std::unique_ptr<storage::frontline_cache> frontline_cache_;
-
-    //
-    // Object IO executor handle.
-    //
-    std::unique_ptr<storage::read_io_executor> object_io_executor_;
 
     //
     // Cache accessor handle.

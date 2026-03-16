@@ -23,11 +23,12 @@ namespace pandora::storage
 
 read_io_dispatcher::read_io_dispatcher(
     const std::uint32_t number_read_io_threads,
-    read_io_executor& object_io_executor,
+    std::unique_ptr<read_io_executor> read_io_executor,
     cache_accessor& cache_accessor)
-    : object_io_executor_{object_io_executor},
+    : read_io_executor_{std::move(read_io_executor)},
       cache_accessor_{cache_accessor},
-      read_io_thread_pool_{number_read_io_threads}
+      read_io_thread_pool_{number_read_io_threads},
+      num_read_io_threads_{number_read_io_threads}
 {}
 
 void
@@ -117,7 +118,7 @@ read_io_dispatcher::execute_read_io_task(
     {
         case schemas::object_request_optype::get:
         {
-            return object_io_executor_.execute_get_operation(
+            return read_io_executor_->execute_get_operation(
                 read_io_task.collocation_index_,
                 read_io_task.container_->get_engine_reference(read_io_task.collocation_index_),
                 read_io_task.object_request_,
@@ -141,6 +142,12 @@ read_io_dispatcher::execute_read_io_task(
             return status::invalid_operation;
         }
     }
+}
+
+std::uint32_t
+read_io_dispatcher::get_num_io_threads()
+{
+    return num_read_io_threads_;
 }
 
 } // namespace pandora::storage.

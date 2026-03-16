@@ -231,4 +231,10 @@ write_io_dispatcher::execute_remove_operation(
     return status;
 }
 
+std::uint32_t
+write_io_dispatcher::get_num_io_threads()
+{
+    return 1u;
+}
+
 } // namespace pandora::storage.

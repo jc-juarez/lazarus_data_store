@@ -58,6 +58,12 @@ public:
     std::span<data_partition>
     get_all_partitions();
 
+    //
+    // Returns the total number of data partitions.
+    //
+    std::uint16_t
+    get_num_data_partitions();
+
 private:
 
     //

@@ -25,6 +25,7 @@ namespace storage
 {
 
 class data_partition;
+class cache_accessor;
 class collocation_resolver;
 class data_partition_provider;
 class threading_context_provider;
@@ -54,7 +55,8 @@ public:
         std::unique_ptr<data_partition_provider>,
         std::unique_ptr<threading_context_provider>>
     generate_collocation_topology(
-        const storage_configuration& storage_configuration);
+        const storage_configuration& storage_configuration,
+        cache_accessor& cache_accessor);
 
     //
     // Core invariant of the system.

@@ -114,6 +114,18 @@ start_system(
     //
     // Construct all the dependencies for the system.
     //
+    auto container_index = std::make_unique<storage::container_index>(
+        system_config.storage_configuration_.container_index_number_buckets_);
+
+    auto frontline_cache = std::make_unique<storage::frontline_cache>(
+        system_config.storage_configuration_.number_frontline_cache_shards_,
+        system_config.storage_configuration_.max_frontline_cache_shard_size_mib_ * 1'024 * 1'024,
+        system_config.storage_configuration_.max_frontline_cache_shard_object_size_bytes,
+        *container_index);
+
+    auto cache_accessor = std::make_unique<storage::cache_accessor>(
+        *frontline_cache);
+
     std::unique_ptr<storage::data_partition> metadata_partition;
     std::unique_ptr<storage::collocation_resolver> collocation_resolver;
     std::unique_ptr<storage::data_partition_provider> data_partition_provider;
@@ -123,10 +135,9 @@ start_system(
         collocation_resolver,
         data_partition_provider,
         threading_context_provider) =
-            storage::collocation_builder::generate_collocation_topology(system_config.storage_configuration_);
-
-    auto container_index = std::make_unique<storage::container_index>(
-        system_config.storage_configuration_.container_index_number_buckets_);
+            storage::collocation_builder::generate_collocation_topology(
+                system_config.storage_configuration_,
+                *cache_accessor);
 
     auto orphaned_container_scavenger = std::make_unique<storage::orphaned_container_scavenger>(
         *container_index);
@@ -148,32 +159,10 @@ start_system(
         std::move(container_operation_serializer),
         *data_partition_provider);
 
-    auto frontline_cache = std::make_unique<storage::frontline_cache>(
-        system_config.storage_configuration_.number_frontline_cache_shards_,
-        system_config.storage_configuration_.max_frontline_cache_shard_size_mib_ * 1'024 * 1'024,
-        system_config.storage_configuration_.max_frontline_cache_shard_object_size_bytes,
-        *container_index);
-
-    auto cache_accessor = std::make_unique<storage::cache_accessor>(
-        *frontline_cache);
-
-    auto object_io_executor = std::make_unique<storage::read_io_executor>(
-        *data_partition_provider);
-
-    auto write_io_task_dispatcher = std::make_unique<storage::write_io_dispatcher>(
-        *data_partition_provider,
-        *cache_accessor);
-
-    auto read_io_task_dispatcher = std::make_unique<storage::read_io_dispatcher>(
-        system_config.storage_configuration_.number_read_io_threads_,
-        *object_io_executor,
-        *cache_accessor);
-
     auto object_management_service = std::make_unique<storage::object_management_service>(
         system_config.storage_configuration_,
         *container_index,
-        *write_io_task_dispatcher,
-        *read_io_task_dispatcher,
+        *threading_context_provider,
         *frontline_cache,
         *collocation_resolver);
 
@@ -219,10 +208,7 @@ start_system(
         std::move(object_management_service),
         std::move(garbage_collector),
         std::move(container_index),
-        std::move(write_io_task_dispatcher),
-        std::move(read_io_task_dispatcher),
         std::move(frontline_cache),
-        std::move(object_io_executor),
         std::move(cache_accessor),
         std::move(container_loader)};
 
