@@ -4,7 +4,7 @@
 // See the LICENSE file in the
 // project root for license terms.
 // ****************************************************
-// Lazarus Data Store
+// PandoraDB
 // Storage
 // 'collocation_builder.cc'
 // Author: jcjuarez
@@ -13,8 +13,8 @@
 // ****************************************************
 
 #include <csignal>
+#include "pandora_db.hh"
 #include "system_init.hh"
-#include "lazarus_data_store.hh"
 #include "collocation_builder.hh"
 #include "../network/server/server.hh"
 #include "../common/args_validations.hh"
@@ -40,7 +40,7 @@
 #include "../network/server/request-handlers/container/create_container_request_handler.hh"
 #include "../network/server/request-handlers/container/remove_container_request_handler.hh"
 
-namespace lazarus
+namespace pandora
 {
 
 exit_code
@@ -208,7 +208,7 @@ start_system(
     //
     // Initialize all core dependencies of the data store.
     //
-    lazarus_data_store lazarus_ds{
+    pandora_db pandora_db{
         std::move(session_id),
         std::move(metadata_partition),
         std::move(collocation_resolver),
@@ -230,7 +230,7 @@ start_system(
     // Start the data store system. This will start the core
     // storage engine and the main server for handling data requests.
     //
-    return lazarus_ds.start_data_store();
+    return pandora_db.start_data_store();
 }
 
 common::system_configuration
@@ -288,9 +288,12 @@ void
 signal_handler(
     std::int32_t signal)
 {
-    TRACE_LOG(info, "Termination signal received. Requesting system stop.");
+    TRACE_LOG(info, "Termination signal received. Requesting system stop. "
+        "SignalType={}.",
+        signal);
+
     network::server::stop();
     stop_source.request_stop();
 }
 
-} // namespace lazarus.
+} // namespace pandora.

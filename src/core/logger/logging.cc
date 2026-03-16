@@ -32,7 +32,9 @@ init_logger(
         1u /* thread_count */);
 
     const std::string current_session_logs_directory =
-        logger_config.logging_session_directory_prefix_ + "-" + common::uuid_to_string(session_id);
+        logger_config.logging_session_directory_prefix_
+        + "-" + generate_log_directory_time_prefix()
+        + "-" + common::uuid_to_string(session_id);
     const std::filesystem::path logging_session_directory_path =
         std::filesystem::path(logger_config.logs_directory_path_) / current_session_logs_directory / logger_config.log_file_prefix_;
 
@@ -63,6 +65,14 @@ init_logger(
         logger_config.flush_frequency_ms_ ,
         logger_config.log_file_prefix_ ,
         logger_config.logging_session_directory_prefix_);
+}
+
+std::string
+generate_log_directory_time_prefix()
+{
+    auto now = std::chrono::system_clock::now();
+    auto now_time = std::chrono::floor<std::chrono::minutes>(now);
+    return std::format("{:%Y_%m_%d_%Hh_%Mm}", now_time);
 }
 
 } // namespace logger.
